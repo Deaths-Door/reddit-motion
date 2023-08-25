@@ -1,9 +1,9 @@
-#![doc = include_str!("../README.md")]
-
 mod setup;
 
-fn main(){
-    setup::print_initial_messages()
+use setup::*;
 
-    let setup = 
+//#[rustube::tokio::main]
+fn main(){
+    print_initial_messages();
+
 }
