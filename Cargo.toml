@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# For progress bar
+indicatif = "0.17.6"
+
 # For downloading neccessary youtube videos
 rustube = "0.6.0"
 
