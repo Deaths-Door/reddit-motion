@@ -8,7 +8,6 @@ Key Features:
 * **Customizable Creations:** Tailor videos to perfection with customiable video creation
 * **Global Reach:** Seamlessly localize videos for international viewers, building connections worldwide.
 * **Lightning-Fast Rendering:** Experience unparalleled speed and efficiency in video production.
-* **One-Click Sharing:** Share your creations on social media platforms directly from `reddit-motion`.
 
 ## Motivation
 

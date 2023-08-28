@@ -1,0 +1,24 @@
+[package]
+name = "reddit-motion"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# For async main
+tokio = { version = "1.32.0", features = ["rt", "rt-multi-thread", "macros"]  }
+
+# For errors
+thiserror = "1.0.47"
+
+# For progress bar
+indicatif = "0.17.6"
+
+# For downloading neccessary youtube videos
+rustube = { version = "0.6.0" , features = ["callback"]}
+
+#colored = "2.0.4" # For better terminal reporting
+# For parsing settings.toml
+#serde = { version = "1.0.145" , features = ["derive"] }
+#toml = "0.7.6"
+
+#roux = "2.2.9" # For accessing reddit
