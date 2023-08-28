@@ -4,11 +4,20 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# For async main
+tokio = { version = "1.32.0", features = ["rt", "rt-multi-thread", "macros"]  }
+
+# For errors
+thiserror = "1.0.47"
+
 # For progress bar
 indicatif = "0.17.6"
 
 # For downloading neccessary youtube videos
-rustube = "0.6.0"
+rustube = { version = "0.6.0" , features = ["callback"]}
+
+#attempt
+futures-util = "0.3"
 
 #colored = "2.0.4" # For better terminal reporting
 # For parsing settings.toml
