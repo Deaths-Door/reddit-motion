@@ -17,3 +17,17 @@ Cargo.lock
 # Added by cargo
 
 /target
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target
+
+
+# Stores local files
+config.toml
+db.toml
+/ffmpeg-6.0
+/bin
+/assets

@@ -1,0 +1,113 @@
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\assets\videos\iXlI8hhiP6I.mp4" -i "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -loop 1 -ss 0 -t 12 -i "C:\Users\Aarav Aditya Shah\Desktop\background-images\i1.jpg" -loop 1 -ss 15 -t 22 output.mp4
+
+
+C:\Users\Aarav Aditya Shah\Downloads
+
+
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -loop 1 -ss 0 -t 12 -i "C:\Users\Aarav Aditya Shah\Desktop\background-images\i1.jpg" -loop 1 -ss 15 -t 22 output.mp4
+
+
+
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -loop 1 -i "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -filter_complex "[0] [1] overlay=0:0 [out]" output.mp4
+
+
+
+
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -filter_complex [0][1]overlay=x=0:y=0 output.mp4
+
+
+ffmpeg -i video.mp4 -i overlay.png -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2 output.mp4
+
+
+// Aligns in centre
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2 "output.mp4"
+
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -loop 1 -ss 0 -t 12 -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2 output.mp4
+
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -loop 1 -t 12 -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2 output.mp4
+
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -loop 1 -t 12 -ss 5  -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2 output.mp4
+
+
+// crop video 
+ffmpeg -i input.mp4 -filter:v "crop=w:h:x:y" output.mp4
+
+// works
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -filter:v "crop=200:200" output.mp4
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -filter:v "crop=200" output.mp4
+
+// not works
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -filter:v "scale=800:400" output.mp4
+
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -filter:v "scale=200:200" output.mp4
+
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -vf "crop=800:400" -filter_complex [0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2"output.mp4"
+
+// crop and align image to center 
+ffmpeg -i  "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -filter:v "crop=200"  -filter_complex "[0][1]overlay=y=(main_h-overlay_h)/2" output.mp4
+
+// extracts audio from video
+
+// fails
+ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\Eco vid.mp4" -vn -acodec copy "ecovid.mp3"
+
+// works
+ffmpeg -i sample.avi -q:a 0 -map a sample.mp3
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\Eco vid.mp4" -q:a 0 -map a "ecovid.mp3"
+
+
+// puts audio as backgronud in video
+
+//works
+ffmpeg 
+    -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" 
+    -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" 
+    -c:v copy  
+    -filter_complex "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=1.5[1a];[0a][1a]amerge[a]" 
+    -map 0:v -map "[a]" 
+    -ac 2 
+    -t {video_length} 
+    "output.mp4"
+
+
+// merge audio + video + png\
+
+//fails
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg" -c:v copy  -filter_complex "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=1.5[1a];[0a][1a]amerge[a];[0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2" -map 0:v -map "[a]" -ac 2 -t 30 output.mp4"
+
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -i  "C:\Users\Aarav Aditya Shah\Desktop\short.jpg"  -filter_complex "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=1.5[1a];[0a][1a]amerge[a];[0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2" -map 0:v -map "[a]" -ac 2 -t 30 -loop 1 -ss 0 -t 30 "output.mp4"
+
+// ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x input.m4v
+1280x720
+
+ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x "C:\Users\Aarav Aditya Shah\Downloads\input.mp4"
+1280x720
+
+// correct loop over 
+
+//fails
+ffmpeg -i input.mp3 -i input.mp4 -c:v copy -c:a aac -strict -2 output.mp4
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -c:v copy -c:a aac -strict -2 output.mp4
+
+
+
+// fails
+ffmpeg -i input.mp4 -i input.mp3 -c:v copy -map 0:v:0 -map 1:a:0 -loop 1 output.mp4
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -c:v copy -map 0:v:0 -map 1:a:0 -loop 1 output.mp4
+
+
+// works
+ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
+//works
+ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -ss 10 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -ss 5 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
+
+// combine mp4s 
+ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
+ffmpeg -f concat -safe 0 -i "C:\Users\Aarav Aditya Shah\Desktop\concat.txt" -c copy output.mp4
+
+ffmpeg -i "concat:C:\Users\Aarav Aditya Shah\Desktop\input.mp4|C:\Users\Aarav Aditya Shah\Desktop\out.mp4|C:\Users\Aarav Aditya Shah\Desktop\out2.mp4|C:\Users\Aarav Aditya Shah\Desktop\output.mp4" -c copy output10.mp4

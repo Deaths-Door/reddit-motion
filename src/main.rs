@@ -1,23 +1,30 @@
-#![doc = include_str!("../README.md")]
-
-mod localizer;
+mod utils;
+mod ffmpeg;
 mod config;
+mod db;
+mod callback;
 
-use localizer::println;
-use config::Config;
+use db::Database;
 
-fn main() {
-    println!(
-r#"
-    ____           __    ___ __     __  ___      __  _           
-   / __ \___  ____/ /___/ (_) /_   /  |/  /___  / /_(_)___  ____ 
-  / /_/ / _ \/ __  / __  / / __/  / /|_/ / __ \/ __/ / __ \/ __ \
- / _, _/  __/ /_/ / /_/ / / /_   / /  / / /_/ / /_/ / /_/ / / / /
-/_/ |_|\___/\__,_/\__,_/_/\__/  /_/  /_/\____/\__/_/\____/_/ /_/ 
-"#
-    );
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    utils::print_banner();
+    utils::check_and_install_latest_version().await?;
 
-    println("intro");
- 
-    let config = Config::try_from("config.toml");
+    let ffmpeg = utils::create_ffmpeg().await?;
+
+    let mut config = config::Config::from_file("config.toml")?;
+    utils::download_assets(&mut config, &ffmpeg).await?;
+
+    let mut db = Database::from_file_or_create("db.toml")?;  
+    let callback = utils::create_callback(); 
+
+    println!("Reading reddit!!");
+
+    let handler = config.create_videos(&mut db,ffmpeg,&callback).await?;
+
+    db.update_database()?;
+    
+    handler.await?;
+    Ok(())
 }

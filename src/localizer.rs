@@ -10,9 +10,12 @@ static_loader! {
 }
 
 lazy_static! {
-    static ref CURRENT_LANGUAGE : LanguageIdentifier = .parse().unwrap();
+    static ref CURRENT_LANGUAGE : LanguageIdentifier = "en-US".parse().unwrap();
 }
 
+pub fn get_localized_string(id : &str) -> String {
+    LOCALES.lookup(&CURRENT_LANGUAGE,id).unwrap()
+}
 pub fn println(id : &str) {
-    println!("{}",&LOCALES.lookup(&CURRENT_LANGUAGE,id).unwrap());
+    println!("{}",&get_localized_string(id));
 }

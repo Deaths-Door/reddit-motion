@@ -1,12 +1,55 @@
 [package]
-name = "reddit_motion"
+name = "reddit-motion"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-# For localization
-fluent-templates = "0.8.0"
+# For threading + async main
+tokio = { version = "1.35.1", features = ["macros", "rt-multi-thread"] }
+
+# For better error reporting
+thiserror = "1.0.47"
+anyhow = "1.0.77"
+colored = "2.1.0"
+
+# For using enums in errors
+strum = { version = "0.25.0" , features = ["derive"]}
+
+# For config.toml
+serde = { version = "1.0.145" , features = ["derive"] }
+toml = "0.7.6"
+
+# For downloading video assets
+rusty_ytdl = "0.6.6"
+
+# For showing progress in terminal (eg video download)
+indicatif = "0.17.6"
+
+# For Preproccessing text input to tts
+regex = "1.10.2"
 lazy_static = "1.4.0"
-unic-langid = "0.9.1"
+
+# For Text-to-Speech to Mp3
+gtts = "0.1.0"
+
+# For browser interaction
+chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"]}
+futures = "0.3.30"
+
+# For Reddit Api
+roux = "2.2.9"
+
+# For randomly chooses assets
+rand = "0.8.5"
+
+# For downloading ffmpeg && checking if newer version of tool is released
+reqwest = "0.11.23"
+serde_json = "1.0.109"
+version-compare = "0.1.1"
+
+# For recursive async functions
+async-recursion = "1.0.5"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+# For extracting zip file
+zip-extract = "0.1.2"

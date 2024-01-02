@@ -14,3 +14,6 @@ Key Features:
 We've all seen those viral videos on TikTok, YouTube, and Instagram – they effortlessly amass millions of views, yet the creative process behind them often involves minimal effort. The real magic lies in smart editing and skillful content aggregation...
 
 ... Now, imagine if you could automate that entire process? 🤯
+
+# TODO MAYBE CHANGE VOICE TTS PROVIDER
+# TODO : FINISH THE README
