@@ -1,11 +1,13 @@
+use std::collections::HashMap;
 use std::path::Path;
 
 use chromiumoxide::Page;
 use roux::submission::SubmissionData;
+use unic_langid::LanguageIdentifier;
 use crate::config::{video, tts, screenshot};
 use crate::config::{VideoCreationError,ParameterArgs};
 use crate::ffmpeg::FFmpeg;
-use super::{StoryMode,StoryModeError};
+use super::{StoryMode,StoryModeError, MediaFiles};
 
 pub struct StoryModeParmeters<'a> {
     pub parms : &'a ParameterArgs<'a>,
@@ -31,7 +33,10 @@ impl StoryMode {
 
         let video_directory = random_video_crop_and_move_to_directory(parms.parms, &bin_directory)?;
 
-        generate_and_concentate_media(
+        let media_files = MediaFiles::default();
+
+        
+       /*generate_and_concentate_media(
             parms,
             &submission.id,
             &submission.title,
@@ -40,7 +45,7 @@ impl StoryMode {
                 let s = screenshot::screenshot_post_title(parms.page, submission,parms.bin_directory, &file_name).await?;
                 Ok(s)
             }
-        ).await?;
+        ).await?;*/
 
        // parms.bin_directory;
 
@@ -73,6 +78,8 @@ fn random_video_crop_and_move_to_directory(
     Ok(new_vdir)
 }
 
+
+#[deprecated]
 async fn generate_and_concentate_media<O>(
     parms : &StoryModeParmeters<'_>,
     id : &str,

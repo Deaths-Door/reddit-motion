@@ -117,6 +117,7 @@ pub(in crate::config) fn random_file_name() -> String {
 
 
 
+#[deprecated]
 pub(in crate::config) fn combine_video_audio_and_png(
     ffmpeg : &FFmpeg,
     id : &str,

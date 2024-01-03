@@ -21,7 +21,7 @@ use roux::submission::SubmissionData;
 
 impl Database {
 
-    pub fn from_file_or_create(_path : &str) -> Result<Self,crate::config::LoadingConfigError> {
+    pub fn from_file_or_create(_path : &str) -> anyhow::Result<()> {
         let path : &Path = _path.as_ref();
         if !path.exists() {
             let mut db = Self::default();
@@ -38,7 +38,7 @@ impl Database {
         Ok(db)
     }
 
-    pub fn update_database(self) -> Result<(),crate::config::LoadingConfigError> {
+    pub fn update_database(self) -> anyhow::Result<()> {
         let toml = toml::to_string(&self).unwrap();
         let mut file = OpenOptions::new()
             .write(true)

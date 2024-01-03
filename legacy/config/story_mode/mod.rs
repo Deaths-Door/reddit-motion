@@ -1,8 +1,11 @@
 mod general;
 mod post;
 mod comments;
+mod media;
 
 pub use general::*;
+pub(super) use media::*;
+
 use std::future::Future;
 
 use chromiumoxide::Page;

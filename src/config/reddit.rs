@@ -1,66 +1,35 @@
-use chromiumoxide::{Page, cdp::browser_protocol::network::CookieParam};
+use serde::{Deserialize,Serialize};
+use serde_with::{serde_as,DisplayFromStr};
+use unic_langid::LanguageIdentifier;
 
-use crate::config::subreddit::SubredditConfig;
-
-use super::args::ParameterArgs;
-
-#[derive(serde::Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct RedditConfig {
-    #[serde(rename="dark_mode")]
-    color_scheme_is_dark : bool,
+    credentials : Option<RedditCredentials>,
     subreddits : Vec<SubredditConfig>,
 }
 
-impl RedditConfig {
-    pub async fn handle(
-        &self,
-        parms : &mut ParameterArgs<'_>
-    ) -> anyhow::Result<()> {        
-        for subreddit in &self.subreddits {
-            (parms.callback.on_new_subreddit)(&subreddit);
-            
-            subreddit.handle(
-                self,
-                parms
-            ).await?;
-
-            (parms.callback.on_end_subreddit)()
-        }
-        Ok(())
-    }
-
-    // TODO : Check why cookies are not working , is it cuz im not logged in??
-    pub(in crate::config) async fn set_color_scheme(&self,page : &Page) -> chromiumoxide::Result<()> {
-        if self.color_scheme_is_dark {
-            page.set_cookie((*DARK_MODE).clone()).await?;
-        };
-
-        page.set_cookie((*DEFAULT_COLOR_SCHEME).clone()).await?;
-        Ok(())
-    }
+#[derive(Serialize, Deserialize)]
+pub struct RedditUser {
+    username : String,
+    password : String,
+    use_dark_mode : bool
 }
 
-lazy_static::lazy_static! {
-    static ref DEFAULT_COLOR_SCHEME : CookieParam = create_cookie(  
-        "eu_cookie", 
-        "{%22opted%22:true%2C%22nonessential%22:false}"
-    );
+#[serde_as]
+#[derive(Serialize, Deserialize)]
+pub struct SubredditConfig {
+    name : String,
 
-    static ref DARK_MODE : CookieParam = create_cookie(
-        "USER", 
-        "eyJwcmVmcyI6eyJ0b3BDb250ZW50RGlzbWlzc2FsVGltZSI6MCwiZ2xvYmFsVGhlbWUiOiJSRURESVQiLCJuaWdodG1vZGUiOnRydWUsImNvbGxhcHNlZFRyYXlTZWN0aW9ucyI6eyJmYXZvcml0ZXMiOmZhbHNlLCJtdWx0aXMiOmZhbHNlLCJtb2RlcmF0aW5nIjpmYWxzZSwic3Vic2NyaXB0aW9ucyI6ZmFsc2UsInByb2ZpbGVzIjpmYWxzZX0sInRvcENvbnRlbnRUaW1lc0Rpc21pc3NlZCI6MH19"
-    );
+    #[serde(default = "drepeat")]
+    repeat_count : u8,
+
+    #[serde(default,rename = "mode")]
+    story_mode : StoryMode,
+
+    for_tts_use : TextToSpeechService,
+
+    #[serde_as(as = "Vec<DisplayFromStr>")]
+    extra_langs: Vec<LanguageIdentifier>,
 }
 
-fn create_cookie(
-    name : &str,
-    value : &str,
-) -> CookieParam {
-    CookieParam::builder()
-        .name(name)
-        .value(value)
-        .domain(".reddit.com".to_string())
-        .path("/".to_string())
-        .build()
-        .expect("Error creating cookie")
-}
+fn drepeat() -> u8 { 1 }
