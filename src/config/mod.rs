@@ -7,16 +7,25 @@ mod screenshot;
 mod args;
 mod video;
 
+use serde::{Deserialize, Deserializer};
+use serde_with::{serde_as,DisplayFromStr};
 pub use story_mode::*;
 pub use tts::*;
 pub use subreddit::*;
+use unic_langid::LanguageIdentifier;
 
-#[derive(serde::Deserialize)]
+#[serde_as]
+#[derive(Deserialize)]
 pub struct Config {
     pub(crate) assets : assets::Assets,
+
+    #[serde_as(as = "DisplayFromStr")]
+    pub(crate) lang : LanguageIdentifier,
+
     dimensions : Dimesions,
     reddit : reddit::RedditConfig
 }
+
 
 #[derive(serde::Deserialize)]
 pub struct Dimesions {
@@ -39,7 +48,7 @@ pub enum LoadingConfigError {
     Toml(#[from] toml::de::Error)
 }
 
-use std::path::Path;
+use std::{path::Path, str::FromStr};
 use chromiumoxide::{Browser,BrowserConfig,handler::viewport::Viewport};
 use futures::StreamExt;
 use anyhow::anyhow;

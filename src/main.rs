@@ -3,17 +3,20 @@ mod ffmpeg;
 mod config;
 mod db;
 mod callback;
+mod localize;
 
 use db::Database;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    utils::print_banner();
+    let mut config = config::Config::from_file("config.toml")?;
+
+    utils::print_banner(&config.lang)?;
+
     utils::check_and_install_latest_version().await?;
 
-    let ffmpeg = utils::create_ffmpeg().await?;
+    let ffmpeg = utils::create_ffmpeg(&config.lang).await?;
 
-    let mut config = config::Config::from_file("config.toml")?;
     utils::download_assets(&mut config, &ffmpeg).await?;
 
     let mut db = Database::from_file_or_create("db.toml")?;  

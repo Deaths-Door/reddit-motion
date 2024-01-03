@@ -1,8 +1,17 @@
 use crate::callback::Callback;
 use crate::ffmpeg::{self, FFmpeg};
+use crate::localize::lookup;
 use colored::Colorize;
 
-pub fn print_banner() {
+lazy_static::lazy_static! {
+    static ref SEPERATOR : String = "=".repeat(20);
+}
+
+fn print_seperator() {
+    println!("{}",*SEPERATOR);
+}
+
+pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
     let banner = r#"
     ____           __    ___ __     __  ___      __  _           
    / __ \___  ____/ /___/ (_) /_   /  |/  /___  / /_(_)___  ____ 
@@ -11,19 +20,40 @@ pub fn print_banner() {
 /_/ |_|\___/\__,_/\__,_/_/\__/  /_/  /_/\____/\__/_/\____/_/ /_/ 
 "#.bright_red();
 
-    let thanks = "Thanks for using this tool! Feel free to contribute to this project on GitHub!".bold();
-    let questions = "If you have any questions, feel free to contact me by submitting a GitHub issue at ".green();
-    let solutions = "You can find solutions to many common FAQs at ".green();
+    println!("{banner}");
 
-    let github_link = "https://github.com/Deaths-Door/reddit-motion".blue();
-    let doc_link = "https://docs.rs/reddit_motion".blue();
+    const LINK_PLACEHOLDER : &str = "|-|";
 
-    // As they are the longest
-    let seperater = "=".repeat(questions.len() + github_link.len());
-    println!("{banner}\n{thanks}\n{questions}{github_link}\n{solutions}{doc_link}\n{seperater}");
+    let thanks = lookup(lang, "thanks")?.bold();
+
+    let proccess = |id , link : &str| -> anyhow::Result<String> {
+        let _string = lookup(lang, id)?;
+        let (a,b) = _string.split_once(LINK_PLACEHOLDER).unwrap();
+        Ok(format!("{}{}{}",a.green(),link.blue(),b.green()))
+    };
+    
+    let questions = {
+        const LINK : &str = "https://github.com/Deaths-Door/reddit-motion";
+        proccess("questions",LINK)?
+    };
+
+    let solutions = {
+        const LINK : &str = "https://docs.rs/reddit_motion";
+        proccess("solutions",LINK)?
+    };
+
+    for i in [&*thanks,&questions,&solutions] {
+        println!("{i}");
+    }
+
+    print_seperator();
+
+    Ok(())
 }
 
 use serde_json::Value;
+use unic_langid::LanguageIdentifier;
+
 pub async fn check_and_install_latest_version() -> anyhow::Result<()> {
     const URL : &str = "https://api.github.com/repos/Deaths-Door/reddit-motiont/releases/latest";
    
@@ -54,33 +84,41 @@ pub async fn check_and_install_latest_version() -> anyhow::Result<()> {
 }
 
 // TODO : Format all printlns with colored crate
-pub async fn create_ffmpeg<'a>() -> Result<ffmpeg::FFmpeg,ffmpeg::FFmpegInstallError> {
+pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<ffmpeg::FFmpeg> {
     let mut ffmpeg = ffmpeg::FFmpeg::new();
+    let local_path = "ffmpeg-6.0";
 
-    ffmpeg.check_and_install(
-        "ffmpeg-6.0",
-        || {
-            println!("FFmpeg is not installed on this system.");
+    fn end(ffmpeg : FFmpeg,lang : &LanguageIdentifier) -> anyhow::Result<ffmpeg::FFmpeg> {
+        println!("{}",lookup(lang, "ffmpeg")?.green());
 
-            println!("We can try to automatically install it for you. Would you like to do that? (y/n):");
+        print_seperator();
     
-            use std::io::*;
-            let mut input = String::new();
-    
-            stdin().read_line(&mut input).expect("Error reading input");
-    
-            if input.to_lowercase() == "n" {
-                println!("Please install FFmpeg manually and try again.");
-                std::process::exit(0);
-            }    
-    
-            println!("Downloading FFmpeg...");
-        },
-    ).await?;
+        Ok(ffmpeg)
+    }
 
-    println!("FFmpeg is availiable!");
+    if ffmpeg.check_if_installed(local_path).is_some_and(|v| v) {
+        return end(ffmpeg,lang);
+    }
 
-    Ok(ffmpeg)
+    println!("{}",lookup(lang, "ffmpeg.not_installed")?.bright_red());
+
+    println!("{}",lookup(lang, "ffmpeg.auto_download")?);
+
+    use std::io::*;
+    let mut input = String::new();
+
+    stdin().read_line(&mut input).expect("Error reading input");
+
+    if input.to_lowercase() == "n" {
+        println!("{}",lookup(lang,"ffmpeg.manually")?);
+        std::process::exit(0);
+    }    
+
+    println!("{}",lookup(lang, "ffmpeg.downloading")?.yellow());
+
+    ffmpeg.install(local_path).await?;
+
+    end(ffmpeg,lang)
 }
 
 
@@ -89,17 +127,22 @@ use indicatif::ProgressBar;
 
 pub async fn download_assets(config : &mut Config,ffmpeg : &FFmpeg) -> anyhow::Result<()> {
     let progress_bar = ProgressBar::new(config.assets.count() as u64);
+    let lang = &config.lang;
 
+    let s = lookup(lang, "assets.downloading")?;
     config.assets.download(ffmpeg,||{
         progress_bar.inc(1);
-        println!("Downloaded another asset...");
+        println!("{s}");
     }).await?;
     
-    println!("Assets are availiable!");
+    println!("{}",lookup(lang, "assets")?.green());
+
+    print_seperator();
 
     Ok(())
 }
 
+// TODO : Trasnlate this as wel
 pub fn create_callback() -> Callback {
     Callback {
         on_new_subreddit : |subreddit| println!("Checking {} subreddit...",subreddit.name),

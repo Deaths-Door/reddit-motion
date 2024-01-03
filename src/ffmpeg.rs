@@ -106,27 +106,6 @@ impl FFmpeg {
 }
 
 impl FFmpeg {
-    /// Checks if FFmpeg is installed and installs it if necessary.
-    ///
-    /// # Arguments
-    /// `on_installing`: A callback function that is called before the FFmpeg installation begins.
-    ///
-    /// # Returns
-    /// An `FFmpegInstallError` if the installation failed, or `Ok(())` if successful.
-    pub async fn check_and_install<P : AsRef<Path>>(
-        &mut self,
-        local_path : P,
-        on_installing : impl FnOnce(),
-    ) -> Result<(),FFmpegInstallError> {
-        if self.check_if_installed(local_path.as_ref()).is_some_and(|v| v) {
-            return Ok(())
-        }
-
-        on_installing();
-        
-        self.install(local_path).await
-    }
-
     // Checks if FFmpeg is installed.
     ///
     /// # Returns
