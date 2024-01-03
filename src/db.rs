@@ -1,12 +1,17 @@
 use std::collections::HashSet;
-
-#[derive(serde::Deserialize,serde::Serialize,Default)]
+use chrono::{DateTime, Utc};
+use serde_with::{serde_as,DisplayFromStr};
+#[serde_as]
+#[derive(Default,serde::Deserialize,serde::Serialize)]
 pub struct Database {
     #[serde(skip)]
     path : String,
 
     // TODO : Include more metadata eg language doneit 
-    subreddit_ids : HashSet<String>
+    subreddit_ids : HashSet<String>,
+
+    #[serde_as(as = "DisplayFromStr")]
+    pub(crate) last_version_check : DateTime<Utc>
 }
 use std::path::Path;
 use std::fs::{File,OpenOptions};
@@ -15,6 +20,7 @@ use std::io::Write;
 use roux::submission::SubmissionData;
 
 impl Database {
+
     pub fn from_file_or_create(_path : &str) -> Result<Self,crate::config::LoadingConfigError> {
         let path : &Path = _path.as_ref();
         if !path.exists() {

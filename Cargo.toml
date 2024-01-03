@@ -42,9 +42,9 @@ roux = "2.2.9"
 # Random selection
 rand = "0.8.5"
 
-# FFmpeg download and version check
-reqwest = "0.11.23"
-serde_json = "1.0.109"
+# Version check
+crates_io_api = "0.9.0"
+chrono = "0.4.31"
 version-compare = "0.1.1"
 
 # Recursive async functions
@@ -57,6 +57,9 @@ unic-langid = "0.9.4"
 # Custom Serialization 
 serde_with = "3.4.0"
 
+# FFmpeg download
 [target.'cfg(target_os = "windows")'.dependencies]
+reqwest = "0.11.23"
+
 # For extracting zip file
 zip-extract = "0.1.2"

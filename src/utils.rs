@@ -1,4 +1,5 @@
 use crate::callback::Callback;
+use crate::db::Database;
 use crate::ffmpeg::{self, FFmpeg};
 use crate::localize::lookup;
 use colored::Colorize;
@@ -50,35 +51,45 @@ pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
 
     Ok(())
 }
-
-use serde_json::Value;
 use unic_langid::LanguageIdentifier;
 
-pub async fn check_and_install_latest_version() -> anyhow::Result<()> {
-    const URL : &str = "https://api.github.com/repos/Deaths-Door/reddit-motiont/releases/latest";
-   
-    let client = reqwest::Client::builder()
-        .user_agent("reddit-motion")
-        .build()?;
-
-    let response = client.get(URL).send().await?;
-    let data : Value = response.json().await?;
-
-    // If none then that means its the first release 
-    if let Some(_release_version) = data.get("tag_name") {
-        if let Value::String(release_version) = _release_version {
-            use version_compare::*;
-            let package_version = env!("CARGO_PKG_VERSION");
+pub async fn check_and_install_latest_version(db : &mut Database) -> anyhow::Result<()> {
+    use chrono::*;
+    // Check Every Week Once
+    let last_checked = db.last_version_check;
+    let now = Utc::now();
     
-            // less then
-            if let Cmp::Lt = compare(package_version,&release_version).unwrap() {
-                let message = format!(
-                    "You are using an older version ({package_version}) of the bot. Download the newest version ({release_version}) from https://github.com/Deaths-Door/reddit-motion/releases/latest"
-                ).bright_red();
-                println!("{message}");
-            }
+    let duration = now.signed_duration_since(last_checked);
+
+    if duration.num_weeks() < 1 {
+        return Ok(())
+    } 
+
+    {
+        use crates_io_api::AsyncClient;
+
+        let client = AsyncClient::new(
+            "reddit-motion",
+            std::time::Duration::from_millis(1000)
+        )?;
+        
+        let _crate = client.get_crate("reddit-motion").await?;
+        
+        let release_version = &_crate.versions.first().unwrap().num;
+    
+        use version_compare::*;
+        let package_version = env!("CARGO_PKG_VERSION");
+    
+        // less then
+        if let Cmp::Lt = compare(package_version,release_version).unwrap() {
+            let message = format!(
+                "You are using an older version ({package_version}) of the bot. Download the newest version ({release_version}) from https://github.com/Deaths-Door/reddit-motion/releases/latest"
+            ).bright_red();
+            println!("{message}");
         }
     }
+    
+    db.last_version_check = now;
 
     Ok(())
 }
