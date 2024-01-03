@@ -1,7 +1,7 @@
 use crate::callback::Callback;
 use crate::db::Database;
 use crate::ffmpeg::{self, FFmpeg};
-use crate::localize::lookup;
+use crate::localize::{lookup, lookup_args, lookup1};
 use colored::Colorize;
 
 lazy_static::lazy_static! {
@@ -12,6 +12,8 @@ fn print_seperator() {
     println!("{}",*SEPERATOR);
 }
 
+use maplit::{convert_args, hashmap};
+use unic_langid::LanguageIdentifier;
 pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
     let banner = r#"
     ____           __    ___ __     __  ___      __  _           
@@ -23,24 +25,22 @@ pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
 
     println!("{banner}");
 
-    const LINK_PLACEHOLDER : &str = "|-|";
-
     let thanks = lookup(lang, "thanks")?.bold();
 
-    let proccess = |id , link : &str| -> anyhow::Result<String> {
-        let _string = lookup(lang, id)?;
-        let (a,b) = _string.split_once(LINK_PLACEHOLDER).unwrap();
-        Ok(format!("{}{}{}",a.green(),link.blue(),b.green()))
+    let proccess = |id ,arg_id , value| -> anyhow::Result<String> {
+        let _string = lookup1(lang, id,arg_id,value)?;
+        let (a,b) = _string.split_once(value).unwrap();
+        Ok(format!("{}{}{}",a.green(),value.blue(),b.green()))
     };
     
     let questions = {
         const LINK : &str = "https://github.com/Deaths-Door/reddit-motion";
-        proccess("questions",LINK)?
+        proccess("questions","link",LINK)?
     };
 
     let solutions = {
         const LINK : &str = "https://docs.rs/reddit_motion";
-        proccess("solutions",LINK)?
+        proccess("solutions","link",LINK)?
     };
 
     for i in [&*thanks,&questions,&solutions] {
@@ -51,16 +51,15 @@ pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
 
     Ok(())
 }
-use unic_langid::LanguageIdentifier;
 
-pub async fn check_and_install_latest_version(db : &mut Database) -> anyhow::Result<()> {
+pub async fn check_and_install_latest_version(db : &mut Database,lang : &LanguageIdentifier) -> anyhow::Result<()> {
     use chrono::*;
-    // Check Every Week Once
     let last_checked = db.last_version_check;
     let now = Utc::now();
     
     let duration = now.signed_duration_since(last_checked);
 
+    // Check Every Week Once
     if duration.num_weeks() < 1 {
         return Ok(())
     } 
@@ -73,19 +72,38 @@ pub async fn check_and_install_latest_version(db : &mut Database) -> anyhow::Res
             std::time::Duration::from_millis(1000)
         )?;
         
-        let _crate = client.get_crate("reddit-motion").await?;
+        let mut _crate = client.get_crate("reddit-motion").await?;
         
-        let release_version = &_crate.versions.first().unwrap().num;
+        let release_version = &_crate.versions.first_mut().unwrap().num;
     
         use version_compare::*;
         let package_version = env!("CARGO_PKG_VERSION");
     
         // less then
-        if let Cmp::Lt = compare(package_version,release_version).unwrap() {
-            let message = format!(
-                "You are using an older version ({package_version}) of the bot. Download the newest version ({release_version}) from https://github.com/Deaths-Door/reddit-motion/releases/latest"
-            ).bright_red();
-            println!("{message}");
+        if let Cmp::Lt = compare(package_version,&release_version).unwrap() {
+            const LINK : &str = "https://crates.io/crates/reddit-motion";
+            let string = lookup_args(lang, "using-old-version",&convert_args!(hashmap!(
+                "package_version" => package_version,
+                "release_version" => &**release_version,
+                "link" => LINK
+            )))?;
+
+            let (start_old_v,__end_old_v) = string.split_once(package_version).unwrap();
+            let (start_new_v,__end_new_v) = __end_old_v.split_once(release_version).unwrap();
+            let (start_end,end_end) = __end_new_v.split_once(LINK).unwrap();
+
+            println!(
+                "{}{}{}{}{}{}{}",
+                start_old_v.red(),
+                package_version.yellow(),
+                start_new_v.red(),
+                release_version.yellow(),
+                start_end.red(),
+                LINK.blue(),
+                end_end.red()
+            );
+
+            print_seperator()
         }
     }
     
@@ -94,7 +112,6 @@ pub async fn check_and_install_latest_version(db : &mut Database) -> anyhow::Res
     Ok(())
 }
 
-// TODO : Format all printlns with colored crate
 pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<ffmpeg::FFmpeg> {
     let mut ffmpeg = ffmpeg::FFmpeg::new();
     let local_path = "ffmpeg-6.0";
@@ -153,7 +170,7 @@ pub async fn download_assets(config : &mut Config,ffmpeg : &FFmpeg) -> anyhow::R
     Ok(())
 }
 
-// TODO : Trasnlate this as wel
+// TODO : Trasnlate this as well
 pub fn create_callback() -> Callback {
     Callback {
         on_new_subreddit : |subreddit| println!("Checking {} subreddit...",subreddit.name),

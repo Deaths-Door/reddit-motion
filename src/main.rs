@@ -13,7 +13,7 @@ async fn main() -> anyhow::Result<()> {
     utils::print_banner(&config.lang)?;
 
     let mut db = Database::from_file_or_create("db.toml")?;  
-    utils::check_and_install_latest_version(&mut db).await?;
+    utils::check_and_install_latest_version(&mut db,&config.lang).await?;
 
     let ffmpeg = utils::create_ffmpeg(&config.lang).await?;
     utils::download_assets(&mut config, &ffmpeg).await?;
