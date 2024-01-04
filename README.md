@@ -42,7 +42,7 @@ Extend on the Proxy Idea by rotating (IPv6)Addresses (you can find an example IP
 Use cookies (you can find an example cookies)
 for this to take effect you have to first wait for the current ratelimit to expire!
 Wait it out
-
+reddit.use_dark_mode = has no effect unless logged in
 cargo isntall -> crate -- --edit ... create config.toml , then run it crate
 Translate assets into more langs
 # assets dirs can follow this pattern

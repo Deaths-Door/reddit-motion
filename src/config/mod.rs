@@ -6,16 +6,17 @@ mod story_mode;
 mod translate;
 mod callback;
 mod args;
+mod error;
 
 pub use assets::*;
 pub use dimensions::*;
 pub use reddit::*;
-use rusty_ytdl::Video;
 pub use tts::*;
 pub use story_mode::*;
 pub use translate::*;
 pub use callback::*;
 pub use args::*;
+pub use error::*;
 
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
@@ -52,17 +53,16 @@ impl Config {
     }
 
     pub async fn exceute_create_videos(
-        &self,
+        self,
         db : &mut Database,
-        config : &Config,
         ffmpeg : &FFmpeg,
         callback : &Callback
     ) -> anyhow::Result<JoinHandle<()>> {
         let (browser,handler) = self.create_browser().await?;
 
-        let args = VideoCreationArguments::new(config, callback, ffmpeg, &browser);
+        let args = VideoCreationArguments::new(&self, callback, ffmpeg, &browser);
 
-        //self.reddit.exceute(&args);
+        self.reddit.exceute(&args).await?;
 
         Ok(handler)
     }

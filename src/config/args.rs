@@ -4,10 +4,10 @@ use crate::ffmpeg::FFmpeg;
 use super::{Config, Callback};
 
 pub struct VideoCreationArguments<'a> {
-    config : &'a Config,
-    callback : &'a Callback,
-    ffmpeg : &'a FFmpeg,
-    browser : &'a Browser
+    pub config : &'a Config,
+    pub callback : &'a Callback,
+    pub ffmpeg : &'a FFmpeg,
+    pub browser : &'a Browser
 }
 
 impl<'a> VideoCreationArguments<'a> {
