@@ -30,5 +30,3 @@ config.toml
 db.toml
 /ffmpeg-6.0
 /bin
-/assets
-!assets/locales/*
