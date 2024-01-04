@@ -4,6 +4,7 @@ mod reddit;
 mod tts;
 mod story_mode;
 mod translate;
+mod callback;
 
 pub use assets::*;
 pub use dimensions::*;
@@ -11,6 +12,7 @@ pub use reddit::*;
 pub use tts::*;
 pub use story_mode::*;
 pub use translate::*;
+pub use callback::*;
 
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};

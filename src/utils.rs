@@ -15,7 +15,7 @@ fn print_seperator() {
     println!("{}",*SEPERATOR);
 }
 
-pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
+pub fn print_banner(lang : &LanguageIdentifier) {
     let banner = r#"
     ____           __    ___ __     __  ___      __  _           
    / __ \___  ____/ /___/ (_) /_   /  |/  /___  / /_(_)___  ____ 
@@ -26,22 +26,22 @@ pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
 
     println!("{banner}");
 
-    let thanks = lookup(lang, "thanks")?.bold();
+    let thanks = lookup(lang, "thanks").bold();
 
-    let proccess = |id ,arg_id , value| -> anyhow::Result<String> {
-        let _string = lookup1(lang, id,arg_id,value)?;
+    let proccess = |id ,arg_id , value| {
+        let _string = lookup1(lang, id,arg_id,value);
         let (a,b) = _string.split_once(value).unwrap();
-        Ok(format!("{}{}{}",a.green(),value.blue(),b.green()))
+        format!("{}{}{}",a.green(),value.blue(),b.green())
     };
     
     let questions = {
         const LINK : &str = "https://github.com/Deaths-Door/reddit-motion";
-        proccess("questions","link",LINK)?
+        proccess("questions","link",LINK)
     };
 
     let solutions = {
         const LINK : &str = "https://docs.rs/reddit_motion";
-        proccess("solutions","link",LINK)?
+        proccess("solutions","link",LINK)
     };
 
     for i in [&*thanks,&questions,&solutions] {
@@ -49,8 +49,6 @@ pub fn print_banner(lang : &LanguageIdentifier) -> anyhow::Result<()> {
     }
 
     print_seperator();
-
-    Ok(())
 }
 
 pub async fn check_and_install_latest_version(db : &mut Database,lang : &LanguageIdentifier) -> anyhow::Result<()> {
@@ -87,7 +85,7 @@ pub async fn check_and_install_latest_version(db : &mut Database,lang : &Languag
                 "package_version" => package_version,
                 "release_version" => &**release_version,
                 "link" => LINK
-            )))?;
+            )));
 
             let (start_old_v,__end_old_v) = string.split_once(package_version).unwrap();
             let (start_new_v,__end_new_v) = __end_old_v.split_once(release_version).unwrap();
@@ -118,7 +116,7 @@ pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<FFm
     let local_path = "ffmpeg-6.0";
 
     fn end(ffmpeg : FFmpeg,lang : &LanguageIdentifier) -> anyhow::Result<FFmpeg> {
-        println!("{}",lookup(lang, "ffmpeg")?.green());
+        println!("{}",lookup(lang, "ffmpeg").green());
 
         print_seperator();
     
@@ -129,9 +127,9 @@ pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<FFm
         return end(ffmpeg,lang);
     }
 
-    println!("{}",lookup(lang, "ffmpeg.not_installed")?.bright_red());
+    println!("{}",lookup(lang, "ffmpeg.not_installed").bright_red());
 
-    println!("{}",lookup(lang, "ffmpeg.auto_download")?);
+    println!("{}",lookup(lang, "ffmpeg.auto_download"));
 
     use std::io::*;
     let mut input = String::new();
@@ -139,11 +137,11 @@ pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<FFm
     stdin().read_line(&mut input).expect("Error reading input");
 
     if input.to_lowercase() == "n" {
-        println!("{}",lookup(lang,"ffmpeg.manually")?);
+        println!("{}",lookup(lang,"ffmpeg.manually"));
         std::process::exit(0);
     }    
 
-    println!("{}",lookup(lang, "ffmpeg.downloading")?.yellow());
+    println!("{}",lookup(lang, "ffmpeg.downloading").yellow());
 
     ffmpeg.install(local_path).await?;
 
@@ -152,42 +150,33 @@ pub async fn create_ffmpeg<'a>(lang : &LanguageIdentifier) -> anyhow::Result<FFm
 
 pub async fn download_assets(assets : &mut Assets,lang : &LanguageIdentifier) -> anyhow::Result<()> {
     assets.on_empty_assets(||{
-        let s = lookup(lang, "assets.empty")?.bright_red();
+        let s = lookup(lang, "assets.empty").bright_red();
         println!("{s}");
         Ok(())
     })?;
 
     let progress_bar = ProgressBar::new(assets.count() as u64);
 
-    let downloading = lookup(lang, "assets.downloading")?.bold();
     let on_each_download =|| {
         progress_bar.inc(1);
-        println!("{downloading}");
+        println!("{}",lookup(lang, "assets.downloading").bold());
     };
 
-    const FILE : &str = "FILE";
-    const ACTUAL : &str = "ACTUAL";
-    const EXPECTED : &str = "EXPECTED";
-
-    // Need to get it outside the function so putting default values
-    let wrong_mime = lookup_args(lang, "assets.wrong-mime", &convert_args!(hashmap!(
-        "file" => FILE,
-        "actual" => ACTUAL,
-        "expected" => EXPECTED
-    )))?;
-
     let warn_wrong_mime = |path: PathBuf,actual_mime : &Name<'_>,expected_mime : &Name<'_>|{
-        let s = wrong_mime.replace(FILE, &path.display().to_string())
-            .replace(ACTUAL,actual_mime.as_str())
-            .replace(EXPECTED, expected_mime.as_str())
-            .bright_yellow();
-        println!("{s}")
+        let wrong_mime = lookup_args(lang, "assets.wrong-mime", &convert_args!(hashmap!(
+            "file" => path.display().to_string(),
+            "actual" => actual_mime.as_str(),
+            "expected" => expected_mime.as_str()
+        )));
+
+        println!("{wrong_mime}")
     };
 
     assets.process_and_download(warn_wrong_mime,on_each_download).await?;
 
     progress_bar.finish_and_clear();
-    println!("{}",lookup(lang, "assets")?.green());
+    println!("{}",lookup(lang, "assets").green());
     print_seperator();
+    
     Ok(())
 }

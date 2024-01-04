@@ -42,7 +42,7 @@ Extend on the Proxy Idea by rotating (IPv6)Addresses (you can find an example IP
 Use cookies (you can find an example cookies)
 for this to take effect you have to first wait for the current ratelimit to expire!
 Wait it out
-
+Translate assets into more langs
 # assets dirs can follow this pattern
 Support for matching file paths against Unix shell style patterns.
 
