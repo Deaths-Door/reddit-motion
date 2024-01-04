@@ -17,4 +17,20 @@ impl<'a> VideoCreationArguments<'a> {
         ffmpeg: &'a FFmpeg, 
         browser: &'a Browser
     ) -> Self { Self { config, callback, ffmpeg, browser } }
+
+    pub fn call_invalid_reddit_credentials(&self) {
+        (self.callback.invalid_reddit_credentials)(&self.config.lang);
+    }
+
+    pub fn call_login_successful(&self) {
+        (self.callback.login_successful)(&self.config.lang);
+    }
+    
+    pub fn call_on_new_subreddit(&self, subreddit_name: &str) {
+        (self.callback.on_new_subreddit)(&self.config.lang, subreddit_name);
+    }
+    
+    pub fn call_on_end_subreddit(&self) {
+        (self.callback.on_end_subreddit)(&self.config.lang);
+    }
 }

@@ -20,3 +20,5 @@ assets = Assets are availiable!
 reddit = PUTINMESSAGE
     .credentials = Your reddit credentials are incorrect! Please modify them accordingly in the config.toml file.
     .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
+    .subreddit-checking = Checking { $name } subreddit
+    .subreddit-finished = Finished with subreddit!

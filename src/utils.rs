@@ -181,12 +181,20 @@ pub async fn download_assets(assets : &mut Assets,lang : &LanguageIdentifier) ->
     Ok(())
 }
 
-pub fn create_callback(lang : &LanguageIdentifier) -> Callback {
-    let creds_invalid = lookup(&lang.clone(), "reddit.credentials").bright_yellow();
-    let login_success = lookup(&lang.clone(), "reddit.login-success").bold();
+pub fn create_callback() -> Callback {
+    Callback::new(
+        |lang| println!("{}",lookup(&lang, "reddit.credentials").bright_yellow()), 
+        |lang| println!("{}",lookup(&lang, "reddit.login-success").bold()), 
+        |lang,name| {
+            let s = lookup1(lang, "reddit.subreddit-checking", "name", name);
+            let len = s.len();
+            let horizontal_edges = format!("+{}+","-".repeat(len));
 
-    Callback {
-        invalid_reddit_credentials : Box::new(move || println!("{creds_invalid}")),
-        login_successful : Box::new(move || println!("{login_success}"))
-    }
+            println!("{horizontal_edges}\n| {} |\n{horizontal_edges}",s.bold());
+        }, 
+        |lang| {
+            println!("{}",lookup(lang, "reddit.subreddit-finished").bright_green());    
+            print_seperator();
+        }, 
+    )
 }

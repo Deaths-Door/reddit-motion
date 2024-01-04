@@ -44,14 +44,23 @@ fn drepeat() -> u8 { 1 }
 
 impl RedditConfig {
     pub async fn exceute(&self,args : &VideoCreationArguments<'_>) -> Result<(),VideoCreationError> {
+        let callback = args.callback;
+
         if let Some(user) = &self.user {
             match !user.login_and_set_theme(args.browser).await? {
-                true => (args.callback.invalid_reddit_credentials)(),
-                false => (args.callback.login_successful)(),
+                true => args.call_invalid_reddit_credentials(),
+                false => args.call_login_successful(),
             }
         }
 
-        println!("PASSED");
+        for subreddit in &self.subreddits {
+            args.call_on_new_subreddit(&subreddit.name);
+
+            //TODO
+
+            args.call_on_end_subreddit();
+        }
+
         Ok(())
     }
 }

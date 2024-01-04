@@ -57,7 +57,6 @@ impl FFmpeg {
     pub fn ffprobe_expect_failure<T>(
         &self,
         builder : impl FnOnce(&mut Command) -> (),
-        map_output : impl FnOnce(Output) -> T
     ) -> std::io::Result<()> {
         self.ffprobe_expect_failure_map(builder, |_| ())
     }
