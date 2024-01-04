@@ -183,8 +183,10 @@ pub async fn download_assets(assets : &mut Assets,lang : &LanguageIdentifier) ->
 
 pub fn create_callback(lang : &LanguageIdentifier) -> Callback {
     let creds_invalid = lookup(&lang.clone(), "reddit.credentials").bright_yellow();
+    let login_success = lookup(&lang.clone(), "reddit.login-success").bold();
 
     Callback {
-        invalid_reddit_credentials : Box::new(move || println!("{creds_invalid}"))
+        invalid_reddit_credentials : Box::new(move || println!("{creds_invalid}")),
+        login_successful : Box::new(move || println!("{login_success}"))
     }
 }

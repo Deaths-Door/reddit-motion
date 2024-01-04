@@ -45,8 +45,9 @@ fn drepeat() -> u8 { 1 }
 impl RedditConfig {
     pub async fn exceute(&self,args : &VideoCreationArguments<'_>) -> Result<(),VideoCreationError> {
         if let Some(user) = &self.user {
-            if !user.login_and_set_theme(args.browser).await? {
-                (args.callback.invalid_reddit_credentials)();
+            match !user.login_and_set_theme(args.browser).await? {
+                true => (args.callback.invalid_reddit_credentials)(),
+                false => (args.callback.login_successful)(),
             }
         }
 

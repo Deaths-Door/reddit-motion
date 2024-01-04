@@ -13,9 +13,10 @@ ffmpeg = FFmpeg is availiable
 
 assets = Assets are availiable!
     .empty = The Assets list is empty. Please check your configuration and ensure that there are at least one video or audio file specified.
-    .wrong-mime = The mime type of { $file } is { $actual } but it is expected to be { $expected}.
+    .wrong-mime = The mime type of { $file } is { $actual } but it is expected to be { $expected }.
         Please ensure that the file is of the correct type before continuing.
     .downloading = Downloaded another asset...
 
 reddit = PUTINMESSAGE
     .credentials = Your reddit credentials are incorrect! Please modify them accordingly in the config.toml file.
+    .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
