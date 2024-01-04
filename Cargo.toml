@@ -55,16 +55,17 @@ rusty_ytdl = "0.6.6"
 # File download progress
 indicatif = "0.17.6"
 
+# Browser interaction
+chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"]}
+futures = "0.3.30"
+
+
 # Text preprocessing
 #regex = "1.10.2"
 #lazy_static = "1.4.0"
 
 # Text-to-Speech
 #gtts = "0.1.0"
-
-# Browser interaction
-#chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"]}
-#futures = "0.3.30"
 
 # Reddit API
 #roux = "2.2.9"

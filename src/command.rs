@@ -37,8 +37,12 @@ impl Command {
         utils::download_assets(&mut config.assets, &config.lang).await?;
 
         let ffmpeg = utils::create_ffmpeg(&config.lang).await?;
-
+        let callback = utils::create_callback();
+        let handle = config.exceute_create_videos(&mut db,&config,&ffmpeg,&callback).await?;
+    
         db.update_database()?;
+
+        handle.await;
         Ok(())
     }
 }

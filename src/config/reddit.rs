@@ -6,6 +6,7 @@ use super::{StoryMode, TextToSpeechService};
 
 #[derive(Serialize, Deserialize)]
 pub struct RedditConfig {
+    #[serde(flatten)]
     credentials : Option<RedditUser>,
     subreddits : Vec<SubredditConfig>,
 }

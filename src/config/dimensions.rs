@@ -10,3 +10,9 @@ pub struct Dimensions {
 
 fn dwidth() -> u32 { 800 }
 fn dheight() -> u32 { 600 }
+
+impl Dimensions {
+    pub const fn width_height(&self) -> (u32,u32) {
+        (self.width,self.height)
+    }
+}

@@ -5,7 +5,7 @@ use maplit::{convert_args, hashmap};
 use mime::Name;
 use unic_langid::LanguageIdentifier;
 use colored::Colorize;
-use crate::{localize::{lookup, lookup_args, lookup1}, db::Database, ffmpeg::FFmpeg, config::Assets};
+use crate::{localize::{lookup, lookup_args, lookup1}, db::Database, ffmpeg::FFmpeg, config::{Assets, Callback}};
 
 lazy_static::lazy_static! {
     static ref SEPERATOR : String = "=".repeat(20);
@@ -179,4 +179,10 @@ pub async fn download_assets(assets : &mut Assets,lang : &LanguageIdentifier) ->
     print_seperator();
     
     Ok(())
+}
+
+pub fn create_callback() -> Callback {
+    Callback {
+        
+    }
 }
