@@ -1,39 +1,35 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use serde_with::{serde_as,DisplayFromStr};
+use unic_langid::LanguageIdentifier;
+use std::path::Path;
+use std::fs::OpenOptions;
+use std::io::Write;
+
 #[serde_as]
 #[derive(Default,serde::Deserialize,serde::Serialize)]
 pub struct Database {
     #[serde(skip)]
     path : String,
 
-    // TODO : Include more metadata eg language doneit 
-    subreddit_ids : HashSet<String>,
-
     #[serde_as(as = "DisplayFromStr")]
-    pub(crate) last_version_check : DateTime<Utc>
-}
-use std::path::Path;
-use std::fs::{File,OpenOptions};
-use std::io::Write;
+    pub last_version_check : DateTime<Utc>,
 
-use roux::submission::SubmissionData;
+    // TODO : Include more metadata eg language doneit 
+    #[serde_as(as = "HashMap<_,Vec<DisplayFromStr>>")]
+    subreddit_ids : HashMap<String,Vec<LanguageIdentifier>>
+}
 
 impl Database {
-
-    pub fn from_file_or_create(_path : &str) -> anyhow::Result<()> {
+    pub fn from_file_or_create(_path : &str) -> anyhow::Result<Database> {
         let path : &Path = _path.as_ref();
-        if !path.exists() {
-            let mut db = Self::default();
-            db.path = _path.to_string();
-
-            let mut file = File::create(path)?;
-            write!(file,"{}",toml::to_string(&db).unwrap())?;
-            return Ok(db)
-        }
-
-        let toml = std::fs::read_to_string(path)?;
-        let mut db = toml::from_str::<Database>(&toml)?;
+        let mut db = match path.exists() {
+            true => {
+                let toml = std::fs::read_to_string(path)?;
+                toml::from_str::<Database>(&toml)?
+            },
+            false => Self::default()
+        };
         db.path = _path.to_string();
         Ok(db)
     }
@@ -41,6 +37,7 @@ impl Database {
     pub fn update_database(self) -> anyhow::Result<()> {
         let toml = toml::to_string(&self).unwrap();
         let mut file = OpenOptions::new()
+            .create(true)
             .write(true)
             .open(self.path)
             .unwrap();
@@ -48,7 +45,7 @@ impl Database {
         Ok(write!(file,"{}",toml)?)
     }
 
-    pub fn retain(&mut self,submission : &SubmissionData) -> bool {
+    /*pub fn retain(&mut self,submission : &SubmissionData) -> bool {
         // TODO : Check against more data once it has that
         self.subreddit_ids.remove(&submission.id)
     }
@@ -56,5 +53,5 @@ impl Database {
     pub fn add(&mut self,submission : SubmissionData) {
         // TODO : Insert more data once done
         self.subreddit_ids.insert(submission.id);
-    }
+    }*/
 }

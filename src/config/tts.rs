@@ -1,9 +1,11 @@
 use serde::{Deserialize,Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,Default)]
 pub struct TextToSpeech {
+    #[serde(default)]
     choice : TextToSpeechService,
-    elevenlabs : ElevenlabsConfig
+
+    elevenlabs : Option<ElevenlabsConfig>
 }
 
 #[derive(Serialize, Deserialize)]

@@ -2,9 +2,11 @@ use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
 
+use super::{StoryMode, TextToSpeechService};
+
 #[derive(Serialize, Deserialize)]
 pub struct RedditConfig {
-    credentials : Option<RedditCredentials>,
+    credentials : Option<RedditUser>,
     subreddits : Vec<SubredditConfig>,
 }
 
@@ -26,6 +28,7 @@ pub struct SubredditConfig {
     #[serde(default,rename = "mode")]
     story_mode : StoryMode,
 
+    #[serde(default)]
     for_tts_use : TextToSpeechService,
 
     #[serde_as(as = "Vec<DisplayFromStr>")]

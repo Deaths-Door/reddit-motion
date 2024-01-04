@@ -20,10 +20,24 @@ use unic_langid::LanguageIdentifier;
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     #[serde_as(as = "DisplayFromStr")]
-    lang: LanguageIdentifier,
+    pub lang: LanguageIdentifier,
+    pub(crate) assets: Assets,
     dimensions: Dimensions,
     reddit: RedditConfig,
-    assets: Assets,
+
+    #[serde(default)]
     tts : TextToSpeech,
+
+    #[serde(default)]
     translate : TranslationServices
+}
+
+use std::path::Path;
+
+impl Config {
+    pub fn from_file<P>(path : P) -> anyhow::Result<Self> where P : AsRef<Path> {
+        let toml = std::fs::read_to_string(path)?;
+        let config = toml::from_str::<Config>(&toml)?;
+        Ok(config)
+    }
 }

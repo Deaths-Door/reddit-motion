@@ -1,7 +1,13 @@
 mod config;
+mod command;
+mod utils;
+mod localize;
+mod db;
+mod ffmpeg;
 
+use clap::Parser;
 
-fn main() -> anyhow::Result<()> {
-
-    Ok(())
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    command::Command::parse().exceute().await
 }

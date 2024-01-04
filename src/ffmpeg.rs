@@ -14,15 +14,15 @@ pub struct FFmpeg {
 /// This enum represents errors that can occur when installing FFmpeg.
 #[derive(thiserror::Error,Debug)]
 pub enum FFmpegInstallError {
-    #[error("Failed due to {}",.0)]
+    #[error(transparent)]
     IO(#[from] std::io::Error),
 
     #[cfg(windows)]
-    #[error("Failed due to {}",.0)]
+    #[error(transparent)]
     Request(#[from] reqwest::Error),
 
     #[cfg(windows)]
-    #[error("Failed due to {}",.0)]
+    #[error(transparent)]
     ZipExtraction(#[from] zip_extract::ZipExtractError),
 }
 
@@ -54,6 +54,14 @@ impl FFmpeg {
         self.expect_failure_map(self.ffmpeg_command(),builder,|_|())
     }
 
+    pub fn ffprobe_expect_failure<T>(
+        &self,
+        builder : impl FnOnce(&mut Command) -> (),
+        map_output : impl FnOnce(Output) -> T
+    ) -> std::io::Result<()> {
+        self.ffprobe_expect_failure_map(builder, |_| ())
+    }
+
     pub fn ffprobe_expect_failure_map<T>(
         &self,
         builder : impl FnOnce(&mut Command) -> (),
@@ -78,26 +86,6 @@ impl FFmpeg {
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other, 
                 "ffmpeg command failed"
-            ))
-        };
-
-        Ok(map_output(output))
-    }
-
-    pub fn ffprobe_expect_failure<T>(
-        &self,
-        builder : impl FnOnce(&mut Command) -> (),
-        map_output : impl FnOnce(Output) -> T
-    ) -> std::io::Result<T> {
-        let mut command = self.ffprobe_command();
-        builder(&mut command);
-        let output =  command.output()?;
-
-        if !output.status.success() {
-            //stderr={}",String::from_utf8(o.stderr).expect("Error")
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other, 
-                format!("ffmpeg command failed as , {}",String::from_utf8(output.stderr).expect("Error"))
             ))
         };
 
