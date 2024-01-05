@@ -21,4 +21,4 @@ reddit = PUTINMESSAGE
     .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
     .subreddit-checking = Checking { $name } subreddit
     .subreddit-finished = Finished with subreddit!
-    .subreddit-skipped = Error encountered while processing subreddit: { $error } \n. Skipping subreddit.
+    .post-skipped = Error encountered while processing subreddit post: { $error } \n. Skipping post.

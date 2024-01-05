@@ -197,7 +197,7 @@ pub fn create_callback() -> Callback {
             print_seperator();
         }, 
         |lang,error| {
-            println!("{}",lookup1(lang, "reddit.subreddit-skipped","error",&error.to_string()).red());    
+            println!("{}",lookup1(lang, "reddit.post-skipped","error",&error.to_string()).red());    
             print_seperator();
         }
     )

@@ -31,22 +31,37 @@ impl SubredditConfig {
 
         let mut count= 0;
         for _ in 0..self.repeat_count {
-            // langs that we need to proccess it in
-            let (submission,langs) = retry_till_new_submission(
-                &mut count,
-                &self.extra_langs,
-                &args, 
-                &subreddit
-            ).await?;
-
-            // TODO PROCCESS IT FOR THE CURRENT LANG As WELL
-            for lang in langs {
-                let storage_directory = format!("bin/{name}/{id}/{lang}",name=subreddit.name,id=submission.id);
-                let vid_gen_args = VideoGenerationArguments::new(storage_directory);
-
-
-                // TODO : PUSH THIS TO SOME SORT OF TASK MANAGER
+            if let Err(err) = self.__exceute(&mut count, args, &subreddit).await {
+                args.call_on_skipping_due_to_error(err)
             }
+        }
+
+        Ok(())
+    }
+
+    pub async fn __exceute(
+        &self,
+        count : &mut u32,
+        args : &VideoCreationArguments<'_>,
+        subreddit : &Subreddit
+    ) -> Result<(),VideoCreationError> {
+        
+        // langs that we need to proccess it in
+        let (submission,langs) = retry_till_new_submission(
+            count,
+            &self.extra_langs,
+            &args, 
+            &subreddit
+        ).await?;
+
+        self.story_mode.can_proceed(&submission)?;
+
+        // TODO PROCCESS IT FOR THE CURRENT LANG As WELL
+        for lang in langs {
+            let storage_directory = format!("bin/{name}/{id}/{lang}",name=subreddit.name,id=submission.id);
+            let vid_gen_args = VideoGenerationArguments::new(storage_directory);
+
+            // TODO : PUSH THIS TO SOME SORT OF TASK MANAGER
         }
 
         Ok(())
@@ -61,17 +76,20 @@ async fn retry_till_new_submission<'a>(
 ) -> Result<(SubmissionData,Vec<&'a LanguageIdentifier>),VideoCreationError> {
     if extra_langs.is_empty() {
         let submission = submission(&subreddit,*count).await?;
+        *count += 1;
         return Ok((submission,vec![]));
     }
 
     loop {
         let submission = submission(&subreddit,*count).await?;
+
+        *count += 1;
+
         let langs = args.db.unprocessed_threads(&submission.id,extra_langs);
 
         if !langs.is_empty() {
             return Ok((submission,langs));
         }
-        *count += 1;
     }
 }
 

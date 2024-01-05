@@ -11,8 +11,8 @@ pub enum VideoCreationError {
     //#[error(transparent)]
   //  TextToSpeech(#[from] super::TextToSpeechError),
 
-   // #[error(transparent)]
-   // StoryMode(#[from] crate::config::story_mode::StoryModeError),   
+    #[error(transparent)]
+    StoryMode(#[from] crate::config::story_mode::StoryModeError),   
     #[error("Failed to navigate browser, {}",.0)]
     Browser(#[from] chromiumoxide::error::CdpError),
 }
