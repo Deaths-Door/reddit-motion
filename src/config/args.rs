@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use chromiumoxide::Browser;
+use whatlang::Detector;
 use crate::{ffmpeg::FFmpeg, db::Database};
 use super::{Config, Callback};
 
@@ -9,6 +10,7 @@ pub struct VideoCreationArguments<'a> {
     pub ffmpeg : &'a FFmpeg,
     pub browser : &'a Browser,
     pub db : &'a Database,
+    pub detector : Detector,
     callback : &'a Callback,
 }
 
@@ -19,7 +21,7 @@ impl<'a> VideoCreationArguments<'a> {
         ffmpeg: &'a FFmpeg,
         db : &'a Database, 
         browser: &'a Browser
-    ) -> Self { Self { config, callback, ffmpeg, browser ,db} }
+    ) -> Self { Self { config, callback, ffmpeg, browser ,db , detector : Detector::new()} }
 
     pub fn call_invalid_reddit_credentials(&self) {
         (self.callback.invalid_reddit_credentials)(&self.config.lang)

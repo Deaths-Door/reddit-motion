@@ -16,6 +16,22 @@ pub struct StoryModeParmeters<'a> {
     pub page : &'a Page,
 }
 
+// if some process ahead fails it keeps on to the file
+macro_rules! if_path_exists {
+    ($path : expr,return $return : expr) => {
+        if std::path::Path::new($path).exists() {
+            return Ok($return)
+        }
+    };
+    (not $path : expr,$code : expr) => {
+        if !std::path::Path::new($path).exists() {
+           $code
+        }
+    };
+}
+
+pub(crate) use if_path_exists;
+
 impl StoryMode {
     pub(super) async fn read_mode(
         parms : &StoryModeParmeters<'_>,

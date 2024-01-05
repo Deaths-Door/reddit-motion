@@ -1,7 +1,8 @@
-use roux::{Subreddit, util::FeedOption, submission::SubmissionData};
+use roux::Subreddit;
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
-use unic_langid::LanguageIdentifier;
+use unic_langid::{LanguageIdentifier, langid};
+use whatlang::Lang;
 
 use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationArguments};
 
@@ -45,9 +46,8 @@ impl SubredditConfig {
         args : &VideoCreationArguments<'_>,
         subreddit : &Subreddit
     ) -> Result<(),VideoCreationError> {
-        
         // langs that we need to proccess it in
-        let (submission,langs) = retry_till_new_submission(
+        let (submission,extra_langs) = super::retry_till_new_submission(
             count,
             &self.extra_langs,
             &args, 
@@ -56,55 +56,17 @@ impl SubredditConfig {
 
         self.story_mode.can_proceed(&submission)?;
 
-        // TODO PROCCESS IT FOR THE CURRENT LANG As WELL
-        for lang in langs {
-            let storage_directory = format!("bin/{name}/{id}/{lang}",name=subreddit.name,id=submission.id);
-            let vid_gen_args = VideoGenerationArguments::new(storage_directory);
+        let detected_lang = super::detect_post_language(&args.detector,&submission);
 
-            // TODO : PUSH THIS TO SOME SORT OF TASK MANAGER
-        }
+        // AND EVERY OTHER LANG
+       // for lang in langs {
+            let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
+            let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
+
+            video_generation_arguments.exceute_no_translate(detected_lang).await?;
+            // TODO : ADD IT TO THE TASKMANAGER
+    //    }
 
         Ok(())
     }
-}
-
-async fn retry_till_new_submission<'a>(
-    count : &mut u32,
-    extra_langs: &'a [LanguageIdentifier],
-    args : &VideoCreationArguments<'_>,
-    subreddit: &Subreddit,
-) -> Result<(SubmissionData,Vec<&'a LanguageIdentifier>),VideoCreationError> {
-    if extra_langs.is_empty() {
-        let submission = submission(&subreddit,*count).await?;
-        *count += 1;
-        return Ok((submission,vec![]));
-    }
-
-    loop {
-        let submission = submission(&subreddit,*count).await?;
-
-        *count += 1;
-
-        let langs = args.db.unprocessed_threads(&submission.id,extra_langs);
-
-        if !langs.is_empty() {
-            return Ok((submission,langs));
-        }
-    }
-}
-
-async fn submission(subreddit : &Subreddit,count : u32)  -> Result<SubmissionData,VideoCreationError> {
-    let options = FeedOption::new()
-        .limit(1)
-        .count(count);
-    
-    let v = subreddit.top(1, Some(options))
-        .await?
-        .data
-        .children
-        .pop()
-        .unwrap()
-        .data;
-
-    Ok(v)
 }

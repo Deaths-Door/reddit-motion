@@ -35,7 +35,7 @@ pub struct Config {
     reddit: RedditConfig,
 
     #[serde(default)]
-    tts : TextToSpeech,
+    tts : TextToSpeechService,
 
     #[serde(default)]
     translate : TranslationServices
@@ -49,6 +49,9 @@ impl Config {
     pub fn from_file<P>(path : P) -> anyhow::Result<Self> where P : AsRef<Path> {
         let toml = std::fs::read_to_string(path)?;
         let config = toml::from_str::<Config>(&toml)?;
+
+        config.tts.setup();
+
         Ok(config)
     }
 

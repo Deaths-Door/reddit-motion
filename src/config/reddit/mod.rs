@@ -1,6 +1,9 @@
 mod login;
 mod theme;
 mod subreddit;
+mod utils;
+
+pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};
 use super::{VideoCreationArguments, VideoCreationError};
@@ -40,8 +43,4 @@ impl RedditConfig {
 
         Ok(())
     }
-}
-
-pub(in crate::config::reddit) async fn wait_for(secs : u64) {
-    tokio::time::sleep(std::time::Duration::from_secs(secs)).await;
 }

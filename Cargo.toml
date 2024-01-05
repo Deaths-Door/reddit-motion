@@ -63,6 +63,12 @@ futures = "0.3.30"
 # Reddit API
 roux = "2.2.9"
 
+# For detecting language of current post
+whatlang = "0.16.4"
+
+# For Task Management (video creation using ffmpeg)
+#coachman = "0.3.0"
+
 # Text preprocessing
 #regex = "1.10.2"
 #lazy_static = "1.4.0"
