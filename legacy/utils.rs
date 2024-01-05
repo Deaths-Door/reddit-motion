@@ -1,7 +1,5 @@
 pub fn create_callback() -> Callback {
     Callback {
-        on_new_subreddit : |subreddit| println!("Checking {} subreddit...",subreddit.name),
-        on_end_subreddit : || println!("Finished with subreddit!"),
         info : |submission| {
             println!("Video will be {} 👍",submission.title);
             println!("Thread url is https://reddit.com{} 👍",submission.permalink);

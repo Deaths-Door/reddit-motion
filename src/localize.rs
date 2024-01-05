@@ -18,7 +18,7 @@ pub fn lookup_args<'a>(lang : &LanguageIdentifier,id : &str,map : &HashMap<&str,
         .expect(&*"Specificed locale not availiable".bright_red())
 }
 
-pub fn lookup1<'a>(lang : &LanguageIdentifier,id : &str,arg_id : &str,value : &str) -> String {
+pub fn lookup1(lang : &LanguageIdentifier,id : &str,arg_id : &str,value : &str) -> String {
     lookup_args(lang, id, &convert_args!(hashmap!(
         arg_id => value
     )))

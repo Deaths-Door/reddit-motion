@@ -4,7 +4,6 @@ solutions = You can find solutions to many common FAQs at { $link }
 
 using-old-version = "You are using an older version ({ $package_version }) of the bot. Download the newest version ({ $release_version }) from { $link }
 
-
 ffmpeg = FFmpeg is availiable
     .not_installed = FFmpeg is not installed on this system.
     .auto_download = We can try to automatically install it for you. Would you like to do that? (y/n)
@@ -22,3 +21,4 @@ reddit = PUTINMESSAGE
     .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
     .subreddit-checking = Checking { $name } subreddit
     .subreddit-finished = Finished with subreddit!
+    .subreddit-skipped = Error encountered while processing subreddit: { $error } \n. Skipping subreddit.
