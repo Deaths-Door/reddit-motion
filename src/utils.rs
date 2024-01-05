@@ -199,6 +199,18 @@ pub fn create_callback() -> Callback {
         |lang,error| {
             println!("{}",lookup1(lang, "reddit.post-skipped","error",&error.to_string()).red());    
             print_seperator();
+        },
+        |lang,submission| {
+            let link = format!("https://reddit.com{}",submission.permalink);
+            let s = lookup_args(lang, "reddit.post-inform", &convert_args!(hashmap!(
+                "name" => &*submission.name,
+                "link" => &*link,
+                "percent" => submission.upvote_ratio
+            )));
+
+            let (a,b) = s.split_once(&link).unwrap();
+
+            println!("{a}{}{b}",link.blue());
         }
     )
 }

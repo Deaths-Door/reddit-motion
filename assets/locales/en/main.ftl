@@ -22,3 +22,4 @@ reddit = PUTINMESSAGE
     .subreddit-checking = Checking { $name } subreddit
     .subreddit-finished = Finished with subreddit!
     .post-skipped = Error encountered while processing subreddit post: { $error } \n. Skipping post.
+    .post-inform = "Video will be { $name } 👍\n Thread url is { $link } 👍\nThread has a upvote ratio of { $percent }%

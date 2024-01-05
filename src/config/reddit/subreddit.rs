@@ -55,6 +55,9 @@ impl SubredditConfig {
         ).await?;
 
         let story_mode = self.story_mode.resolve_mode(&submission)?;
+
+        args.config.call_on_post_choosen(&submission);
+        
         let detected_lang = super::detect_post_language(&args.detector,&submission);
 
         // TODO IMFORMAT USER THE LANG OF IT

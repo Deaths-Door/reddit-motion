@@ -1,6 +1,7 @@
 use std::error::Error;
 
 use chromiumoxide::Browser;
+use roux::submission::SubmissionData;
 use whatlang::Detector;
 use crate::{ffmpeg::FFmpeg, db::Database};
 use super::{Config, Callback};
@@ -41,5 +42,9 @@ impl<'a> VideoCreationArguments<'a> {
 
     pub fn call_on_skipping_due_to_error<E : Error>(&self,err : E) {
         (self.callback.on_skipping_due_to_error)(&self.config.lang,&err)
+    }
+
+    pub fn call_on_post_choosen(&self,submission : &SubmissionData) {
+        (self.callback.on_post_choosen)(&self.config.lang,submission)
     }
 }
