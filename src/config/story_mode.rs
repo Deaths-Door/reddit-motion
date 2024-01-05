@@ -1,6 +1,7 @@
 use roux::submission::SubmissionData;
 use serde::{Deserialize,Serialize};
 
+#[derive(Clone)]
 #[derive(Default,Debug,strum::Display)]
 #[derive(Serialize,Deserialize)]
 pub enum StoryMode {
@@ -29,15 +30,15 @@ impl std::fmt::Display for StoryModeError {
 }
 
 impl StoryMode {
-    pub fn can_proceed(&self,submission : &SubmissionData) -> Result<(),StoryModeError> {
+    pub fn resolve_mode(&self,submission : &SubmissionData) -> Result<Self,StoryModeError> {
         match self {
-            StoryMode::Auto => match StoryMode::ReadPost.can_proceed(submission) {
-                Err(_) => StoryMode::ReadComments.can_proceed(submission),
-                _ => Ok(())
+            StoryMode::Auto => match StoryMode::ReadPost.resolve_mode(submission) {
+                Err(_) => StoryMode::ReadComments.resolve_mode(submission),
+                Ok(value) => Ok(value)
             },
             StoryMode::ReadComments if submission.num_comments == 0 => Err(StoryModeError(StoryMode::ReadComments)),
             StoryMode::ReadPost if submission.selftext.is_empty() =>  Err(StoryModeError(StoryMode::ReadPost)),
-            _ => Ok(())
+            _ => Ok(self.clone())
         }
     }
 }

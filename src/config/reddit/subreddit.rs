@@ -54,8 +54,7 @@ impl SubredditConfig {
             &subreddit
         ).await?;
 
-        self.story_mode.can_proceed(&submission)?;
-
+        let story_mode = self.story_mode.resolve_mode(&submission)?;
         let detected_lang = super::detect_post_language(&args.detector,&submission);
 
         // AND EVERY OTHER LANG
@@ -63,7 +62,11 @@ impl SubredditConfig {
             let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
             let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
 
-            video_generation_arguments.exceute_no_translate(detected_lang).await?;
+            video_generation_arguments.exceute_no_translate(
+                &submission,
+                &story_mode,
+                &args
+            ).await?;
             // TODO : ADD IT TO THE TASKMANAGER
     //    }
 

@@ -21,7 +21,8 @@ impl TextToSpeechService {
         }
     }
 
-    pub async fn save_speech_to_file(&self) {
+    // TODO : IMPLMENT THIS 
+    pub async fn save_speech_to_file(&self,text : &str) {
         match self {
             TextToSpeechService::Google => todo!(),
             TextToSpeechService::Elevenlabs { api_key, model, voice_name } => todo!(),

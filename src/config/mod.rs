@@ -35,7 +35,7 @@ pub struct Config {
     reddit: RedditConfig,
 
     #[serde(default)]
-    tts : TextToSpeechService,
+    pub tts : TextToSpeechService,
 
     #[serde(default)]
     translate : TranslationServices

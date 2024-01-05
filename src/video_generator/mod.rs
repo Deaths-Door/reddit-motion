@@ -2,17 +2,17 @@ mod title;
 
 use std::{path::PathBuf, collections::HashMap};
 
+use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 
-use crate::config::{VideoCreationError, TextToSpeechService};
+use crate::config::{VideoCreationError, VideoCreationArguments, StoryMode};
 
-// root storage dir => png dirs + audio dirs && Organized by lang
 pub struct VideoGenerationArguments {
     // Gen
     storage_directory : PathBuf,
 
-    // langs => audio + png dirs
-    files : HashMap<LanguageIdentifier,Vec<(String,String)>>
+    // audio + png dirs
+    files : Vec<(String,String)>
 }
 
 impl VideoGenerationArguments {
@@ -23,7 +23,15 @@ impl VideoGenerationArguments {
         }
     }
 
-    pub async fn exceute_no_translate(&mut self,lang : LanguageIdentifier) -> Result<(),VideoCreationError> {
+    pub async fn exceute_no_translate(
+        &mut self,
+        submission : &SubmissionData,
+        story_mode : &StoryMode, // can not be AUTO
+        args : &VideoCreationArguments<'_>
+    ) -> Result<(),VideoCreationError> {
+        /*args.config.tts.save_speech_to_file(&submission.title).await?;
+
+        story_mode.exceute(submission,args).await?;*/
         // text + take screenshot -> dir => translate
         Ok(())
     }
