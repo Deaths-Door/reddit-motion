@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
@@ -15,9 +15,9 @@ pub struct Database {
     #[serde_as(as = "DisplayFromStr")]
     pub last_version_check : DateTime<Utc>,
 
-    // TODO : Include more metadata eg language doneit 
-    #[serde_as(as = "HashMap<_,Vec<DisplayFromStr>>")]
-    subreddit_ids : HashMap<String,Vec<LanguageIdentifier>>
+    #[serde_as(as = "HashMap<_,HashSet<DisplayFromStr>>")]
+    #[serde(default)]
+    proccessed_threads : HashMap<String,HashSet<LanguageIdentifier>>
 }
 
 impl Database {
@@ -45,13 +45,14 @@ impl Database {
         Ok(write!(file,"{}",toml)?)
     }
 
-    /*pub fn retain(&mut self,submission : &SubmissionData) -> bool {
-        // TODO : Check against more data once it has that
-        self.subreddit_ids.remove(&submission.id)
-    }
 
-    pub fn add(&mut self,submission : SubmissionData) {
-        // TODO : Insert more data once done
-        self.subreddit_ids.insert(submission.id);
-    }*/
+    pub fn unprocessed_threads<'a>(&self,id : &str,langs : &'a [LanguageIdentifier]) -> Vec<&'a LanguageIdentifier> {
+        self.proccessed_threads.get(id).and_then(|processed_langs|{
+            Some(
+                langs.iter()
+                    .filter(|lang| !processed_langs.contains(lang))
+                    .collect()
+            )
+        }).unwrap_or(vec![])
+    }
 }

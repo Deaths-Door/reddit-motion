@@ -22,6 +22,7 @@ pub struct RedditUser {
 
 impl RedditConfig {
     pub async fn exceute(&self,args : &VideoCreationArguments<'_>) -> Result<(),VideoCreationError> {
+        // TODO : ENABLE THIS
         if let Some(user) = &self.user {
             match !user.login_and_set_theme(args.browser).await? {
                 true => args.call_invalid_reddit_credentials(),
@@ -29,6 +30,7 @@ impl RedditConfig {
             }
         }
 
+        // TODO : MAYBE CHECK THE BIN DIR FOR THREADS NOT FINISHED?
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 

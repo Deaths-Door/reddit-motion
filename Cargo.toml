@@ -60,6 +60,8 @@ indicatif = "0.17.6"
 chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"]}
 futures = "0.3.30"
 
+# Reddit API
+roux = "2.2.9"
 
 # Text preprocessing
 #regex = "1.10.2"
@@ -67,9 +69,6 @@ futures = "0.3.30"
 
 # Text-to-Speech
 #gtts = "0.1.0"
-
-# Reddit API
-#roux = "2.2.9"
 
 # Random selection
 #rand = "0.8.5"

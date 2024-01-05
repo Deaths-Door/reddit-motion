@@ -2,7 +2,8 @@ use std::error::Error;
 use unic_langid::LanguageIdentifier;
 
 // Box as I don't want to specific generics everywhere
-pub struct Callback {
+pub struct Callback {    
+    // UI
     pub(in crate::config) invalid_reddit_credentials : Box<dyn Fn(&LanguageIdentifier)>,
     pub(in crate::config) login_successful : Box<dyn Fn(&LanguageIdentifier)>,
     pub(in crate::config) on_new_subreddit : Box<dyn Fn(&LanguageIdentifier,&str)>,

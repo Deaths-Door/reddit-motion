@@ -43,7 +43,7 @@ pub struct Config {
 
 use std::path::Path;
 
-use crate::{db::Database, ffmpeg::FFmpeg};
+use crate::{ffmpeg::FFmpeg, db::Database};
 
 impl Config {
     pub fn from_file<P>(path : P) -> anyhow::Result<Self> where P : AsRef<Path> {
@@ -54,16 +54,17 @@ impl Config {
 
     pub async fn exceute_create_videos(
         self,
-        db : &mut Database,
         ffmpeg : &FFmpeg,
+        db : &Database,
         callback : &Callback
     ) -> anyhow::Result<JoinHandle<()>> {
         let (browser,handler) = self.create_browser().await?;
 
-        let args = VideoCreationArguments::new(&self, callback, ffmpeg, &browser);
+        let args = VideoCreationArguments::new(&self, callback, ffmpeg, db,&browser);
 
         self.reddit.exceute(&args).await?;
 
+        println!("PROCCESSING FINSIHED");
         Ok(handler)
     }
 

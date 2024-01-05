@@ -1,8 +1,9 @@
+use roux::util::RouxError;
 
 #[derive(thiserror::Error, Debug)]
 pub enum VideoCreationError {
-   // #[error(transparent)]
- //   Reddit(#[from] RouxError),
+    #[error(transparent)]
+    Reddit(#[from] RouxError),
 
    // #[error(transparent)]
   //  File(#[from] std::io::Error),

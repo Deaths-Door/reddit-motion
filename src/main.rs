@@ -4,6 +4,7 @@ mod utils;
 mod localize;
 mod db;
 mod ffmpeg;
+mod video_generator;
 
 use clap::Parser;
 

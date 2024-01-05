@@ -14,7 +14,8 @@ pub struct ElevenlabsConfig {
     voice_ids : Vec<String>
 }
 
-#[derive(Default,Serialize, Deserialize)]
+#[derive(Default)]
+#[derive(Serialize, Deserialize)]
 pub enum TextToSpeechService {
     #[default]
     Google,
