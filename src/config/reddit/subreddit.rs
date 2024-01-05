@@ -57,6 +57,7 @@ impl SubredditConfig {
         let story_mode = self.story_mode.resolve_mode(&submission)?;
         let detected_lang = super::detect_post_language(&args.detector,&submission);
 
+        // TODO IMFORMAT USER THE LANG OF IT
         // AND EVERY OTHER LANG
        // for lang in langs {
             let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);

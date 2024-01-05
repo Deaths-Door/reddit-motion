@@ -66,15 +66,15 @@ roux = "2.2.9"
 # For detecting language of current post
 whatlang = "0.16.4"
 
-# For Task Management (video creation using ffmpeg)
-#coachman = "0.3.0"
-
 # Text preprocessing
-#regex = "1.10.2"
-#lazy_static = "1.4.0"
+regex = "1.10.2"
 
 # Text-to-Speech
-#gtts = "0.1.0"
+gtts = "0.1.0"
+elevenlabs_rs = "0.2.0"
+
+# For Task Management (video creation using ffmpeg)
+#coachman = "0.3.0"
 
 # Random selection
 #rand = "0.8.5"
