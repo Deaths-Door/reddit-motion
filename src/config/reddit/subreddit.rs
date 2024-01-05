@@ -56,14 +56,14 @@ impl SubredditConfig {
 
         let story_mode = self.story_mode.resolve_mode(&submission)?;
 
-        args.config.call_on_post_choosen(&submission);
-        
-        let detected_lang = super::detect_post_language(&args.detector,&submission);
+        args.call_on_post_choosen(&submission);
 
-        // TODO IMFORMAT USER THE LANG OF IT
+        let detected_lang = super::detect_post_language(&args.detector,&submission);
         // AND EVERY OTHER LANG
        // for lang in langs {
             let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
+            std::fs::create_dir_all(&storage_directory)?;
+            
             let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
 
             video_generation_arguments.exceute_no_translate(

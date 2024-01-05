@@ -1,9 +1,10 @@
+mod utils;
 mod title;
 
-use std::{path::PathBuf, collections::HashMap};
+pub(in crate::video_generator) use utils::*;
+use std::path::PathBuf;
 
 use roux::submission::SubmissionData;
-use unic_langid::LanguageIdentifier;
 
 use crate::config::{VideoCreationError, VideoCreationArguments, StoryMode};
 
@@ -29,10 +30,11 @@ impl VideoGenerationArguments {
         story_mode : &StoryMode, // can not be AUTO
         args : &VideoCreationArguments<'_>
     ) -> Result<(),VideoCreationError> {
-        /*args.config.tts.save_speech_to_file(&submission.title).await?;
+        let page = create_new_page(args.browser,submission).await?;
 
-        story_mode.exceute(submission,args).await?;*/
-        // text + take screenshot -> dir => translate
+        self.exceute_title(submission,&page,args).await?;
+
+        /*story_mode.exceute(submission,args).await?;*/
         Ok(())
     }
 }

@@ -5,11 +5,11 @@ pub enum VideoCreationError {
     #[error(transparent)]
     Reddit(#[from] RouxError),
 
-   // #[error(transparent)]
-  //  File(#[from] std::io::Error),
+    #[error(transparent)]
+    File(#[from] std::io::Error),
     
-    //#[error(transparent)]
-  //  TextToSpeech(#[from] super::TextToSpeechError),
+    #[error(transparent)]
+    TextToSpeech(#[from] super::TextToSpeechError),
 
     #[error(transparent)]
     StoryMode(#[from] crate::config::story_mode::StoryModeError),   
