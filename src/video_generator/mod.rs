@@ -1,5 +1,6 @@
 mod utils;
 mod title;
+mod post;
 
 use chromiumoxide::Page;
 use unic_langid::LanguageIdentifier;
@@ -37,7 +38,7 @@ impl VideoGenerationArguments {
         exceute!(
             story_mode,
             self.exceute_title_no_translation(submission,page,args).await?,
-            Ok(()),
+            self.exceute_post_no_translation(submission,page,args).await,
             Ok(()),
             Ok(())
         )
