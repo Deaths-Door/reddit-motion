@@ -2,7 +2,6 @@ use roux::Subreddit;
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::{LanguageIdentifier, langid};
-use whatlang::Lang;
 
 use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationArguments};
 
@@ -58,21 +57,30 @@ impl SubredditConfig {
 
         args.call_on_post_choosen(&submission);
 
+        let page = super::create_new_page(args.browser,&submission).await?;
         let detected_lang = super::detect_post_language(&args.detector,&submission);
-        // AND EVERY OTHER LANG
-       // for lang in langs {
-            let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
-            std::fs::create_dir_all(&storage_directory)?;
-            
-            let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
+        let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
+        std::fs::create_dir_all(&storage_directory)?;
+        let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
 
-            video_generation_arguments.exceute_no_translate(
+        // TODO : ADD IT TO THE TASKMANAGER
+
+        video_generation_arguments.exceute_no_translation(
+            &submission,
+            &story_mode,
+            &page,
+            &args
+        ).await?;
+
+        for lang in extra_langs {
+            video_generation_arguments.exceute_with_translation(
+                lang,
                 &submission,
                 &story_mode,
+                &page,
                 &args
             ).await?;
-            // TODO : ADD IT TO THE TASKMANAGER
-    //    }
+        }
 
         Ok(())
     }

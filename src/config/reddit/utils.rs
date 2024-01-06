@@ -1,3 +1,4 @@
+use chromiumoxide::{Browser, Page};
 use roux::{Subreddit, util::FeedOption, submission::SubmissionData};
 use unic_langid::LanguageIdentifier;
 use whatlang::{Detector, Lang};
@@ -57,4 +58,16 @@ pub(super) fn detect_post_language(detector : &Detector,submission : &Submission
         .code();
 
     detected_lang.parse().unwrap()
+}
+
+
+pub(super) async fn create_new_page(
+    browser : &Browser,
+    submission : &SubmissionData
+) -> chromiumoxide::Result<Page> {
+    let url = format!("https://www.reddit.com/r/{name}/comments/{id}",name = submission.name,id = submission.id);
+    let page = browser.new_page(url).await?;
+
+    // TODO : CLOSE ALL POPUPS + NSFW + ANOYMUS BROWSING + COOKIES ACCEPT
+    Ok(page)
 }

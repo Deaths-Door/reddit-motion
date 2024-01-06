@@ -3,6 +3,8 @@ use std::path::{PathBuf, Path};
 use chromiumoxide::{Page, Browser};
 use roux::submission::SubmissionData;
 
+use crate::config::{VideoCreationError, StoryMode, VideoCreationArguments};
+
 use super::VideoGenerationArguments;
 
 impl VideoGenerationArguments {
@@ -23,13 +25,32 @@ impl VideoGenerationArguments {
     }
 }
 
-pub(super) async fn create_new_page(
-    browser : &Browser,
-    submission : &SubmissionData
-) -> chromiumoxide::Result<Page> {
-    let url = format!("https://www.reddit.com/r/{name}/comments/{id}",name = submission.name,id = submission.id);
-    let page = browser.new_page(url).await?;
+macro_rules! exceute {
+    (
+        $story_mode:expr,
+        $title : expr,
+        $comments : expr,
+        $post :expr,
+        $auto : expr
+    ) => {{
+        $title;
 
-    // TODO : CLOSE ALL POPUPS + NSFW + ANOYMUS BROWSING + COOKIES ACCEPT
-    Ok(page)
+        match $story_mode {
+            StoryMode::ReadComments => $comments,
+            StoryMode::ReadPost =>$post,
+            _ => $auto
+        }
+    }};
 }
+
+// if some process ahead fails it keeps on to the file
+macro_rules! if_path_exists {
+    (not $path : expr,$code : expr) => {
+        if !std::path::Path::new($path).exists() {
+           $code
+        }
+    };
+}
+
+pub(super) use {exceute,if_path_exists};
+

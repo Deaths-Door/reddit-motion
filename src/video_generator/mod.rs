@@ -1,6 +1,8 @@
 mod utils;
 mod title;
 
+use chromiumoxide::Page;
+use unic_langid::LanguageIdentifier;
 pub(in crate::video_generator) use utils::*;
 use std::path::PathBuf;
 
@@ -24,17 +26,38 @@ impl VideoGenerationArguments {
         }
     }
 
-    pub async fn exceute_no_translate(
+    pub async fn exceute_no_translation(
         &mut self,
         submission : &SubmissionData,
         story_mode : &StoryMode, // can not be AUTO
+        page : &Page,
         args : &VideoCreationArguments<'_>
     ) -> Result<(),VideoCreationError> {
-        let page = create_new_page(args.browser,submission).await?;
+        // TODO UPDATE THIS
+        exceute!(
+            story_mode,
+            self.exceute_title_no_translation(submission,page,args).await?,
+            Ok(()),
+            Ok(()),
+            Ok(())
+        )
+    }
 
-        self.exceute_title(submission,&page,args).await?;
-
-        /*story_mode.exceute(submission,args).await?;*/
-        Ok(())
+    
+    pub async fn exceute_with_translation(
+        &mut self,
+        langs : &LanguageIdentifier,
+        submission : &SubmissionData,
+        story_mode : &StoryMode, // can not be AUTO
+        page : &Page,
+        args : &VideoCreationArguments<'_>
+    ) -> Result<(),VideoCreationError> {
+        exceute!(
+            story_mode,
+            { },
+            Ok(()),
+            Ok(()),
+            Ok(())
+        )
     }
 }
