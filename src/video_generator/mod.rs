@@ -1,16 +1,18 @@
 mod utils;
 mod title;
 mod post;
+mod comments;
 
 use chromiumoxide::Page;
 use unic_langid::LanguageIdentifier;
 pub(in crate::video_generator) use utils::*;
 use std::path::PathBuf;
 
-use roux::submission::SubmissionData;
+use roux::{submission::SubmissionData, Subreddit};
 
 use crate::config::{VideoCreationError, VideoCreationArguments, StoryMode};
 
+#[derive(Debug)]
 pub struct VideoGenerationArguments {
     // Gen
     storage_directory : PathBuf,
@@ -29,19 +31,18 @@ impl VideoGenerationArguments {
 
     pub async fn exceute_no_translation(
         &mut self,
+        subreddit : &Subreddit,
         submission : &SubmissionData,
         story_mode : &StoryMode, // can not be AUTO
         page : &Page,
         args : &VideoCreationArguments<'_>
     ) -> Result<(),VideoCreationError> {
-        // TODO UPDATE THIS
-        exceute!(
-            story_mode,
-            self.exceute_title_no_translation(submission,page,args).await?,
-            self.exceute_post_no_translation(submission,page,args).await,
-            Ok(()),
-            Ok(())
-        )
+        self.exceute_title_no_translation(submission,page,args).await?;
+        match story_mode {
+            StoryMode::ReadComments { max_comments } => self.exceute_comments_no_translation(*max_comments, subreddit, submission, page, args).await,
+            StoryMode::ReadPost => self.exceute_post_no_translation(submission,page,args).await,
+            _ => Ok(())
+        }
     }
 
     
@@ -53,12 +54,7 @@ impl VideoGenerationArguments {
         page : &Page,
         args : &VideoCreationArguments<'_>
     ) -> Result<(),VideoCreationError> {
-        exceute!(
-            story_mode,
-            { },
-            Ok(()),
-            Ok(()),
-            Ok(())
-        )
+        // TODO()
+        todo!()
     }
 }

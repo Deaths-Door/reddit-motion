@@ -1,7 +1,7 @@
 use roux::Subreddit;
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
-use unic_langid::{LanguageIdentifier, langid};
+use unic_langid::LanguageIdentifier;
 
 use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationArguments};
 
@@ -64,16 +64,20 @@ impl SubredditConfig {
         std::fs::create_dir_all(&storage_directory)?;
         let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
 
-        // TODO : ADD IT TO THE TASKMANAGER
 
+        // TODO : ADD IT TO THE TASKMANAGER
+        // TODO : FINSIH IT
         video_generation_arguments.exceute_no_translation(
+            &subreddit,
             &submission,
             &story_mode,
             &page,
             &args
         ).await?;
 
-        for lang in extra_langs {
+        println!("{:?}",video_generation_arguments);
+
+        /*for lang in extra_langs {
             video_generation_arguments.exceute_with_translation(
                 lang,
                 &submission,
@@ -81,7 +85,7 @@ impl SubredditConfig {
                 &page,
                 &args
             ).await?;
-        }
+        }*/
 
         Ok(())
     }

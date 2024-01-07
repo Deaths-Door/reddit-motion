@@ -13,7 +13,7 @@ impl VideoGenerationArguments {
         page : &Page,
         args : &VideoCreationArguments<'_>,
     ) -> Result<(),VideoCreationError> {
-        self.__exceute_post_content(submission, page, args, |s|s, |element,_| async {
+        self.exceute_post_content(submission, page, args, |s|s, |element,_| async {
             Ok(element)
         }).await
     }
@@ -21,15 +21,15 @@ impl VideoGenerationArguments {
 
     // post.content.element = #t3_4ifj4i > div > div[data-click-id=\"text\"]"
     // post.content.text = post.content.element > div > (has p elements which need to be translated)
-    async fn __exceute_post_content<F>(
+    async fn exceute_post_content<F>(
         &mut self,
         submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl Fn(&str) -> &str,
+        map_text : impl FnOnce(&str) -> &str,
         map_element : impl FnOnce(Element,&str) -> F 
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-        self.__exceute_on_post(
+        self.exceute_on_post(
             submission,
             page,
             args,

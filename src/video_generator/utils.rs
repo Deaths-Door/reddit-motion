@@ -25,24 +25,6 @@ impl VideoGenerationArguments {
     }
 }
 
-macro_rules! exceute {
-    (
-        $story_mode:expr,
-        $title : expr,
-        $post :expr,
-        $comments : expr,
-        $auto : expr
-    ) => {{
-        $title;
-
-        match $story_mode {
-            StoryMode::ReadComments => $comments,
-            StoryMode::ReadPost =>$post,
-            _ => $auto
-        }
-    }};
-}
-
 // if some process ahead fails it keeps on to the file
 macro_rules! if_path_exists {
     (not $path : expr,$code : expr) => {
@@ -52,17 +34,23 @@ macro_rules! if_path_exists {
     };
 }
 
-pub(super) use {exceute,if_path_exists};
-
-
 pub(super) async fn post_element_and_screenshot<F>(
     page: &Page,
     submission : &SubmissionData,
     file_name : &Path,
     map_element : impl FnOnce(Element) -> F,
 ) -> chromiumoxide::Result<()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-    let class = format!("#t3_{}",submission.id);
-    let title_element = page.find_element(class).await?;
+    let selector = format!("#t3_{}",submission.id);
+    element_and_screenshot(selector, page, file_name, map_element).await
+}
+
+pub(super) async fn element_and_screenshot<F>(
+    selector : String,
+    page: &Page,
+    file_name : &Path,
+    map_element : impl FnOnce(Element) -> F,
+) -> chromiumoxide::Result<()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
+    let title_element = page.find_element(selector).await?;
 
     let _ = map_element(title_element)
         .await?
@@ -73,26 +61,40 @@ pub(super) async fn post_element_and_screenshot<F>(
 }
 
 impl VideoGenerationArguments {
-    pub(super) async fn __exceute_on_post<'a,F>(
+    pub(super) async fn exceute_on_post<'a,F>(
         &mut self,
-        _submission : &SubmissionData,
+        submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
         name : &str,
         core_text : &'a str,
-        map_text : impl Fn(&'a str) -> &str,
+        map_text : impl FnOnce(&'a str) -> &str,
         map_element : impl FnOnce(Element,&'a str) -> F // translate the &str and update the element with it for translate version
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
+        self.exceute_on_thread(submission, args, name, core_text, map_text, |png_path,text| async move {
+            super::post_element_and_screenshot(page, submission, &png_path,|e| map_element(e,text)).await
+        }).await
+    }
+
+    /// Lowest API for VideoGenerationArguments
+    pub(super) async fn exceute_on_thread<'a,F>(
+        &mut self,
+        _submission : &SubmissionData,
+        args : &VideoCreationArguments<'_>,
+        name : &str,
+        core_text : &'a str,
+        map_text : impl FnOnce(&'a str) -> &str,
+        // Text is already translated
+        screenshot : impl FnOnce(PathBuf,&'a str) -> F
+    ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<()>> {
         let text = map_text(core_text);
 
         let audio_path = self.audio_file(name);
-        super::if_path_exists!(not &audio_path,args.config.tts.save_speech_to_file(&audio_path,text).await?);       
+        if_path_exists!(not &audio_path,args.config.tts.save_speech_to_file(&audio_path,text).await?);       
 
         let png_path = self.png_file(name);
-
-        super::if_path_exists!(not &png_path,
-            super::post_element_and_screenshot(page, _submission, &png_path,|e| map_element(e,text)
-        ).await?);       
+        // TODO : Find a way to pass &Path instead of cloning
+        if_path_exists!(not &png_path,screenshot(png_path.clone(),text).await?);       
 
         self.push_files(audio_path,png_path);
 

@@ -15,7 +15,6 @@ We've all seen those viral videos on TikTok, YouTube, and Instagram – they eff
 
 ... Now, imagine if you could automate that entire process? 🤯
 
-# TODO MAYBE CHANGE VOICE TTS PROVIDER
 # TODO : FINISH THE README
 
 requires ffmpeg 

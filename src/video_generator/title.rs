@@ -1,6 +1,4 @@
-use std::path::Path;
-
-use chromiumoxide::{Page, cdp::browser_protocol::page::CaptureScreenshotFormat, Element};
+use chromiumoxide::{Page, Element};
 use roux::submission::SubmissionData;
 
 use crate::config::{VideoCreationArguments, VideoCreationError};
@@ -29,10 +27,10 @@ impl VideoGenerationArguments {
         submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl Fn(&str) -> &str,
+        map_text : impl FnOnce(&str) -> &str,
         map_element : impl FnOnce(Element,&str) -> F // translate the &str and update the element with it for translate version
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-        self.__exceute_on_post(
+        self.exceute_on_post(
             submission,
             page,
             args,
