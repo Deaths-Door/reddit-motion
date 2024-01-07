@@ -1,10 +1,7 @@
 use chromiumoxide::{Page, Element};
 use roux::submission::SubmissionData;
 
-use crate::config::{VideoCreationArguments, VideoCreationError};
-
-use super::VideoGenerationArguments;
-
+use crate::{config::{VideoCreationError, VideoCreationArguments}, video_generator::VideoGenerationArguments};
 
 impl VideoGenerationArguments {
     pub(super) async fn exceute_post_no_translation(

@@ -6,6 +6,7 @@ mod utils;
 pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};
+use coachman::manager::TaskManager;
 use super::{VideoCreationArguments, VideoCreationError};
 
 #[derive(Serialize, Deserialize)]
@@ -32,15 +33,19 @@ impl RedditConfig {
             }
         }
 
+        let mut taskmanger = TaskManager::builder().build();
+
         // TODO : MAYBE CHECK THE BIN DIR FOR THREADS NOT FINISHED?
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args).await?;
+            subreddit.exceute(args,&mut taskmanger).await?;
 
             args.call_on_end_subreddit();
         }
 
+        taskmanger.join(false).await;
+        
         Ok(())
     }
 }

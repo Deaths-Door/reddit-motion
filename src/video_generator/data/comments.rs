@@ -118,7 +118,7 @@ async fn comment_element_and_screenshot<F>(
     file_name : &Path,
     map_element : impl FnOnce(Element) -> F,
 ) -> chromiumoxide::Result<()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-    println!("id={comment_id}");
+    // TODO : CHECK WHY ISNT THIS WORKING , like it takes a screenshot but shws upempty
     let selector = format!("#{comment_id}");
     let _ = element_and_screenshot(selector, page, file_name, map_element).await.unwrap();
     Ok(())

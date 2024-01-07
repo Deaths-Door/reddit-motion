@@ -2,7 +2,7 @@ use roux::Subreddit;
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
-
+use coachman::manager::TaskManager;
 use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationArguments};
 
 #[serde_as]
@@ -26,12 +26,12 @@ pub struct SubredditConfig {
 fn drepeat() -> u8 { 1 }
 
 impl SubredditConfig {
-    pub async fn exceute(&self,args : &VideoCreationArguments<'_>) -> Result<(),VideoCreationError> {
+    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,taskmanger : &mut TaskManager) -> Result<(),VideoCreationError> {
         let subreddit  = Subreddit::new(&self.name);
 
         let mut count= 0;
         for _ in 0..self.repeat_count {
-            if let Err(err) = self.__exceute(&mut count, args, &subreddit).await {
+            if let Err(err) = self.__exceute(&mut count,taskmanger, args, &subreddit).await {
                 args.call_on_skipping_due_to_error(err)
             }
         }
@@ -42,6 +42,7 @@ impl SubredditConfig {
     pub async fn __exceute(
         &self,
         count : &mut u32,
+        taskmanger : &mut TaskManager,
         args : &VideoCreationArguments<'_>,
         subreddit : &Subreddit
     ) -> Result<(),VideoCreationError> {
@@ -59,33 +60,35 @@ impl SubredditConfig {
 
         let page = super::create_new_page(args.browser,&submission).await?;
 
-        let detected_lang = super::detect_post_language(&args.detector,&submission);
-        let storage_directory = format!("bin/{name}/{id}/{detected_lang}",name=subreddit.name,id=submission.id);
-        std::fs::create_dir_all(&storage_directory)?;
-        let mut video_generation_arguments = VideoGenerationArguments::new(storage_directory);
+        {
+            let detected_lang = super::detect_post_language(&args.detector,&submission);
+            let mut video_generation_arguments = VideoGenerationArguments::new_and_create_dir(&submission,&detected_lang);
+    
+            // TODO : PUSH TO TASK MANAGER
+            video_generation_arguments.exceute_data_gathering_no_translation(
+                &subreddit,
+                &submission,
+                &story_mode,
+                &page,
+                &args
+            ).await?;
+            
+            taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
+        }
 
+        for lang in extra_langs {
+            let mut video_generation_arguments = VideoGenerationArguments::new_and_create_dir(&submission,&lang);
 
-        // TODO : ADD IT TO THE TASKMANAGER
-        // TODO : FINSIH IT
-        video_generation_arguments.exceute_no_translation(
-            &subreddit,
-            &submission,
-            &story_mode,
-            &page,
-            &args
-        ).await?;
-
-        println!("{:?}",video_generation_arguments);
-
-        /*for lang in extra_langs {
-            video_generation_arguments.exceute_with_translation(
+            video_generation_arguments.exceute_data_gathering_with_translation(
                 lang,
                 &submission,
                 &story_mode,
                 &page,
                 &args
             ).await?;
-        }*/
+
+            taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
+        }
 
         Ok(())
     }

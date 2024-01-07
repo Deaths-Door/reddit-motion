@@ -57,7 +57,7 @@ rusty_ytdl = "0.6.6"
 indicatif = "0.17.6"
 
 # Browser interaction
-chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"]}
+chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"] }
 futures = "0.3.30"
 
 # Reddit API
@@ -74,13 +74,10 @@ gtts = "0.1.0"
 elevenlabs_rs = "0.2.0"
 
 # For Task Management (video creation using ffmpeg)
-#coachman = "0.3.0"
+coachman = "0.3.0"
 
 # Random selection
 #rand = "0.8.5"
-
-# Recursive async functions
-#async-recursion = "1.0.5"
 
 # FFmpeg download
 [target.'cfg(target_os = "windows")'.dependencies]
