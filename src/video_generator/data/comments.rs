@@ -5,9 +5,9 @@ use roux::{submission::SubmissionData, Subreddit, comment::CommentData, response
 
 use crate::config::{VideoCreationArguments, VideoCreationError};
 
-use super::{VideoGenerationArguments, utils::element_and_screenshot};
+use super::{VideoGenerationFiles, utils::element_and_screenshot};
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     pub(super) async fn exceute_comments_no_translation(
         &mut self,
         max_comments : u32,
@@ -67,7 +67,7 @@ impl VideoGenerationArguments {
     }
 }
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     async fn exceute_comment<F>(
         &mut self,
         comment : CommentData,

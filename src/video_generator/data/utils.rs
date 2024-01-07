@@ -5,9 +5,9 @@ use roux::submission::SubmissionData;
 
 use crate::config::{VideoCreationArguments, VideoCreationError};
 
-use super::VideoGenerationArguments;
+use super::VideoGenerationFiles;
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     pub(super) fn push_files(&mut self,audio : PathBuf,png : PathBuf) {
         self.files.push((audio.display().to_string(),png.display().to_string()))
     }
@@ -60,7 +60,7 @@ pub(super) async fn element_and_screenshot<F>(
     Ok(())
 }
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     pub(super) async fn exceute_on_post<'a,F>(
         &mut self,
         submission : &SubmissionData,

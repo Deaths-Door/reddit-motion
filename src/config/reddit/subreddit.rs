@@ -3,7 +3,7 @@ use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
 use coachman::manager::TaskManager;
-use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationArguments};
+use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationFiles};
 
 #[serde_as]
 #[derive(Serialize, Deserialize)]
@@ -62,10 +62,10 @@ impl SubredditConfig {
 
         {
             let detected_lang = super::detect_post_language(&args.detector,&submission);
-            let mut video_generation_arguments = VideoGenerationArguments::new_and_create_dir(&submission,&detected_lang);
+            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&detected_lang);
     
             // TODO : PUSH TO TASK MANAGER
-            video_generation_arguments.exceute_data_gathering_no_translation(
+            video_generation_files.exceute_data_gathering_no_translation(
                 &subreddit,
                 &submission,
                 &story_mode,
@@ -73,13 +73,13 @@ impl SubredditConfig {
                 &args
             ).await?;
             
-            taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
+         //   taskmanger.try_spawn(async { video_generation_arguments.exceute_generation(args).await } );    
         }
 
         for lang in extra_langs {
-            let mut video_generation_arguments = VideoGenerationArguments::new_and_create_dir(&submission,&lang);
+            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&lang);
 
-            video_generation_arguments.exceute_data_gathering_with_translation(
+            video_generation_files.exceute_data_gathering_with_translation(
                 lang,
                 &submission,
                 &story_mode,
@@ -87,7 +87,7 @@ impl SubredditConfig {
                 &args
             ).await?;
 
-            taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
+          //  taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
         }
 
         Ok(())

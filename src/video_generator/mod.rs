@@ -5,7 +5,7 @@ use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use std::path::PathBuf;
 #[derive(Debug)]
-pub struct VideoGenerationArguments {
+pub struct VideoGenerationFiles {
     // Gen
     storage_directory : PathBuf,
 
@@ -13,7 +13,7 @@ pub struct VideoGenerationArguments {
     files : Vec<(String,String)>
 }
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     pub fn new_and_create_dir(submission : &SubmissionData,lang : &LanguageIdentifier) -> Self {
         let storage_directory = format!("bin/{name}/{id}/{lang}",name=submission.subreddit,id=submission.id);
         Self::new(storage_directory)

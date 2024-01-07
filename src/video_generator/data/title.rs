@@ -3,11 +3,11 @@ use roux::submission::SubmissionData;
 
 use crate::config::{VideoCreationArguments, VideoCreationError};
 
-use super::VideoGenerationArguments;
+use super::VideoGenerationFiles;
 
 
 
-impl VideoGenerationArguments {
+impl VideoGenerationFiles {
     pub(super) async fn exceute_title_no_translation(
         &mut self,
         submission : &SubmissionData,

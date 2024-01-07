@@ -1,9 +1,11 @@
-use super::VideoGenerationArguments;
+use crate::config::VideoCreationArguments;
+
+use super::VideoGenerationFiles;
 
 
 
-impl VideoGenerationArguments {
-    pub async fn exceute_generation(self) {
+impl VideoGenerationFiles {
+    pub async fn exceute_generation(self,args : &VideoCreationArguments<'_>) {
         
     }
 }
