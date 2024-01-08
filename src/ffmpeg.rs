@@ -6,6 +6,7 @@ use std::{process::{Command, Output}, path::Path};
 ///
 /// The `local_download_path` field is the path to the local directory where FFmpeg will be downloaded.
 /// The `command` field is the command to run FFmpeg.
+#[derive(Clone)]
 pub struct FFmpeg {
     ffmpeg_command : String,
     ffprobe_command : String

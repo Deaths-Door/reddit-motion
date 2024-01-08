@@ -211,6 +211,13 @@ pub fn create_callback() -> Callback {
             let (a,b) = s.split_once(&link).unwrap();
 
             println!("{a}{}{b}",link.blue());
+        },
+        |lang,result|{
+            println!("{}",match result {
+                Ok(path) => lookup1(lang, "video.success", "path", &path.to_string()).green(),
+                Err(err) => lookup1(lang, "video.error", "error", &err.to_string()).red(),
+            });
+            print_seperator();
         }
     )
 }

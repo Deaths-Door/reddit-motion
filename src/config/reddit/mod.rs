@@ -41,13 +41,15 @@ impl RedditConfig {
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args,&mut tasks,db).await?;
+            subreddit.exceute(args,db,|files,ffmpeg| {
+                tasks.push(files.exceute_generation(ffmpeg))
+            }).await;
 
             args.call_on_end_subreddit();
         }
 
         while let Some(task_result) = tasks.next().await {
-            args.call_finished_producing_video();
+            args.call_on_video_finished(task_result);
         }
         
         Ok(())

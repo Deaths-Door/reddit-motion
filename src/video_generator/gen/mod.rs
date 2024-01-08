@@ -1,11 +1,13 @@
-use crate::{config::{VideoCreationArguments, Config}, ffmpeg::FFmpeg};
+use crate::{config::{VideoCreationArguments, Config, VideoCreationError}, ffmpeg::FFmpeg};
 
 use super::VideoGenerationFiles;
 
 
 
 impl VideoGenerationFiles {
-    pub async fn exceute_generation(self,config : Config,ffmpeg : FFmpeg) {
-        
+    // returns output video path
+    pub async fn exceute_generation(self,ffmpeg : FFmpeg) -> std::io::Result<String> {
+        // TODO
+        todo!()
     }
 }

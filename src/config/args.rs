@@ -1,14 +1,14 @@
-use std::{error::Error, sync::Arc};
+use std::error::Error;
 
 use chromiumoxide::Browser;
 use roux::submission::SubmissionData;
 use whatlang::Detector;
-use crate::{ffmpeg::FFmpeg, db::Database};
-use super::{Config, Callback};
+use crate::ffmpeg::FFmpeg;
+use super::{Config, Callback, VideoCreationError};
 
 pub struct VideoCreationArguments<'a> {
-    pub config : Arc<Config>,
-    pub ffmpeg : Arc<FFmpeg>,
+    pub config : Config,
+    pub ffmpeg : FFmpeg,
     pub browser : &'a Browser,
     pub detector : Detector,
     callback : &'a Callback,
@@ -20,7 +20,7 @@ impl<'a> VideoCreationArguments<'a> {
         browser: &'a Browser,
         config: Config, 
         ffmpeg: FFmpeg,
-    ) -> Self { Self { config : Arc::new(config), ffmpeg : Arc::new(ffmpeg), callback, browser , detector : Detector::new()} }
+    ) -> Self { Self { config , ffmpeg, callback, browser , detector : Detector::new()} }
 
     pub fn call_invalid_reddit_credentials(&self) {
         (self.callback.invalid_reddit_credentials)(&self.config.lang)
@@ -38,11 +38,15 @@ impl<'a> VideoCreationArguments<'a> {
         (self.callback.on_end_subreddit)(&self.config.lang)
     }
 
-    pub fn call_on_skipping_due_to_error<E : Error>(&self,err : E) {
-        (self.callback.on_skipping_due_to_error)(&self.config.lang,&err)
+    pub fn call_on_skipping_post_due_to_error<E : Error>(&self,err : E) {
+        (self.callback.on_skipping_post_due_to_error)(&self.config.lang,&err)
     }
 
     pub fn call_on_post_choosen(&self,submission : &SubmissionData) {
         (self.callback.on_post_choosen)(&self.config.lang,submission)
+    }
+
+    pub fn call_on_video_finished(&self,result : std::io::Result<String>) {
+        (self.callback.on_video_finished)(&self.config.lang,result)
     }
 }

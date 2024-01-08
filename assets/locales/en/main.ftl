@@ -16,10 +16,14 @@ assets = Assets are availiable!
         Please ensure that the file is of the correct type before continuing.
     .downloading = Downloaded another asset...
 
-reddit = PUTINMESSAGE
+reddit = *
     .credentials = Your reddit credentials are incorrect! Please modify them accordingly in the config.toml file.
     .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
     .subreddit-checking = Checking { $name } subreddit
     .subreddit-finished = Finished with subreddit!
     .post-skipped = Error encountered while processing subreddit post: { $error } \n. Skipping post.
     .post-inform = "Video will be { $name } 👍\n Thread url is { $link } 👍\nThread has a upvote ratio of { $percent }%
+
+video = *
+    .success = Genereated Video is availiable at { $path } 🥰
+    .error = Error encountered while processing video { $error }
