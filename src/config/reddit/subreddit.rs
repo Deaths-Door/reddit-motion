@@ -3,7 +3,7 @@ use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
 use coachman::manager::TaskManager;
-use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationFiles};
+use crate::{config::{StoryMode, TextToSpeechService, VideoCreationArguments, VideoCreationError}, video_generator::VideoGenerationFiles, db::Database};
 
 #[serde_as]
 #[derive(Serialize, Deserialize)]
@@ -26,31 +26,30 @@ pub struct SubredditConfig {
 fn drepeat() -> u8 { 1 }
 
 impl SubredditConfig {
-    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,taskmanger : &mut TaskManager) -> Result<(),VideoCreationError> {
+    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,taskmanger : &mut TaskManager,db : &mut Database) {
         let subreddit  = Subreddit::new(&self.name);
 
         let mut count= 0;
         for _ in 0..self.repeat_count {
-            if let Err(err) = self.__exceute(&mut count,taskmanger, args, &subreddit).await {
+            if let Err(err) = self.__exceute(&mut count,taskmanger,db, args, &subreddit).await {
                 args.call_on_skipping_due_to_error(err)
             }
         }
-
-        Ok(())
     }
 
     pub async fn __exceute(
         &self,
         count : &mut u32,
         taskmanger : &mut TaskManager,
+        db : &mut Database,
         args : &VideoCreationArguments<'_>,
         subreddit : &Subreddit
     ) -> Result<(),VideoCreationError> {
         // langs that we need to proccess it in
         let (submission,extra_langs) = super::retry_till_new_submission(
+            db,
             count,
             &self.extra_langs,
-            &args, 
             &subreddit
         ).await?;
 
@@ -73,7 +72,8 @@ impl SubredditConfig {
                 &args
             ).await?;
             
-         //   taskmanger.try_spawn(async { video_generation_arguments.exceute_generation(args).await } );    
+            taskmanger.try_spawn(video_generation_files.exceute_generation(args.config,args.ffmpeg));    
+            db.add_proccessed_thread(&submission, detected_lang);
         }
 
         for lang in extra_langs {
@@ -87,6 +87,8 @@ impl SubredditConfig {
                 &args
             ).await?;
 
+            taskmanger.try_spawn(video_generation_files.exceute_generation(args.config,args.ffmpeg));    
+            db.add_proccessed_thread(&submission, lang.clone());
           //  taskmanger.try_spawn(video_generation_arguments.exceute_generation());    
         }
 

@@ -73,9 +73,6 @@ regex = "1.10.2"
 gtts = "0.1.0"
 elevenlabs_rs = "0.2.0"
 
-# For Task Management (video creation using ffmpeg)
-coachman = "0.3.0"
-
 # Random selection
 #rand = "0.8.5"
 

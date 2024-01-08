@@ -3,16 +3,16 @@ use roux::{Subreddit, util::FeedOption, submission::SubmissionData};
 use unic_langid::LanguageIdentifier;
 use whatlang::{Detector, Lang};
 
-use crate::config::{VideoCreationArguments, VideoCreationError};
+use crate::{config::{VideoCreationArguments, VideoCreationError}, db::Database};
 
 pub(super) async fn wait_for(secs : u64) {
     tokio::time::sleep(std::time::Duration::from_secs(secs)).await;
 }
 
 pub(super) async fn retry_till_new_submission<'a>(
+    db : &Database,
     count : &mut u32,
     extra_langs: &'a [LanguageIdentifier],
-    args : &VideoCreationArguments<'_>,
     subreddit: &Subreddit,
 ) -> Result<(SubmissionData,Vec<&'a LanguageIdentifier>),VideoCreationError> {
     // TODO : REMOVE THIS ONCE WE HAVE DETECTED THE LANGUAGE
@@ -27,7 +27,7 @@ pub(super) async fn retry_till_new_submission<'a>(
 
         *count += 1;
 
-        let langs = args.db.unprocessed_threads(&submission.id,extra_langs);
+        let langs = db.unprocessed_threads(&submission.id,extra_langs);
 
         if !langs.is_empty() {
             return Ok((submission,langs));

@@ -38,7 +38,7 @@ impl Command {
 
         let ffmpeg = utils::create_ffmpeg(&config.lang).await?;
         let callback = utils::create_callback();
-        let handle = config.exceute_create_videos(&ffmpeg,&db,&callback).await?;
+        let handle = config.exceute_create_videos(ffmpeg,&mut db,&callback).await?;
 
         db.update_database()?;
 

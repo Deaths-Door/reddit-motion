@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, sync::Arc};
 
 use chromiumoxide::Browser;
 use roux::submission::SubmissionData;
@@ -7,22 +7,20 @@ use crate::{ffmpeg::FFmpeg, db::Database};
 use super::{Config, Callback};
 
 pub struct VideoCreationArguments<'a> {
-    pub config : &'a Config,
-    pub ffmpeg : &'a FFmpeg,
+    pub config : Arc<Config>,
+    pub ffmpeg : Arc<FFmpeg>,
     pub browser : &'a Browser,
-    pub db : &'a Database,
     pub detector : Detector,
     callback : &'a Callback,
 }
 
 impl<'a> VideoCreationArguments<'a> {
     pub fn new(
-        config: &'a Config, 
         callback: &'a Callback, 
-        ffmpeg: &'a FFmpeg,
-        db : &'a Database, 
-        browser: &'a Browser
-    ) -> Self { Self { config, callback, ffmpeg, browser ,db , detector : Detector::new()} }
+        browser: &'a Browser,
+        config: Config, 
+        ffmpeg: FFmpeg,
+    ) -> Self { Self { config : Arc::new(config), ffmpeg : Arc::new(ffmpeg), callback, browser , detector : Detector::new()} }
 
     pub fn call_invalid_reddit_credentials(&self) {
         (self.callback.invalid_reddit_credentials)(&self.config.lang)

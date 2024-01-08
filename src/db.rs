@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use chrono::{DateTime, Utc};
+use roux::submission::SubmissionData;
 use serde_with::{serde_as,DisplayFromStr};
 use unic_langid::LanguageIdentifier;
 use std::path::Path;
@@ -54,5 +55,12 @@ impl Database {
                     .collect()
             )
         }).unwrap_or(vec![])
+    }
+
+    pub fn add_proccessed_thread(&mut self,submission : &SubmissionData,lang : LanguageIdentifier) {
+        match self.proccessed_threads.get_mut(&submission.id) {
+            None => { self.proccessed_threads.insert(submission.id.clone(), HashSet::from([lang])); },
+            Some(values) => { values.insert(lang); },
+        };
     }
 }

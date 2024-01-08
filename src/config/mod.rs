@@ -57,17 +57,16 @@ impl Config {
 
     pub async fn exceute_create_videos(
         self,
-        ffmpeg : &FFmpeg,
-        db : &Database,
+        ffmpeg : FFmpeg,
+        db : &mut Database,
         callback : &Callback
     ) -> anyhow::Result<JoinHandle<()>> {
         let (browser,handler) = self.create_browser().await?;
 
-        let args = VideoCreationArguments::new(&self, callback, ffmpeg, db,&browser);
+        let args = VideoCreationArguments::new(callback, &browser, self, ffmpeg);
 
-        self.reddit.exceute(&args).await?;
+        args.config.reddit.exceute(&args,db).await?;
 
-        println!("PROCCESSING FINSIHED");
         Ok(handler)
     }
 

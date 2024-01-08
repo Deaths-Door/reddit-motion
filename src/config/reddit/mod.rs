@@ -3,10 +3,12 @@ mod theme;
 mod subreddit;
 mod utils;
 
+use futures::{stream::FuturesUnordered, StreamExt};
 pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};
-use coachman::manager::TaskManager;
+use crate::db::Database;
+
 use super::{VideoCreationArguments, VideoCreationError};
 
 #[derive(Serialize, Deserialize)]
@@ -25,7 +27,7 @@ pub struct RedditUser {
 }
 
 impl RedditConfig {
-    pub async fn exceute(&self,args : &VideoCreationArguments<'_>) -> Result<(),VideoCreationError> {
+    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database) -> Result<(),VideoCreationError> {
         if let Some(user) = &self.user {
             match !user.login_and_set_theme(args.browser).await? {
                 true => args.call_invalid_reddit_credentials(),
@@ -33,18 +35,20 @@ impl RedditConfig {
             }
         }
 
-        let mut taskmanger = TaskManager::builder().build();
+        let mut tasks = FuturesUnordered::new();
 
         // TODO : MAYBE CHECK THE BIN DIR FOR THREADS NOT FINISHED?
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args,&mut taskmanger).await?;
+            subreddit.exceute(args,&mut tasks,db).await?;
 
             args.call_on_end_subreddit();
         }
 
-        taskmanger.join(false).await;
+        while let Some(task_result) = tasks.next().await {
+            args.call_finished_producing_video();
+        }
         
         Ok(())
     }
