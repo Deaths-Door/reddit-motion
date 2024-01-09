@@ -1,11 +1,11 @@
 use serde::{Deserialize,Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Dimensions {
     #[serde(default = "dwidth")]
-    width : u32,
+    pub(crate) width : u32,
     #[serde(default = "dheight")]
-    height : u32,
+    pub(crate) height : u32,
 }
 
 fn dwidth() -> u32 { 800 }

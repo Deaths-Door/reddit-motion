@@ -7,7 +7,7 @@ use futures::{stream::FuturesUnordered, StreamExt};
 pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};
-use crate::db::Database;
+use crate::{db::Database, video_generator::VideoGenerator};
 
 use super::{VideoCreationArguments, VideoCreationError};
 
@@ -41,8 +41,9 @@ impl RedditConfig {
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args,db,|files,ffmpeg| {
-                tasks.push(files.exceute_generation(ffmpeg))
+            subreddit.exceute(args,db,|files,args| {
+                let gen = VideoGenerator::new(files,args);
+                tasks.push(gen.exceute())
             }).await;
 
             args.call_on_end_subreddit();

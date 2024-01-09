@@ -16,6 +16,19 @@ impl Assets {
     pub fn count(&self) -> usize {
         self.audio.len() + self.videos.len()
     }
+
+    fn random_index(slice : &[String]) -> usize {
+        use rand::Rng;
+        rand::thread_rng().gen_range(0..slice.len())
+    }
+
+    pub fn random_video_directory(&self) -> &str {
+        &self.videos[Self::random_index(&self.videos)]
+    }
+
+    pub fn random_audio_directory(&self) -> &str {
+        &self.audio[Self::random_index(&self.audio)]
+    }
 }
 
 impl Assets {

@@ -16,18 +16,6 @@ impl Assets {
         self.audio.len() + self.videos.len()
     }
 
-    fn random_index(slice : &[String]) -> usize {
-        rand::thread_rng().gen_range(0..slice.len())
-    }
-
-    pub fn random_video_directory(&self) -> &str {
-        &self.videos[Self::random_index(&self.videos)]
-    }
-
-    pub fn random_audio_directory(&self) -> &str {
-        &self.audio[Self::random_index(&self.audio)]
-    }
-
 }
 impl Assets {
     pub async fn download<F>(&mut self,ffmpeg : &FFmpeg,on_each_download_finished : F) -> anyhow::Result<()> where F : Fn() + Copy {

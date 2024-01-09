@@ -24,7 +24,7 @@ pub(in crate::config) fn get_video_dimensions(ffmpeg : &FFmpeg,path : &str) -> s
             .parse::<u32>()
             .unwrap();
 
-        assert!(split.next().is_none());
+        assert!( plit.next().is_none());
 
         Dimesions { width , height }
     })

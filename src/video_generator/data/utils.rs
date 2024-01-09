@@ -34,6 +34,8 @@ macro_rules! if_path_exists {
     };
 }
 
+pub(crate) use if_path_exists;
+
 pub(super) async fn post_element_and_screenshot<F>(
     page: &Page,
     submission : &SubmissionData,

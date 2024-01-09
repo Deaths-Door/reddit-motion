@@ -26,7 +26,7 @@ pub struct SubredditConfig {
 fn drepeat() -> u8 { 1 }
 
 impl SubredditConfig {
-    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database,add_task : impl Fn(VideoGenerationFiles,FFmpeg) + Copy) {
+    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database,add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>) + Copy) {
         let subreddit  = Subreddit::new(&self.name);
 
         let mut count= 0;
@@ -43,7 +43,7 @@ impl SubredditConfig {
         db : &mut Database,
         args : &VideoCreationArguments<'_>,
         subreddit : &Subreddit,
-        add_task : impl Fn(VideoGenerationFiles,FFmpeg)
+        add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>)
     ) -> Result<(),VideoCreationError> {
         // langs that we need to proccess it in
         let (submission,extra_langs) = super::retry_till_new_submission(
@@ -71,7 +71,7 @@ impl SubredditConfig {
                 &args
             ).await?;
             
-            add_task(video_generation_files,args.ffmpeg.clone());
+            add_task(video_generation_files,args);
             db.add_proccessed_thread(&submission, detected_lang);
         }
 
@@ -86,7 +86,7 @@ impl SubredditConfig {
                 &args
             ).await?;
 
-            add_task(video_generation_files,args.ffmpeg.clone());
+            add_task(video_generation_files,args);
             db.add_proccessed_thread(&submission, lang.clone());
         }
 

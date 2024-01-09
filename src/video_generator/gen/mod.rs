@@ -1,12 +1,15 @@
+mod crop;
+
 use crate::{config::{VideoCreationArguments, Config, VideoCreationError}, ffmpeg::FFmpeg};
 
-use super::VideoGenerationFiles;
+use super::{VideoGenerationFiles, VideoGenerator};
 
-
-
-impl VideoGenerationFiles {
+impl VideoGenerator {
     // returns output video path
-    pub async fn exceute_generation(self,ffmpeg : FFmpeg) -> std::io::Result<String> {
+    pub async fn exceute(self) -> std::io::Result<String> {
+        let storage_directory = self.video_gen_files.storage_directory.display().to_string();
+
+        let video_directory = self.crop_and_move(storage_directory)?;
         // TODO
         todo!()
     }

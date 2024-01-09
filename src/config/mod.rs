@@ -31,7 +31,7 @@ pub struct Config {
     #[serde_as(as = "DisplayFromStr")]
     pub lang: LanguageIdentifier,
     pub assets: Assets,
-    dimensions: Dimensions,
+    pub dimensions: Dimensions,
     reddit: RedditConfig,
 
     #[serde(default)]
