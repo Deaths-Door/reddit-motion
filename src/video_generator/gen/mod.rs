@@ -14,13 +14,13 @@ impl VideoGenerator {
         // So isntead of bin/.. do to generated_videos/..
         let output_directory = bin_directory.replace("bin", "generated_videos");
 
-        let video_directory = self.crop_and_move(bin_directory)?;
+        let video_directory = self.crop_and_move(bin_directory.clone())?;
  
         let (title_segment,title_duration) = self.title_segment(&video_directory)?;
         let mut current_duration = title_duration;
 
         // Skip 1 as we concat the title segment which is the first element 
-        let iter = self.video_gen_files.files.into_iter()
+        let iter = self.video_gen_files.files.iter()
             .skip(1)
             .enumerate();
 
@@ -47,14 +47,12 @@ impl VideoGenerator {
                     next_duration
                 },
                 true => {
-                   // TODO
-                    // spilt segment_path into videolimit + others
+                   // TODO // spilt segment_path into videolimit + others
                     // then others in chucks of videolimit + write to file
                     // conacnt start and others
-                    // TODO : ADD AUDIO BACKGRONUD TO IT
 
                     // Create Video 
-                    concat::concat_for_mp4s(&self.ffmpeg, Self::CONCAT_FILE, &output_directory)?;
+                    self.create_final_video(bin_directory.clone(),&output_directory)?;
     
                     // TODO : MAKE THIS WORK IN PARALELL?
                     // Now 'redefine' the file , so content is overwritten and it the future this work can be done in paraell
@@ -67,7 +65,7 @@ impl VideoGenerator {
             }
         }
             
-        //self.cleanup()?;
+        self.cleanup()?;
 
         Ok(output_directory)
     }

@@ -15,7 +15,7 @@ pub(super) async fn retry_till_new_submission<'a>(
     extra_langs: &'a [LanguageIdentifier],
     subreddit: &Subreddit,
 ) -> Result<(SubmissionData,Vec<&'a LanguageIdentifier>),VideoCreationError> {
-    // TODO : REMOVE THIS ONCE WE HAVE DETECTED THE LANGUAGE
+    // Basically without this infinite loop 😅
     if extra_langs.is_empty() {
         let submission = submission(&subreddit,*count).await?;
         *count += 1;

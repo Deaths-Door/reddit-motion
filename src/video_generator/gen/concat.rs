@@ -44,7 +44,7 @@ pub(super) fn concat_media_files(
 }
 
 
-pub(super) fn center_screenshot_in_mp4(
+fn center_screenshot_in_mp4(
     ffmpeg : &FFmpeg,
     mp4_file : &str,
     png_file : &str,
@@ -71,6 +71,8 @@ pub(super) fn concat_for_mp4s(
     txt_path : &str,
     output_path : &str
 ) -> std::io::Result<()> {
+    if_path_exists!(output_path,return ok);
+
     // ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
 
     ffmpeg.ffmpeg_expect_failure(|cmd|{
