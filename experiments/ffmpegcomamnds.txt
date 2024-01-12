@@ -103,11 +103,35 @@ ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full
 
 //works
 ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -ss 10 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
-ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -ss 5 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
++ t to restrict max duration
+ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -ss 5 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
 
+// video len 
+
+//nup
+ffprobe -i <file> -show_entries format=duration -v quiet -of csv="p=0"
+ffprobe -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -show_entries format=duration -v quiet -of csv="p=0"
+ffprobe -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -show_entries format=duration -v quiet -of csv="p=0"
+
+ 
+// kinda 
+ffmpeg -i input.ext 2>&1 | find "Duration"
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" 2>&1 | find "Duration"
+
+//works
+ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 fifa.mp4
+ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 "C:\Users\Aarav Aditya Shah\Desktop\input.mp4"
 
 // combine mp4s 
 ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
 ffmpeg -f concat -safe 0 -i "C:\Users\Aarav Aditya Shah\Desktop\concat.txt" -c copy output.mp4
 
 ffmpeg -i "concat:C:\Users\Aarav Aditya Shah\Desktop\input.mp4|C:\Users\Aarav Aditya Shah\Desktop\out.mp4|C:\Users\Aarav Aditya Shah\Desktop\out2.mp4|C:\Users\Aarav Aditya Shah\Desktop\output.mp4" -c copy output10.mp4
+
+
+
+// Spilt into parts
+ffmpeg -i input.mp4 -c copy -map 0 -segment_time 00:20:00 -f segment output%03d.mp4
+
+ffmpeg -i big_buck_bunny_480p_5mb.mp4 -acodec copy -f segment -segment_time 10 -vcodec copy -reset_timestamps 1 -map 0 output_time_%d.mp4
+ffmpeg -i "C:\Users\Aarav Aditya Shah\Desktop\out.mp4" -acodec copy -f segment -segment_time 10 -vcodec copy -reset_timestamps 1 -map 0 output_time_%d.mp4

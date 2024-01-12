@@ -21,12 +21,17 @@ pub struct SubredditConfig {
 
     #[serde_as(as = "Vec<DisplayFromStr>")]
     extra_langs: Vec<LanguageIdentifier>,
+
+    #[serde(default = "dvideo_length_limit")]
+    // in secs
+    video_length_limit : u64,
 }
 
 fn drepeat() -> u8 { 1 }
+fn dvideo_length_limit() -> u64 { 60 }
 
 impl SubredditConfig {
-    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database,add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>) + Copy) {
+    pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database,add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>,u64) + Copy) {
         let subreddit  = Subreddit::new(&self.name);
 
         let mut count= 0;
@@ -43,7 +48,7 @@ impl SubredditConfig {
         db : &mut Database,
         args : &VideoCreationArguments<'_>,
         subreddit : &Subreddit,
-        add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>)
+        add_task : impl Fn(VideoGenerationFiles,&VideoCreationArguments<'_>,u64)
     ) -> Result<(),VideoCreationError> {
         // langs that we need to proccess it in
         let (submission,extra_langs) = super::retry_till_new_submission(
@@ -71,7 +76,7 @@ impl SubredditConfig {
                 &args
             ).await?;
             
-            add_task(video_generation_files,args);
+            add_task(video_generation_files,args,self.video_length_limit);
             db.add_proccessed_thread(&submission, detected_lang);
         }
 
@@ -86,7 +91,7 @@ impl SubredditConfig {
                 &args
             ).await?;
 
-            add_task(video_generation_files,args);
+            add_task(video_generation_files,args,self.video_length_limit);
             db.add_proccessed_thread(&submission, lang.clone());
         }
 

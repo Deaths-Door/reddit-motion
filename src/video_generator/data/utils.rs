@@ -27,6 +27,11 @@ impl VideoGenerationFiles {
 
 // if some process ahead fails it keeps on to the file
 macro_rules! if_path_exists {
+    ($path : expr,return ok) => {
+        if std::path::Path::new($path).exists() {
+           return Ok(())
+        }
+    };
     (not $path : expr,$code : expr) => {
         if !std::path::Path::new($path).exists() {
            $code

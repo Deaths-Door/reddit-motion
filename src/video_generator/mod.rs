@@ -20,6 +20,7 @@ pub struct VideoGenerator {
     video_gen_files : VideoGenerationFiles,
     ffmpeg : FFmpeg,
     dimensions: Dimensions,
+    video_length_limit : u64,
     video_asset_directory : String,
     audio_asset_directory : String
 }
@@ -39,13 +40,13 @@ impl VideoGenerationFiles {
 }
 
 impl VideoGenerator {
-    pub fn new(video_gen_files: VideoGenerationFiles, args : &VideoCreationArguments<'_> ) -> Self {
+    pub fn new(video_gen_files: VideoGenerationFiles, args : &VideoCreationArguments<'_>,video_length_limit : u64) -> Self {
         let ffmpeg = args.ffmpeg.clone();
         let config = &args.config;
         let dimensions = config.dimensions.clone();    
         let video_asset_directory = config.assets.random_video_directory().to_owned();
         let audio_asset_directory = config.assets.random_audio_directory().to_owned();
 
-        Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory} 
+        Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory , video_length_limit } 
     }
 }

@@ -43,9 +43,9 @@ fn get_video_dimensions(ffmpeg: &FFmpeg,file_path : &str) -> std::io::Result<Dim
             .unwrap();
 
         // Output contains an extra \n
-        let mut _height = split.next().unwrap();
-        _height = &_height[0.._height.len() - 2];
-        let height = _height    
+        let height = split.next()
+            .unwrap()    
+            .trim_end()
             .parse::<u32>()
             .unwrap();
 
@@ -56,6 +56,8 @@ fn get_video_dimensions(ffmpeg: &FFmpeg,file_path : &str) -> std::io::Result<Dim
 }
 
 fn crop_video(ffmpeg: &FFmpeg,dimesions: &Dimensions,input : &str,file_path : &str) -> std::io::Result<()> {
+    if_path_exists!(file_path,return ok);
+
     // ffmpeg -i input.mp4 -filter:v "crop=w:h:x:y" output.mp4
     ffmpeg.ffmpeg_expect_failure(|cmd|{
         let filter = format!("crop={}:{}",dimesions.width,dimesions.height);

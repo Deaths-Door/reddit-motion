@@ -25,5 +25,5 @@ reddit = *
     .post-inform = "Video will be { $name } 👍\n Thread url is { $link } 👍\nThread has a upvote ratio of { $percent }%
 
 video = *
-    .success = Genereated Video is availiable at { $path } 🥰
+    .success = Genereated content is availiable at { $path } 🥰
     .error = Error encountered while processing video { $error }

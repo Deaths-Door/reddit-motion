@@ -41,8 +41,8 @@ impl RedditConfig {
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args,db,|files,args| {
-                let gen = VideoGenerator::new(files,args);
+            subreddit.exceute(args,db,|files,args,video_length_limit| {
+                let gen = VideoGenerator::new(files,args,video_length_limit);
                 tasks.push(gen.exceute())
             }).await;
 

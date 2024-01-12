@@ -32,10 +32,11 @@ pub struct Config {
     pub lang: LanguageIdentifier,
     pub assets: Assets,
     pub dimensions: Dimensions,
-    reddit: RedditConfig,
-
+    
     #[serde(default)]
     pub tts : TextToSpeechService,
+
+    reddit: RedditConfig,
 
     #[serde(default)]
     translate : TranslationServices

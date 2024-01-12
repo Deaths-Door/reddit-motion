@@ -3,15 +3,14 @@ mod title;
 mod post;
 mod comments;
 
+pub(in crate::video_generator) use utils::*;
+pub(in crate::video_generator::data) use super::VideoGenerationFiles;
+
 use chromiumoxide::Page;
 use unic_langid::LanguageIdentifier;
-pub(in crate::video_generator) use utils::*;
-use std::path::PathBuf;
 
 use roux::{submission::SubmissionData, Subreddit};
 use crate::config::{VideoCreationError, VideoCreationArguments, StoryMode};
-
-pub(in crate::video_generator::data) use super::VideoGenerationFiles;
 
 impl VideoGenerationFiles {
     pub async fn exceute_data_gathering_no_translation(
