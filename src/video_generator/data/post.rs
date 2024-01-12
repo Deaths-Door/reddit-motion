@@ -34,9 +34,25 @@ impl VideoGenerationFiles {
             &submission.selftext,
             map_text,
             |element,text| async move {
+                if submission.over_18 {
+                    // Content hidden by button
+                    show_nsfw_body(&element).await?;
+                }
+
                 let element = element.find_element("div > div[data-click-id=\"text\"]").await?;
                 map_element(element,text).await
             }
         ).await
     }
+}
+
+
+async fn show_nsfw_body(element : &Element) -> chromiumoxide::Result<()> {
+    element.find_element(
+        "div > div._3xX726aBn29LDbsDtzr_6E._1Ap4F5maDtT1E1YuCiaO0r.D3IL3FD0RFy_mkKLPwL4 > div > div > button"
+    )
+    .await?
+    .click()
+    .await
+    .map(|_| ())
 }

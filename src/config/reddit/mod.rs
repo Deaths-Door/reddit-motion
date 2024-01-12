@@ -37,7 +37,6 @@ impl RedditConfig {
 
         let mut tasks = FuturesUnordered::new();
 
-        // TODO : MAYBE CHECK THE BIN DIR FOR THREADS NOT FINISHED?
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
