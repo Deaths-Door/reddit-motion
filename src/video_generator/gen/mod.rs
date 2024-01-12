@@ -51,7 +51,7 @@ impl VideoGenerator {
                     // spilt segment_path into videolimit + others
                     // then others in chucks of videolimit + write to file
                     // conacnt start and others
-                
+                    // TODO : ADD AUDIO BACKGRONUD TO IT
 
                     // Create Video 
                     concat::concat_for_mp4s(&self.ffmpeg, Self::CONCAT_FILE, &output_directory)?;

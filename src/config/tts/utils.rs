@@ -18,10 +18,9 @@ pub(super) fn preprocess_text(text : &str) -> String {
 }
 
 pub(super) fn google(directory : &Path,text : &str) -> Result<(),TextToSpeechError> {
-    println!("path={}",&directory.display().to_string());
-    match gtts::save_to_file(&text,&directory.display().to_string()) {
+    match gtts::save_to_file(text,&directory.display().to_string()) {
         true => Ok(()),
-        false => Err(TextToSpeechError(anyhow::anyhow!("Unknown Cause with google translate").into()))
+        false => Err(TextToSpeechError(anyhow::anyhow!("unknown cause with google translate for {text}").into()))
     }
 }
 

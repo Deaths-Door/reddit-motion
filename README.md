@@ -72,15 +72,10 @@ This tool uses a configuration file to store various settings related to the lan
 lang = "en"
 
 # Assets to be used in the video
-assets = [
-    {
-        # Base directory containing the assets
-        base_dir = "assets"
-
-        # Patterns to match against asset filenames
-        patterns = ["*.mp4", "*.jpg"]
-    }
-]
+[assets]
+# Ensure it is filled with some value
+video = []
+audio = []
 
 # Dimensions of the output video
 dimensions = {
@@ -92,26 +87,25 @@ dimensions = {
 tts = "Google"
 
 # Reddit configuration
-reddit = {
-    subreddits = [
-        {
-            name = "subreddit1"
-            repeat_count = 2
-            for_tts_use = "Elevenlabs"
-            extra_langs = ["de", "fr"]
-            video_length_limit = 60
-        },
-        {
-            name = "subreddit2"
-            mode = "StoryMode::List"
-        }
-    ]
+[reddit]
+subreddits = [
+{
+    name = "subreddit1"
+    repeat_count = 2
+    for_tts_use = "Elevenlabs"
+    extra_langs = ["de", "fr"]
+    video_length_limit = 60
+},
+{
+    name = "subreddit2"
+    mode = "StoryMode::List"
 }
+]
 ```
 The following table describes the various settings that can be specified in the configuration file:
 | Setting | Description |
 |---|---|
-| lang | The language in which the video narration will be generated. This can be any valid language identifier. Defaults to the system's default language. |
+| lang | The language in which the tool is in. |
 | assets | A list of structures containing information about the assets to be used in the video. See the Assets section for more details. |
 | dimensions | A structure defining the dimensions of the output video. See the Dimensions section for more details. |
 | tts | The text-to-speech service to use for generating the video narration. Defaults to Google. See the TextToSpeechService section for more details. |
@@ -126,23 +120,21 @@ height | The height of the output video in pixels. Defaults to 360 pixels.|
 
 The tts setting defines the text-to-speech service to use for generating the video narration. Currently, the following services are supported:
 
-Service    | Description                                                                                                        
----------- | -------------------------------------------------------------------------------------------------------------------
+Service    |Description                                                                                                      ---------- | -------------------------------------------------------------------------------------------------------------------
 Google     | The Google text-to-speech service. This is the default service.                                                    
 Elevenlabs | The Elevenlabs text-to-speech service. This requires an API key, which can be obtained from the Elevenlabs website.
 
 If you are using the `Elevenlabs` service, you will need to specify your `API key` in the configuration file. The API key should be placed in the `api_key` field of the TextToSpeechService structure.  For example:
 
 ```toml
-tts = "Elevenlabs"
-
-tts_settings = {
-    api_key = "YOUR_API_KEY"
-    # You can also specify the model and voice name to be used for the Elevenlabs service.
-    # model = "..."
-    # voice = "..."
-}
+[tts.elevenlabs]
+api_key = "YOUR_API_KEY"
+# You can also specify the model and voice name to be used for the Elevenlabs service.
+# model = "..."
+# voice = "..."
 ```
+
+For more information about this API , visit this [documentation](https://elevenlabs.io/docs/api-reference)
 
 The `RedditConfig` struct contains configuration options for accessing Reddit.
 
