@@ -67,7 +67,6 @@ pub(super) async fn create_new_page(
 ) -> chromiumoxide::Result<Page> {
     let url = format!("https://www.reddit.com/r/{name}/comments/{id}",name = submission.subreddit,id = submission.id);
     let page = browser.new_page(url).await?;
-
     // TODO : CLOSE ALL POPUPS + NSFW + ANOYMUS BROWSING + COOKIES ACCEPT for no login 
     Ok(page)
 }

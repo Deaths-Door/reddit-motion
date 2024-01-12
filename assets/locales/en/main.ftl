@@ -2,7 +2,7 @@ thanks = Thanks for using this tool! Feel free to contribute to this project on 
 questions = If you have any questions, feel free to contact me by submitting a GitHub issue at { $link }
 solutions = You can find solutions to many common FAQs at { $link }
 
-using-old-version = "You are using an older version ({ $package_version }) of the bot. Download the newest version ({ $release_version }) from { $link }
+using-old-version = You are using an older version ({ $package_version }) of the bot. Download the newest version ({ $release_version }) from { $link }
 
 ffmpeg = FFmpeg is availiable
     .not_installed = FFmpeg is not installed on this system.

@@ -68,7 +68,7 @@ This tool uses a configuration file to store various settings related to the lan
 
 *Example Configuration File*
 ```toml
-# Language in which the video narration will be generated
+# Language in which the tool will be in
 lang = "en"
 
 # Assets to be used in the video
@@ -98,18 +98,19 @@ subreddits = [
 },
 {
     name = "subreddit2"
-    mode = "StoryMode::List"
+    mode = "auto"
 }
 ]
 ```
 The following table describes the various settings that can be specified in the configuration file:
-| Setting | Description |
-|---|---|
-| lang | The language in which the tool is in. |
-| assets | A list of structures containing information about the assets to be used in the video. See the Assets section for more details. |
-| dimensions | A structure defining the dimensions of the output video. See the Dimensions section for more details. |
-| tts | The text-to-speech service to use for generating the video narration. Defaults to Google. See the TextToSpeechService section for more details. |
-| reddit | A structure containing configuration options for accessing Reddit. See the Reddit section for more details. |
+| Setting    | Description                                                                                                                                     |
+|------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| lang       | The language in which the tool is in. *Available languages:* German, English, Spanish, French, Hindi, Italian, Japanese, Turkish, Ukrainian                                                                          |
+| assets     | A list of structures containing information about the assets to be used in the video. See the Assets section for more details.                  |
+| dimensions | A structure defining the dimensions of the output video. See the Dimensions section for more details.                                           |
+| tts        | The text-to-speech service to use for generating the video narration. Defaults to Google. See the TextToSpeechService section for more details. |
+| reddit     | A structure containing configuration options for accessing Reddit. See the Reddit section for more details.                                     |
+
 
 The `Dimensions` struct defines the dimensions of the output video. It specifies the width and height of the video.
 
@@ -120,9 +121,10 @@ height | The height of the output video in pixels. Defaults to 360 pixels.|
 
 The tts setting defines the text-to-speech service to use for generating the video narration. Currently, the following services are supported:
 
-Service    |Description                                                                                                      ---------- | -------------------------------------------------------------------------------------------------------------------
-Google     | The Google text-to-speech service. This is the default service.                                                    
-Elevenlabs | The Elevenlabs text-to-speech service. This requires an API key, which can be obtained from the Elevenlabs website.
+Service    | Description                                                                                                         |
+---------- | ------------------------------------------------------------------------------------------------------------------- |
+Google     | The Google text-to-speech service. This is the default service.                                                     |
+Elevenlabs | The Elevenlabs text-to-speech service. This requires an API key, which can be obtained from the Elevenlabs website. |
 
 If you are using the `Elevenlabs` service, you will need to specify your `API key` in the configuration file. The API key should be placed in the `api_key` field of the TextToSpeechService structure.  For example:
 
