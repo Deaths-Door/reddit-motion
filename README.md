@@ -6,7 +6,9 @@
 ![docs.rs](https://img.shields.io/docsrs/reddit-motion)
 ![Crates.io License](https://img.shields.io/crates/l/reddit-motion)
 
-> Transform Reddit Posts and Custom Text into Engaging Videos with Localization. Customize Content, Boost Speed, Share on Social Media – Experience its Excellence!
+> If you encounter any bugs, have suggestions for new features, or need help using this project, please file an issue on the GitHub issues
+
+Transform Reddit Posts and Custom Text into Engaging Videos with Localization. Customize Content, Boost Speed, Share on Social Media – Experience its Excellence!
 
 Key Features:
 
@@ -32,7 +34,7 @@ We've all seen those viral videos on TikTok, YouTube, and Instagram – they eff
 ```bash
 cargo install reddit-motion
 ```
-2. Intially the `--edit` command to create a configuration file and edit the configuration file to your liking and save it.
+2. Intially use the `--edit` command to create a configuration file and edit the configuration file to your liking and save it.
 ```bash
 reddit-motion --edit
 ```
@@ -172,7 +174,7 @@ video_length_limit | The maximum video length in seconds
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://docs.rs/reddit-motion). You can also take a look at the [contributing guide](asd).
+Contributions, issues and feature requests are welcome!<br />Feel free to check issues page.
 
 ## Show your support
 
