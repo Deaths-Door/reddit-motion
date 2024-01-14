@@ -7,7 +7,7 @@ use super::VideoGenerator;
 
 impl VideoGenerator {
     // returns output video path
-    pub async fn exceute(self) -> std::io::Result<String> {
+    pub async fn exceute(self) -> std::io::Result<String> {        
         let bin_directory = self.video_gen_files.storage_directory.display()
             .to_string();
 
@@ -30,7 +30,7 @@ impl VideoGenerator {
 
         for (index,(audio_directory,png_directory)) in iter {
             let (segment_path,segment_duration) = concat::concat_media_files(
-                index,
+                index + 1,
                 &mut current_duration,
                 &self.ffmpeg,
                 bin_directory.clone(),
@@ -41,13 +41,16 @@ impl VideoGenerator {
 
             let next_duration = current_duration + segment_duration;
 
-            current_duration = match next_duration >= self.video_length_limit as f64 {
+            current_duration = match true {// next_duration >= self.video_length_limit as f64 {
                 false => {
+                    println!("{index} = false b4");
                     // Write to the file which contains the videos that should be concated 
                     Self::write_segment(&mut file, &segment_path)?;
+                    println!("{index} = false after");
                     next_duration
                 },
                 true => {
+                    println!("{index} = YES");
                    // TODO // spilt segment_path into videolimit + others
                     // then others in chucks of videolimit + write to file
                     // conacnt start and others

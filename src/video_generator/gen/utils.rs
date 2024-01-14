@@ -37,7 +37,7 @@ impl VideoGenerator {
     
     const CONCAT_FILE : &str = "concat_videos.txt";
 
-    pub(super) fn create_concat_file(segment_path : &str) -> std::io::Result<File> {
+    pub(super) fn create_concat_file(segment_path : &str) -> std::io::Result<File> {  
         let mut file = File::create(Self::CONCAT_FILE)?;
         Self::write_segment(&mut file,segment_path)?;
         Ok(file)
@@ -75,6 +75,8 @@ impl VideoGenerator {
             super::concat::concat_for_mp4s(&self.ffmpeg, Self::CONCAT_FILE, &temp_directory)?;
         });
 
+        std::fs::create_dir_all(&final_output_directory)?;
+        
         add_background_music(
             &self.ffmpeg, 
             &self.audio_asset_directory,

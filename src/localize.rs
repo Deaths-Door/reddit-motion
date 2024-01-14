@@ -4,7 +4,6 @@ use maplit::{convert_args, hashmap};
 use unic_langid::LanguageIdentifier;
 use fluent_templates::fluent_bundle::FluentValue;
 
-// TODO: Translate all into all locales
 fluent_templates::static_loader! {
     static LOCALES = {
         locales : "./assets/locales",

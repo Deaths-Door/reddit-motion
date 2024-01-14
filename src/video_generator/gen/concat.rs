@@ -14,32 +14,51 @@ pub(super) fn concat_media_files(
     // Later indefinitely add a png in the center of the created video 
     // return the output directory
 
-    // ffmpeg -stream_loop -1 -i video.mp4 -i audio.mp3 -c copy -shortest output.mp4
-    let vid_duration = super::utils::get_duration(ffmpeg,video_directory)?;
-
     temp_index_file.push_str(&format!("/temp_{index}.mp4"));
 
-    if_path_exists!(not &temp_index_file,ffmpeg.ffmpeg_expect_failure(|cmd|{
-        cmd.args([
-            "-stream_loop", "-1",
-            "-i" , video_directory,
-            "-i" , audio_directory,
-            "-ss" , &current_position.to_string(),
-            "-t" , &vid_duration.to_string(),
-            "-shortest" , 
-            "-c" , "copy",
-            &temp_index_file
-        ]);
+    let video_asset_duration = super::utils::get_duration(ffmpeg,video_directory)?;
+    let audio_duration = super::utils::get_duration(ffmpeg, audio_directory)?;
+
+
+    // TODO : REMOVE THIS , temp
+   // if_path_exists!(not &temp_index_file,{
+        std::fs::copy(video_directory, &temp_index_file)?; 
+  //  });
+
+    /*// So if video.len > audio.len then just extract that subvideo , as it results in an infinite loop
+    if_path_exists!(not &temp_index_file,ffmpeg.ffmpeg_expect_failure(|cmd| {
+        match video_asset_duration < audio_duration {
+            // loop video till audio end
+            // ffmpeg -stream_loop -1 -i video.mp4 -i audio.mp3 -c copy -shortest output.mp4
+            true => cmd.args([
+                "-stream_loop", "-1",
+                "-i" , video_directory,
+                "-i" , audio_directory,
+                "-ss" , &current_position.to_string(),
+                "-t" , &video_asset_duration.to_string(),
+                "-shortest" , 
+                "-c" , "copy",
+                &temp_index_file
+            ]),
+            false => {
+                cmd.args(
+                    "-i" , video_directory,
+                    "-ss" ,  &current_position.to_string(),
+                    "-t" , &video_asset_duration.to_string(),
+                )
+            }
+        }; 
     })?);
 
-    // 0..=4 as its the len of temp_
-    let out_index_file = temp_index_file.replace("temp_","");
+    todo!()*/
+   // let out_index_file = temp_index_file.replace("temp_","");
     
-    center_screenshot_in_mp4(ffmpeg, &temp_index_file, png_directory, &out_index_file)?;
+    //center_screenshot_in_mp4(ffmpeg, &temp_index_file, png_directory, &out_index_file)?;
 
-    let duration = super::utils::get_duration(ffmpeg, &out_index_file)?;
-
-    Ok((out_index_file,duration))
+    let duration = super::utils::get_duration(ffmpeg, &temp_index_file)?;
+    //let duration = super::utils::get_duration(ffmpeg, &out_index_file)?;
+    Ok((temp_index_file,video_asset_duration))
+    //Ok((out_index_file,video_asset_duration))
 }
 
 
@@ -73,7 +92,7 @@ pub(super) fn concat_for_mp4s(
     if_path_exists!(output_path,return ok);
 
     // ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
-
+    println!("HERE!!");
     ffmpeg.ffmpeg_expect_failure(|cmd|{
         cmd.args([
             "-f" , "concat",
