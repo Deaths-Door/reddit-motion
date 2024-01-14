@@ -97,10 +97,8 @@ subreddits = [
     extra_langs = ["de", "fr"]
     video_length_limit = 60
 },
-{
-    name = "subreddit2"
-    mode = "auto"
-}
+    { name = "askreddit" , mode = { comments = { max_comments = 2 } } , extra_langs = [] }
+
 ]
 ```
 The following table describes the various settings that can be specified in the configuration file:
