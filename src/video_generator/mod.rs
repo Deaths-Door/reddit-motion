@@ -28,6 +28,7 @@ pub struct VideoGenerator {
 
 impl VideoGenerationFiles {
     pub fn new_and_create_dir(submission : &SubmissionData,lang : &LanguageIdentifier) -> std::io::Result<Self> {
+        // TODO : why the fuck arent the media files being created in this directory
         let storage_directory = format!("bin/{name}/{id}/{lang}",name=submission.subreddit,id=submission.id);
         std::fs::create_dir_all(&storage_directory)?;
         Ok(

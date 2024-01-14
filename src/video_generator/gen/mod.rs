@@ -24,7 +24,7 @@ impl VideoGenerator {
             .skip(1)
             .enumerate();
 
-        let reset_file = || Self::create_concat_file(&title_segment);
+        let reset_file = || Self::create_concat_file(bin_directory.clone(),&title_segment);
         // Since first index is 0
         let mut file = reset_file()?;
 
@@ -41,7 +41,7 @@ impl VideoGenerator {
 
             let next_duration = current_duration + segment_duration;
 
-            current_duration = match true {// next_duration >= self.video_length_limit as f64 {
+            current_duration = match next_duration >= self.video_length_limit as f64 {
                 false => {
                     println!("{index} = false b4");
                     // Write to the file which contains the videos that should be concated 
@@ -56,7 +56,7 @@ impl VideoGenerator {
                     // conacnt start and others
 
                     // Create Video 
-                    self.create_final_video(bin_directory.clone(),&output_directory)?;
+                    self.create_final_video(&bin_directory,&output_directory)?;
     
                     // TODO : MAKE THIS WORK IN PARALELL?
                     // Now 'redefine' the file , so content is overwritten and it the future this work can be done in paraell
@@ -70,7 +70,7 @@ impl VideoGenerator {
         }
             
         self.cleanup()?;
-
+        println!("CLEANING UP");
         Ok(output_directory)
     }
 }

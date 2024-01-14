@@ -35,10 +35,10 @@ impl VideoGenerator {
         std::fs::remove_dir_all(&self.video_gen_files.storage_directory)
     }
     
-    const CONCAT_FILE : &str = "concat_videos.txt";
+    pub(super) fn create_concat_file(mut concat_file : String,segment_path : &str) -> std::io::Result<File> {  
+        concat_file.push_str("/concat.txt");
 
-    pub(super) fn create_concat_file(segment_path : &str) -> std::io::Result<File> {  
-        let mut file = File::create(Self::CONCAT_FILE)?;
+        let mut file = File::create(concat_file)?;
         Self::write_segment(&mut file,segment_path)?;
         Ok(file)
     }
@@ -68,11 +68,15 @@ impl VideoGenerator {
         )
     }
 
-    pub(super) fn create_final_video(&self,mut temp_directory : String,final_output_directory : &str) -> std::io::Result<()> {
-        temp_directory.push_str("/temp.mp4");
+    pub(super) fn create_final_video(&self,
+        _temp_directory : &str,
+        final_output_directory : &str
+    ) -> std::io::Result<()> {
+        let temp_directory= format!("{_temp_directory}/final_temp.mp4");
+        let concat_file= format!("{_temp_directory}/concat.txt");
 
         if_path_exists!(not &temp_directory,{
-            super::concat::concat_for_mp4s(&self.ffmpeg, Self::CONCAT_FILE, &temp_directory)?;
+            super::concat::concat_for_mp4s(&self.ffmpeg, &concat_file, &temp_directory)?;
         });
 
         std::fs::create_dir_all(&final_output_directory)?;

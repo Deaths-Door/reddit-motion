@@ -21,9 +21,9 @@ pub(super) fn concat_media_files(
 
 
     // TODO : REMOVE THIS , temp
-   // if_path_exists!(not &temp_index_file,{
+    if_path_exists!(not &temp_index_file,{
         std::fs::copy(video_directory, &temp_index_file)?; 
-  //  });
+    });
 
     /*// So if video.len > audio.len then just extract that subvideo , as it results in an infinite loop
     if_path_exists!(not &temp_index_file,ffmpeg.ffmpeg_expect_failure(|cmd| {
@@ -92,7 +92,6 @@ pub(super) fn concat_for_mp4s(
     if_path_exists!(output_path,return ok);
 
     // ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
-    println!("HERE!!");
     ffmpeg.ffmpeg_expect_failure(|cmd|{
         cmd.args([
             "-f" , "concat",
