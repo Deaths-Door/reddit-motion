@@ -1,4 +1,3 @@
-use chromiumoxide::async_process::Command;
 use roux::Subreddit;
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};
@@ -66,7 +65,7 @@ impl SubredditConfig {
 
         {
             let detected_lang = super::detect_post_language(&args.detector,&submission);
-            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&detected_lang);
+            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&detected_lang)?;
     
             video_generation_files.exceute_data_gathering_no_translation(
                 &subreddit,
@@ -81,7 +80,7 @@ impl SubredditConfig {
         }
 
         for lang in extra_langs {
-            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&lang);
+            let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&lang)?;
 
             video_generation_files.exceute_data_gathering_with_translation(
                 lang,

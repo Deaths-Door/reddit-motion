@@ -80,8 +80,8 @@ impl FFmpeg {
         let output =  command.output()?;
         let status = output.status.success();
 
-        println!("{:?}",command);
         if !status {
+            eprintln!("{:?}",command);
             eprintln!("stderr={}",String::from_utf8(output.stderr).unwrap());
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other, 

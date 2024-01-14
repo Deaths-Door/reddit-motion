@@ -9,6 +9,7 @@ use crate::{ffmpeg::FFmpeg, config::{VideoCreationArguments, Dimensions}};
 
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
+    // TODO : MAYBE USE A StrIng intead
     // Gen
     pub(in crate::video_generator) storage_directory : PathBuf,
 
@@ -26,16 +27,15 @@ pub struct VideoGenerator {
 }
 
 impl VideoGenerationFiles {
-    pub fn new_and_create_dir(submission : &SubmissionData,lang : &LanguageIdentifier) -> Self {
+    pub fn new_and_create_dir(submission : &SubmissionData,lang : &LanguageIdentifier) -> std::io::Result<Self> {
         let storage_directory = format!("bin/{name}/{id}/{lang}",name=submission.subreddit,id=submission.id);
-        Self::new(storage_directory)
-    }
-
-    fn new(storage_directory: impl Into<PathBuf>) -> Self {
-        Self { 
-            storage_directory : storage_directory.into() , 
-            files : Default::default() 
-        }
+        std::fs::create_dir_all(&storage_directory)?;
+        Ok(
+            Self { 
+                storage_directory : storage_directory.into() , 
+                files : Default::default() 
+            }
+        )
     }
 }
 

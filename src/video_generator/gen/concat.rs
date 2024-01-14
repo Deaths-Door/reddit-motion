@@ -5,6 +5,7 @@ pub(super) fn concat_media_files(
     index : usize,
     current_position : &f64,
     ffmpeg : &FFmpeg,
+    mut temp_index_file : String,
     video_directory : &str,
     audio_directory : &str,
     png_directory : &str
@@ -13,13 +14,12 @@ pub(super) fn concat_media_files(
     // Later indefinitely add a png in the center of the created video 
     // return the output directory
 
-    // ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -ss 10 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
-    // + t to restrict max duration
+    // ffmpeg -stream_loop -1 -i video.mp4 -i audio.mp3 -c copy -shortest output.mp4
     let vid_duration = super::utils::get_duration(ffmpeg,video_directory)?;
 
-    let mut out_index_directory = format!("temp_{index}.mp4");
+    temp_index_file.push_str(&format!("/temp_{index}.mp4"));
 
-    if_path_exists!(not &out_index_directory,ffmpeg.ffmpeg_expect_failure(|cmd|{
+    if_path_exists!(not &temp_index_file,ffmpeg.ffmpeg_expect_failure(|cmd|{
         cmd.args([
             "-stream_loop", "-1",
             "-i" , video_directory,
@@ -27,20 +27,19 @@ pub(super) fn concat_media_files(
             "-ss" , &current_position.to_string(),
             "-t" , &vid_duration.to_string(),
             "-shortest" , 
-            "-map", "0:v:0" , 
-            "-map" , "1:a:0",
-            "-y" , &out_index_directory
+            "-c" , "copy",
+            &temp_index_file
         ]);
     })?);
 
-    // 0..=5 as its the len of temp_
-    out_index_directory.replace_range(0..=5,"");
+    // 0..=4 as its the len of temp_
+    let out_index_file = temp_index_file.replace("temp_","");
     
-    center_screenshot_in_mp4(ffmpeg, &out_index_directory, png_directory, &out_index_directory)?;
+    center_screenshot_in_mp4(ffmpeg, &temp_index_file, png_directory, &out_index_file)?;
 
-    let duration = super::utils::get_duration(ffmpeg, &out_index_directory)?;
+    let duration = super::utils::get_duration(ffmpeg, &out_index_file)?;
 
-    Ok((out_index_directory,duration))
+    Ok((out_index_file,duration))
 }
 
 

@@ -6,13 +6,13 @@ impl VideoGenerator {
         storage_directory.push_str("/video.mp4");
 
         if_path_exists!(not &storage_directory,{
+            let video_dir = &self.video_asset_directory;
+
             let video_dimesions = get_video_dimensions(
                 &self.ffmpeg,
-                &storage_directory
+                &video_dir
             )?;
-    
-            let video_dir = &self.video_asset_directory;
-    
+        
             match self.dimensions.width > video_dimesions.width || self.dimensions.height > video_dimesions.height {
                 true => { std::fs::copy(video_dir, &storage_directory)?; },
                 false => { crop_video(&self.ffmpeg, &self.dimensions, video_dir, &storage_directory)?; }

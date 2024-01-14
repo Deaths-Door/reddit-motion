@@ -50,6 +50,7 @@ impl VideoGenerator {
 
     pub(super) fn title_segment(
         &self,
+        bin_directory : &str,
         video_directory : &str,
     )  -> std::io::Result<(String,f64)> {
         let current_position = random_start_point(&self.ffmpeg,&video_directory)?;
@@ -60,6 +61,7 @@ impl VideoGenerator {
             0,
             &current_position,
             &self.ffmpeg,
+            bin_directory.to_owned(),
             &video_directory, 
             &audio_directory, 
             &png_directory

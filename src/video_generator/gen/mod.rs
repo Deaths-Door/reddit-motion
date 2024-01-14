@@ -16,7 +16,7 @@ impl VideoGenerator {
 
         let video_directory = self.crop_and_move(bin_directory.clone())?;
  
-        let (title_segment,title_duration) = self.title_segment(&video_directory)?;
+        let (title_segment,title_duration) = self.title_segment(&bin_directory,&video_directory)?;
         let mut current_duration = title_duration;
 
         // Skip 1 as we concat the title segment which is the first element 
@@ -33,6 +33,7 @@ impl VideoGenerator {
                 index,
                 &mut current_duration,
                 &self.ffmpeg,
+                bin_directory.clone(),
                 &video_directory, 
                 &audio_directory, 
                 &png_directory
