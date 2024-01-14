@@ -80,10 +80,9 @@ video = []
 audio = []
 
 # Dimensions of the output video
-dimensions = {
-    width = 640,
-    height = 360
-}
+[dimensions]
+width = 800
+height = 600
 
 # Text-to-speech service to use for generating the video narration
 tts = "Google"
