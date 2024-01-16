@@ -2,10 +2,10 @@
 use crate::{video_generator::{VideoGenerator, data::if_path_exists}, ffmpeg::FFmpeg, config::Dimensions};
 
 impl VideoGenerator {
-    pub(super) fn crop_and_move(&self,mut storage_directory : String) -> std::io::Result<String> {
-        storage_directory.push_str("/video.mp4");
+    pub(super) fn crop_and_move(&self,directory : &str) -> std::io::Result<String> {
+        let video_file = format!("{directory}/video.mp4");
 
-        if_path_exists!(not &storage_directory,{
+        if_path_exists!(not &video_file,{
             let video_dir = &self.video_asset_directory;
 
             let video_dimesions = get_video_dimensions(
@@ -14,12 +14,12 @@ impl VideoGenerator {
             )?;
         
             match self.dimensions.width > video_dimesions.width || self.dimensions.height > video_dimesions.height {
-                true => { std::fs::copy(video_dir, &storage_directory)?; },
-                false => { crop_video(&self.ffmpeg, &self.dimensions, video_dir, &storage_directory)?; }
+                true => { std::fs::copy(video_dir, &video_file)?; },
+                false => { crop_video(&self.ffmpeg, &self.dimensions, video_dir, &video_file)?; }
             }
         });
 
-        Ok(storage_directory)
+        Ok(video_file)
     }
 }
 

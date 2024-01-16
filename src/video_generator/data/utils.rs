@@ -100,7 +100,6 @@ impl VideoGenerationFiles {
         if_path_exists!(not &audio_path,args.config.tts.save_speech_to_file(&audio_path,text).await?);       
 
         let png_path = self.png_file(name);
-        // TODO : Find a way to pass &Path instead of cloning
         if_path_exists!(not &png_path,screenshot(png_path.clone(),text).await?);       
 
         self.push_files(audio_path,png_path);

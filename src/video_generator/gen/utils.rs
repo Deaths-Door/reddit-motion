@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::{fs::File, path::Path};
 
 use rand::Rng;
 
@@ -35,17 +35,21 @@ impl VideoGenerator {
         std::fs::remove_dir_all(&self.video_gen_files.storage_directory)
     }
     
-    pub(super) fn create_concat_file(mut concat_file : String,segment_path : &str) -> std::io::Result<File> {  
-        concat_file.push_str("/concat.txt");
+    pub(super) fn create_concat_file(directory : &str,segment_path : &str) -> std::io::Result<File> {  
+        let concat_file = format!("{directory}/concat.txt");
 
-        let mut file = File::create(concat_file)?;
+        let mut file = File::create(&concat_file)?;
         Self::write_segment(&mut file,segment_path)?;
+
         Ok(file)
     }
 
     pub(super) fn write_segment(file : &mut File,segment_path : &str) -> std::io::Result<()> {
         use std::io::Write;
-        writeln!(file,"file \"{segment_path}\"")
+        write!(file,"file ")?;
+        let name_bytes = Path::new(segment_path).file_name().unwrap().as_encoded_bytes();
+        file.write_all(name_bytes)?;
+        file.write_all("\n".as_bytes())
     }
 
     pub(super) fn title_segment(
@@ -61,7 +65,7 @@ impl VideoGenerator {
             0,
             &current_position,
             &self.ffmpeg,
-            bin_directory.to_owned(),
+            bin_directory,
             &video_directory, 
             &audio_directory, 
             &png_directory
@@ -81,16 +85,19 @@ impl VideoGenerator {
 
         std::fs::create_dir_all(&final_output_directory)?;
         
+        let final_output_file = format!("{final_output_directory}/video.mp4");
+
         add_background_music(
             &self.ffmpeg, 
             &self.audio_asset_directory,
             &temp_directory,
-            final_output_directory
+            &final_output_file
         )
     }
 }
 
 
+// TODO : MAKE IT SO THE LEN OF THE MP3 DOESNT INFLUCENT THE LEN OF THE VIDEO
 fn add_background_music(
     ffmpeg : &FFmpeg,
     mp3_file : &str,
@@ -111,7 +118,7 @@ fn add_background_music(
             "-i" , mp4_file,
             "-i" , mp3_file,
             "-c:v" , "copy",
-            "-filter-complex", 
+            "-filter_complex", 
             "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]",
             "-map" , "0:v",
             "-map" , "[a]",

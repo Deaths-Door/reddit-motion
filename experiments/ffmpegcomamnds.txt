@@ -99,7 +99,10 @@ ffmpeg -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0
 
 // works
 ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
 ffmpeg  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Downloads\ffmpeg-6.0-full_build\ffmpeg-6.0-full_build\bin\input.mp4" -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/197qd7b/eng/video.mp4" -i "bin/AskReddit/197qd7b\\t1_ki4548l.mp3" -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
 
 //works
 ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -ss 10 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
@@ -135,3 +138,27 @@ ffmpeg -i input.mp4 -c copy -map 0 -segment_time 00:20:00 -f segment output%03d.
 
 ffmpeg -i big_buck_bunny_480p_5mb.mp4 -acodec copy -f segment -segment_time 10 -vcodec copy -reset_timestamps 1 -map 0 output_time_%d.mp4
 ffmpeg -i "C:\Users\Aarav Aditya Shah\Desktop\out.mp4" -acodec copy -f segment -segment_time 10 -vcodec copy -reset_timestamps 1 -map 0 output_time_%d.mp4
+
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/195ydoi/eng/video.mp4" -i "bin/AskReddit/195ydoi\\title.mp3" -ss 8.761524509291409 -t 12.012 -shortest -map 0:v:0 -map 1:a:0 -y "bin/AskReddit/195ydoi/eng/temp_0.mp4"
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/197qd7b/eng/video.mp4" -i "bin/AskReddit/197qd7b\\title.mp3" -ss 8.761524509291409 -t 12.012 -shortest -map 0:v:0 -map 1:a:0 -y "bin/AskReddit/197qd7b/eng/test.mp4"
+
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/197qd7b/eng/video.mp4" -i "bin/AskReddit/197qd7b\\t1_ki4548l.mp3" -ss 8.761524509291409 -t 12.012 -shortest -map 0:v:0 -map 1:a:0 -y "bin/AskReddit/197qd7b/eng/test.mp4"
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/197qd7b/eng/video.mp4" -i "bin/AskReddit/197qd7b\\t1_ki4548l.mp3" -ss 8.761524509291409 -t 12.012 -map 0:v:0 -map 1:a:0 -y "bin/AskReddit/197qd7b/eng/test.mp4"
+
+
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/195ydoi/eng/video.mp4" -i "bin/AskReddit/195ydoi\\title.mp3" -ss 8 -t 12 -shortest -map 0:v:0 -map 1:a:0  "bin/AskReddit/195ydoi/eng/temp_0.mp4"
+
+
+// DONT DO THIS CRASHSED COMPUTER
+ffmpeg-6.0/bin/ffmpeg.exe -stream_loop -1 -i "bin/AskReddit/195ydoi/eng/video.mp4" -i "bin/AskReddit/195ydoi\\title.mp3" -ss 8 -shortest -map 0:v:0 -map 1:a:0  "bin/AskReddit/195ydoi/eng/temp_0.mp4"
+
+
+ffmpeg -f concat -safe 0 -i "bin/AskReddit/196zuio/eng/concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"
+
+
+"ffmpeg-6.0/bin/ffmpeg.exe" -f concat -safe 0 -i "C:\\Users\\Aarav Aditya Shah\\Documents\\GitHub\\project-codebases\\rust\\reddit-motion\\bin\\AskReddit\\196zuio\\eng\\concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"
+
+
+"ffmpeg-6.0/bin/ffmpeg.exe" -f concat  -i "C:\\Users\\Aarav Aditya Shah\\Documents\\GitHub\\project-codebases\\rust\\reddit-motion\\bin\\AskReddit\\196zuio\\eng\\concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"
+
+"ffmpeg-6.0/bin/ffmpeg.exe" -f concat  -i "bin\AskReddit\196zuio\eng\concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"

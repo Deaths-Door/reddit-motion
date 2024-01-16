@@ -1,3 +1,5 @@
+use std::fs;
+
 use crate::{ffmpeg::FFmpeg, video_generator::data::if_path_exists};
 
 /// Returns Created MP4 File || Path && Duration ||
@@ -5,7 +7,7 @@ pub(super) fn concat_media_files(
     index : usize,
     current_position : &f64,
     ffmpeg : &FFmpeg,
-    mut temp_index_file : String,
+    _temp_index_file : &str,
     video_directory : &str,
     audio_directory : &str,
     png_directory : &str
@@ -14,17 +16,16 @@ pub(super) fn concat_media_files(
     // Later indefinitely add a png in the center of the created video 
     // return the output directory
 
-    temp_index_file.push_str(&format!("/temp_{index}.mp4"));
+    let temp_index_file = format!("{_temp_index_file}/temp_{index}.mp4");
 
     let video_asset_duration = super::utils::get_duration(ffmpeg,video_directory)?;
     let audio_duration = super::utils::get_duration(ffmpeg, audio_directory)?;
-
 
     // TODO : REMOVE THIS , temp
     if_path_exists!(not &temp_index_file,{
         std::fs::copy(video_directory, &temp_index_file)?; 
     });
-
+    
     /*// So if video.len > audio.len then just extract that subvideo , as it results in an infinite loop
     if_path_exists!(not &temp_index_file,ffmpeg.ffmpeg_expect_failure(|cmd| {
         match video_asset_duration < audio_duration {
@@ -51,14 +52,14 @@ pub(super) fn concat_media_files(
     })?);
 
     todo!()*/
-   // let out_index_file = temp_index_file.replace("temp_","");
+    let out_index_file = temp_index_file.replace("temp_","");
     
-    //center_screenshot_in_mp4(ffmpeg, &temp_index_file, png_directory, &out_index_file)?;
+    center_screenshot_in_mp4(ffmpeg, &temp_index_file, png_directory, &out_index_file)?;
 
-    let duration = super::utils::get_duration(ffmpeg, &temp_index_file)?;
-    //let duration = super::utils::get_duration(ffmpeg, &out_index_file)?;
-    Ok((temp_index_file,video_asset_duration))
-    //Ok((out_index_file,video_asset_duration))
+//    let duration = super::utils::get_duration(ffmpeg, &temp_index_file)?;
+    let duration = super::utils::get_duration(ffmpeg, &out_index_file)?;
+    //Ok((temp_index_file,video_asset_duration))
+    Ok((out_index_file,video_asset_duration))
 }
 
 
@@ -95,8 +96,7 @@ pub(super) fn concat_for_mp4s(
     ffmpeg.ffmpeg_expect_failure(|cmd|{
         cmd.args([
             "-f" , "concat",
-            "-safe", "0",
-            "-i" , txt_path,
+            "-i" , &txt_path,
             "-c" , "copy",
             output_path
         ]);

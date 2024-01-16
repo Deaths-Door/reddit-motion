@@ -6,6 +6,7 @@ impl RedditUser {
     pub async fn login_and_set_theme(&self,browser : &Browser) -> chromiumoxide::Result<bool> {
         let page = browser.new_page("https://www.reddit.com/login").await?;
     
+        // TODO : UPDATE THIS THIS DOESNT WORK CORrECTLy
         // If visible it means we are already logged in , so return
         // extra time cuz if login then msg shown for like 5secs so we need to add more time to wait
         let (successful,extra_time) = match is_element_visible(&page,"h1.Title").await? {
