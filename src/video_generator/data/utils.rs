@@ -14,13 +14,13 @@ impl VideoGenerationFiles {
 
     pub(super) fn audio_file(&self,name : &str) -> PathBuf {
         let mut pathbuf = self.storage_directory.clone();
-        pathbuf.set_file_name(format!("{}.mp3",name));
+        pathbuf.push(format!("{}.mp3",name));
         pathbuf
     }
     
     pub(super) fn png_file(&self,name : &str) -> PathBuf {
         let mut pathbuf = self.storage_directory.clone();
-        pathbuf.set_file_name(format!("{}.png",name));
+        pathbuf.push(format!("{}.png",name));
         pathbuf
     }
 }

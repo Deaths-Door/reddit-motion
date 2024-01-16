@@ -189,8 +189,9 @@ pub fn create_callback() -> Callback {
             let s = lookup1(lang, "reddit.subreddit-checking", "name", name);
             let len = s.len();
             let horizontal_edges = format!("+{}+","-".repeat(len));
+            let padding=" ".repeat(horizontal_edges.len()-len);
 
-            println!("{horizontal_edges}\n| {} |\n{horizontal_edges}",s.bold());
+            println!("{horizontal_edges}\n| {padding}{}{padding} |\n{horizontal_edges}",s.bold());
         }, 
         |lang| {
             println!("{}",lookup(lang, "reddit.subreddit-finished").bright_green());    
