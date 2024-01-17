@@ -93,7 +93,6 @@ impl VideoGenerator {
             .enumerate();
 
         for (index,(audio_directory,png_directory)) in iter {
-
             let (segment_path,segment_duration) = concat::concat_media_files(
                 index+1,
                 &current_duration,

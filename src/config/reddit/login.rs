@@ -6,12 +6,13 @@ impl RedditUser {
     pub async fn login_and_set_theme(&self,browser : &Browser) -> chromiumoxide::Result<bool> {
         let page = browser.new_page("https://www.reddit.com/login").await?;
     
-        // TODO : UPDATE THIS THIS DOESNT WORK CORrECTLy
         // If visible it means we are already logged in , so return
         // extra time cuz if login then msg shown for like 5secs so we need to add more time to wait
-        let (successful,extra_time) = match is_element_visible(&page,"h1.Title").await? {
-            Some(_) => (true,10),
-            None => (self.inner(&page).await?,0),
+        let (successful,extra_time) = match self.try_to_login(&page).await {
+            Ok(result) => (result,0),
+            // Hence not error , in_visisble
+            Err(error) if matches!(error,CdpError::NotFound) => (true,10),
+            err @ _ => return err
         };
 
         // We are redirected from /login to well / reddit
@@ -27,9 +28,7 @@ impl RedditUser {
         Ok(successful)
     }
 
-    async fn inner(&self,page: &Page) -> chromiumoxide::Result<bool> {
-        println!("TRYING TO LOGIN");
-
+    async fn try_to_login(&self,page: &Page) -> chromiumoxide::Result<bool> {
         // enter username
         page.find_element(r#"[name="username"]"#)
             .await?
@@ -73,16 +72,4 @@ async fn element_visibility<T>(
         Err(error) if matches!(error,CdpError::NotFound) => on_not_visible(),
         Err(error) => Err(error)
     }
-}
-
-async fn is_element_visible(
-    page: &Page,
-    selector : impl Into<String>,
-) -> chromiumoxide::Result<Option<Element>> {
-    element_visibility(
-        page, 
-        selector, 
-        |element| Ok(Some(element)), 
-    || Ok(None)
-    ).await
 }
