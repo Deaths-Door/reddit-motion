@@ -5,7 +5,7 @@ use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use std::path::PathBuf;
 
-use crate::{ffmpeg::FFmpeg, config::{VideoCreationArguments, Dimensions}};
+use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration}};
 
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
@@ -17,11 +17,12 @@ pub struct VideoGenerationFiles {
     files : Vec<(String,String)>
 }
 
+// TODO : Figure out a way to use lifetimes to avoid cloning all the time
 pub struct VideoGenerator {
     video_gen_files : VideoGenerationFiles,
     ffmpeg : FFmpeg,
     dimensions: Dimensions,
-    video_length_limit : u64,
+    video_duration : VideoDuration,
     video_asset_directory : String,
     audio_asset_directory : String
 }
@@ -41,13 +42,14 @@ impl VideoGenerationFiles {
 }
 
 impl VideoGenerator {
-    pub fn new(video_gen_files: VideoGenerationFiles, args : &VideoCreationArguments<'_>,video_length_limit : u64) -> Self {
+    pub fn new(video_gen_files: VideoGenerationFiles, args : &VideoCreationArguments<'_>,video_duration : &VideoDuration) -> Self {
         let ffmpeg = args.ffmpeg.clone();
         let config = &args.config;
         let dimensions = config.dimensions.clone();    
         let video_asset_directory = config.assets.random_video_directory().to_owned();
         let audio_asset_directory = config.assets.random_audio_directory().to_owned();
+        let video_duration = (*video_duration).clone();
 
-        Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory , video_length_limit } 
+        Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory , video_duration } 
     }
 }

@@ -1,129 +1,72 @@
-use std::{fs::File, path::Path};
+use crate::{ffmpeg::FFmpeg, video_generator::VideoGenerator};
 
-use rand::Rng;
+use super::shared::SharedGeneratorLogic;
 
-use crate::{ffmpeg::FFmpeg, video_generator::{VideoGenerator, data::if_path_exists}};
-
-pub(super) fn random_start_point(ffmpeg : &FFmpeg,file_path : &str) -> std::io::Result<f64> {
-    let duration = get_duration(ffmpeg, file_path)?;
-    let value = rand::thread_rng().gen_range(0f64..duration);
-    Ok(value)
-}
-
-pub(super) fn get_duration(ffmpeg : &FFmpeg,file_path : &str) -> std::io::Result<f64> {
+pub(crate) fn get_duration_str<'a,T>(ffmpeg : &FFmpeg,file_path : &str,map : impl FnOnce(&str) -> std::io::Result<T>) -> std::io::Result<T> {
     // ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1 fifa.mp4
-    ffmpeg.ffprobe_expect_failure_map(|cmd|{
+    let output = ffmpeg.ffprobe_expect_failure(|cmd|{
         cmd.args([
             "-v" , "error",
             "-show_entries" , "format=duration",
             "-of" , "default=noprint_wrappers=1",
             "-i" , file_path,
         ]);
-    },|o| {
-        String::from_utf8(o.stdout)
+    })?;
+
+    map(
+        String::from_utf8(output.stdout)
             .unwrap()
             .strip_prefix("duration=")
             .unwrap()
             .trim_end()
-            .parse()
-            .unwrap()
-    })
+    )
 }
 
 impl VideoGenerator {
-    pub(super) fn cleanup(self) -> std::io::Result<()> {
-        std::fs::remove_dir_all(&self.video_gen_files.storage_directory)
-    }
-    
-    pub(super) fn create_concat_file(directory : &str,segment_path : &str) -> std::io::Result<File> {  
-        let concat_file = format!("{directory}/concat.txt");
-
-        let mut file = File::create(&concat_file)?;
-        Self::write_segment(&mut file,segment_path)?;
-
-        Ok(file)
-    }
-
-    pub(super) fn write_segment(file : &mut File,segment_path : &str) -> std::io::Result<()> {
-        use std::io::Write;
-        write!(file,"file ")?;
-        let name_bytes = Path::new(segment_path).file_name().unwrap().as_encoded_bytes();
-        file.write_all(name_bytes)?;
-        file.write_all("\n".as_bytes())
-    }
-
-    pub(super) fn title_segment(
+    pub(super) fn infinte_video_duration(
         &self,
         bin_directory : &str,
-        video_directory : &str,
-    )  -> std::io::Result<(String,f64)> {
-        let current_position = random_start_point(&self.ffmpeg,&video_directory)?;
-
-        let (audio_directory,png_directory) = self.video_gen_files.files.first().unwrap();
-
-        super::concat::concat_media_files(
-            0,
-            &current_position,
-            &self.ffmpeg,
-            bin_directory,
-            &video_directory, 
-            &audio_directory, 
-            &png_directory
-        )
-    }
-
-    pub(super) fn create_final_video(&self,
-        _temp_directory : &str,
-        final_output_directory : &str
+        output_directory : &str
     ) -> std::io::Result<()> {
-        let temp_directory= format!("{_temp_directory}/final_temp.mp4");
-        let concat_file= format!("{_temp_directory}/concat.txt");
+        let mut shared_generator = SharedGeneratorLogic::new(self,bin_directory)?;
 
-        if_path_exists!(not &temp_directory,{
-            super::concat::concat_for_mp4s(&self.ffmpeg, &concat_file, &temp_directory)?;
-        });
+        let iter= || self.video_gen_files.files.iter();
+        for (audio_file,_) in iter() {
+            shared_generator.append_audio(&audio_file)?;
 
-        std::fs::create_dir_all(&final_output_directory)?;
+            get_duration_str(
+                &self.ffmpeg, 
+                &audio_file,
+                |duration| shared_generator.append_image(duration.parse().unwrap())
+            )?;
+        }
+
+        let concated_audio = shared_generator.concat_audio_files(bin_directory)?;
         
-        let final_output_file = format!("{final_output_directory}/video.mp4");
+        super::utils::get_duration_str(
+            &self.ffmpeg,
+            &concated_audio,
+            |concated_audio_length| {
+                let background_audio = shared_generator.prepare_background_music(bin_directory,concated_audio_length)?;
+                let video_path = shared_generator.prepare_background_video(bin_directory,concated_audio_length,|cmd|{
+                    for (_,image_file) in iter() {
+                        cmd.args(["-i" , image_file]);
+                    }
+                })?;
 
-        add_background_music(
-            &self.ffmpeg, 
-            &self.audio_asset_directory,
-            &temp_directory,
-            &final_output_file
+                // TODO : Use this https://filmora.wondershare.com/video-editor/ffmpeg-merge-audio-and-video.html 
+                // to fix this :  Have to do this as can't find a way to successfully create video with audio in a single command
+                let audio_path = shared_generator.combine_background_and_concated_audio(bin_directory,&background_audio,&concated_audio)?;
+                let final_video = shared_generator.concat_video_with_audio(
+                    output_directory, 
+                    &video_path, 
+                    &audio_path
+                )?;
+
+                // TODO : CALL SOME external script eg to publish and split it for long videos
+
+                Ok(())
+            }
         )
     }
-}
-
-
-// TODO : MAKE IT SO THE LEN OF THE MP3 DOESNT INFLUCENT THE LEN OF THE VIDEO
-fn add_background_music(
-    ffmpeg : &FFmpeg,
-    mp3_file : &str,
-    mp4_file : &str,
-    output_directory : &str
-) -> std::io::Result<()> {
-    /*
-    ffmpeg 
-    -i "C:\Users\Aarav Aditya Shah\Downloads\input.mp4" 
-    -i "C:\Users\Aarav Aditya Shah\Music\Alesso - When I’m Gone (with Katy Perry).mp3" 
-    -c:v copy  
-    -filter_complex "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=1.5[1a];[0a][1a]amerge[a]" 
-    -map 0:v -map "[a]" 
-    -ac 2 
-    "output.mp4" */
-    ffmpeg.ffmpeg_expect_failure(|cmd|{
-        cmd.args([
-            "-i" , mp4_file,
-            "-i" , mp3_file,
-            "-c:v" , "copy",
-            "-filter_complex", 
-            "[0:a]aformat=fltp:44100:stereo,apad[0a];[1]aformat=fltp:44100:stereo,volume=0.6[1a];[0a][1a]amerge[a]",
-            "-map" , "0:v",
-            "-map" , "[a]",
-            "-ac" , "2",
-            output_directory
-        ]);
-    })
 }

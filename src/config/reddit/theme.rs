@@ -1,6 +1,6 @@
 use chromiumoxide::Page;
 
-use super::{RedditUser, wait_for};
+use super::RedditUser;
 
 impl RedditUser {
     pub(super) async fn set_theme(&self,page : &Page) -> chromiumoxide::Result<()> {
@@ -11,10 +11,6 @@ impl RedditUser {
             .await?
             .click()
             .await?;
- 
-        //loop{}
-        // takes some time to 'appear' hence wait for like 2secs (just to be safe)
-     //   wait_for(10).await;
 
         let _elements =  page.find_elements("button._2e2g485kpErHhJQUiyvvC2")
             .await?;
@@ -35,8 +31,6 @@ impl RedditUser {
         if !(self.use_dark_mode && is_dark_mode) {
             theme_checkbox.click().await?;  
         }
-
-        wait_for(10).await;
 
         Ok(())
     }

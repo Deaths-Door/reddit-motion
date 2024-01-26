@@ -7,6 +7,7 @@ mod translate;
 mod callback;
 mod args;
 mod error;
+mod duration;
 
 pub use assets::*;
 pub use dimensions::*;
@@ -17,6 +18,7 @@ pub use translate::*;
 pub use callback::*;
 pub use args::*;
 pub use error::*;
+pub use duration::*;
 
 use serde::{Deserialize,Serialize};
 use serde_with::{serde_as,DisplayFromStr};

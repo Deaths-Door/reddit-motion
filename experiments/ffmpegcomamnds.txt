@@ -162,3 +162,59 @@ ffmpeg -f concat -safe 0 -i "bin/AskReddit/196zuio/eng/concat.txt" -c copy "bin/
 "ffmpeg-6.0/bin/ffmpeg.exe" -f concat  -i "C:\\Users\\Aarav Aditya Shah\\Documents\\GitHub\\project-codebases\\rust\\reddit-motion\\bin\\AskReddit\\196zuio\\eng\\concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"
 
 "ffmpeg-6.0/bin/ffmpeg.exe" -f concat  -i "bin\AskReddit\196zuio\eng\concat.txt" -c copy "bin/AskReddit/196zuio/eng/final_temp.mp4"
+
+
+======================================
+// combing audio and video
+ffmpeg -stream_loop -1 -i 20s.ts -i 120s.mp3 -map 0:v:0 -map 1:a:0 -shortest -c copy output.mp4
+
+ffmpeg-6.0\bin\ffmpeg.exe -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\video.mp4" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki4548l.mp3" -map 0:v:0 -map 1:a:0 -shortest -c copy output.mp4
+
+
+ffmpeg-6.0\bin\ffmpeg.exe -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\final_temp.mp4" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki4548l.mp3" -map 0:v:0 -map 1:a:0 -shortest -c copy output.mp4
+
+
+// putting pngs at points in video 
+ffmpeg -i video -i image1 -i image2 -i image3
+ -filter_complex
+    "[0][1]overlay=x=X:y=Y:enable='between(t,23,27)'[v1];
+     [v1][2]overlay=x=X:y=Y:enable='between(t,44,61)'[v2];
+     [v2][3]overlay=x=X:y=Y:enable='gt(t,112)'[v3]"
+-map "[v3]" -map 0:a  out.mp4
+
+
+ffmpeg-6.0\bin\ffmpeg.exe -i "C:\Users\Aarav Aditya Shah\Desktop\out.mp4" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki3a4j8.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki4548l.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\title.png" -filter_complex "[0][1]overlay=x=X:y=Y:enable='between(t,23,27)'[v1];[v1][2]overlay=x=X:y=Y:enable='between(t,44,61)'[v2];[v2][3]overlay=x=X:y=Y:enable='gt(t,112)'[v3]" -map "[v3]" -map 0:a  out.mp4
+
+
+
+// WORKS
+ffmpeg-6.0\bin\ffmpeg.exe -i "C:\Users\Aarav Aditya Shah\Desktop\out.mp4" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki3a4j8.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki4548l.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\title.png" -filter_complex "[0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,23,27)'[v1];[v1][2]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,44,61)'[v2];[v2][3]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='gt(t,112)'[v3]" -map "[v3]" -map 0:a  out.mp4
+
+
+ffmpeg-6.0\bin\ffmpeg.exe -i "C:\Users\Aarav Aditya Shah\Desktop\out.mp4" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki3a4j8.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\t1_ki4548l.png" -i "C:\Users\Aarav Aditya Shah\Documents\GitHub\project-codebases\rust\reddit-motion\bin\AskReddit\197qd7b\eng\title.png" -filter_complex "[0][1]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,23,27)'[1];[1][2]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,44,61)'[2];[2][3]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='gt(t,112)'[3]" -map "[3]" -map 0:a  out.mp4
+
+
+
+======
+
+ffmpeg -i input.mp4 -filter_complex "[0:v]loop=loop_duration=30:loop_start=10[v]" output.mp4
+
+ffmpeg-6.0\bin\ffmpeg.exe -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -filter_complex "[0:v]loop=loop_duration=60:loop_start=5[v]" output.mp4
+
+
+ffmpeg -i input.mp4 -t {maxlen}-filter_complex "[0:v]loop=loop_start=10[v]" output.mp4
+
+ffmpeg-6.0\bin\ffmpeg.exe -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -s 10 -t 60 -filter_complex "[0:v]loop=loop_start=5[v]" output.mp4
+
+
+
+ffmpeg  -stream_loop -1 -i input.mp4 -i input.mp3 -ss 10 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
+ffmpeg-6.0\bin\ffmpeg.exe  -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Downloads\censorbeep.mp3" -ss 5 -t 60 -shortest -map 0:v:0 -map 1:a:0 -y out.mp4
+
+
+// WORKS -> Extend with to duration -> no audio output
+ffmpeg-6.0\bin\ffmpeg.exe -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -i "C:\Users\Aarav Aditya Shah\Downloads\censorbeep.mp3" -ss 5 -t 60 -map 0:v:0 -map 1:a:0 -y out.mp4
+
+// WoRKS -> Extend to duration  -> no audio needed
+ffmpeg-6.0\bin\ffmpeg.exe -stream_loop -1 -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" -ss 5 -t 60 -map 0:v:0 -y out.mp4

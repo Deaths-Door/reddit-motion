@@ -82,6 +82,7 @@ impl VideoGenerationFiles {
         // has comment with id of kgljxfg return None for body
         if comment.body.is_none()  {
             println!("comment_body={:?}",comment);
+            // TODO : Return Error so skipped count is increased??
             return Ok(())
         }
 

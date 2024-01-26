@@ -52,30 +52,23 @@ impl FFmpeg {
         &self,
         builder : impl FnOnce(&mut Command) -> (),
     ) -> std::io::Result<()> { 
-        self.expect_failure_map(self.ffmpeg_command(),builder,|_|())
+        let o = self.expect_failure(self.ffmpeg_command(),builder)?;
+        println!("{}",String::from_utf8(o.stdout).unwrap());
+        Ok(())
     }
 
-    pub fn ffprobe_expect_failure<T>(
+    pub fn ffprobe_expect_failure(
         &self,
         builder : impl FnOnce(&mut Command) -> (),
-    ) -> std::io::Result<()> {
-        self.ffprobe_expect_failure_map(builder, |_| ())
+    ) -> std::io::Result<Output> {
+        self.expect_failure(self.ffprobe_command(),builder)
     }
 
-    pub fn ffprobe_expect_failure_map<T>(
-        &self,
-        builder : impl FnOnce(&mut Command) -> (),
-        map_output : impl FnOnce(Output) -> T
-    ) -> std::io::Result<T> { 
-        self.expect_failure_map(self.ffprobe_command(),builder,map_output)
-    }
-
-    fn expect_failure_map<T>(
+    fn expect_failure(
         &self,
         mut command : Command,
         builder : impl FnOnce(&mut Command) -> (),
-        map_output : impl FnOnce(Output) -> T
-    ) -> std::io::Result<T> {
+    ) -> std::io::Result<Output> {
         builder(&mut command);
         let output =  command.output()?;
         let status = output.status.success();
@@ -89,7 +82,7 @@ impl FFmpeg {
             ))
         };
 
-        Ok(map_output(output))
+        Ok(output)
     }
 }
 
