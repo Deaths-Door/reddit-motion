@@ -10,9 +10,9 @@ use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDu
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
     // TODO : MAYBE USE A StrIng intead
-    // Gen
     pub(in crate::video_generator) storage_directory : PathBuf,
 
+    // TODO : Create new struct for it??
     // audio + png dirs
     files : Vec<(String,String)>
 }

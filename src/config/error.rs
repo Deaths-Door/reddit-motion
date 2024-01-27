@@ -7,7 +7,7 @@ pub enum VideoCreationError {
 
     #[error(transparent)]
     File(#[from] std::io::Error),
-    
+
     #[error(transparent)]
     TextToSpeech(#[from] super::TextToSpeechError),
 

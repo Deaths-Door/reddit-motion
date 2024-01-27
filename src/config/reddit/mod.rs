@@ -4,6 +4,7 @@ mod subreddit;
 mod utils;
 
 use futures::{stream::FuturesUnordered, StreamExt};
+use tokio::pin;
 pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};
@@ -47,7 +48,7 @@ impl RedditConfig {
 
             args.call_on_end_subreddit();
         }
-
+        
         while let Some(task_result) = tasks.next().await {
             args.call_on_video_finished(task_result);
         }

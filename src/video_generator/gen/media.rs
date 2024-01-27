@@ -103,12 +103,14 @@ impl SharedGeneratorLogic<'_> {
         })
     }
 
-    fn extend_media_to_duration(&self,
+    fn extend_media_to_duration(
+        &self,
         input_file : &str,
         output_file: &str,
         start_duration : &str,
         end_duration : &str,
         is_audio : bool,
+        // TODO : remove this??
         filter_complex : Option<&str>
     ) -> std::io::Result<()> {
         // TODO : ADD THIS BACK

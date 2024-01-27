@@ -1,9 +1,10 @@
-use std::{fs::File, io::Write, ops::Deref, path::Path};
+use std::{fs::File, io::Write, ops::Deref, path::Path, process::Command};
 
 use crate::video_generator::VideoGenerator;
 
 pub struct SharedGeneratorLogic<'a> {
-    video_generator : &'a VideoGenerator,
+    // TODO : REMOVE THIS causes errors
+    pub(super) video_generator : &'a VideoGenerator,
 
     audio_concat_file : File,
     pub(super) audio_concat_file_path : String,
@@ -20,7 +21,7 @@ pub struct SharedGeneratorLogic<'a> {
     pub(super) image_index : u16,
 
     /// The start_position of the image
-    image_start_position : f64
+    pub(super) image_start_position : f64
 }
 
 impl Deref for SharedGeneratorLogic<'_> {
@@ -56,18 +57,29 @@ impl SharedGeneratorLogic<'_> {
 
         let name_bytes = Path::new(audio_file).file_name().unwrap().as_encoded_bytes();
         self.audio_concat_file.write_all(name_bytes)?;
-        self.audio_concat_file.write_all("\n".as_bytes())?;
+        self.audio_concat_file.write_all(b"\n")?;
         Ok(())
     }
 
-    pub fn append_image(
-        &mut self,
-        offset_by : f64,
-    ) -> std::io::Result<()> {
+    pub fn append_audio_inpoint(&mut self,inpoint : &f64) -> std::io::Result<()> {        
+        self.audio_concat_file.write_all(b"inpoint ")?;
+        self.audio_concat_file.write_all(inpoint.to_string().as_bytes())
+    }
+
+    pub fn append_audio_outpoint(&mut self,outpoint : &f64) -> std::io::Result<()> {        
+        self.audio_concat_file.write_all(b"outpoint ")?;
+        self.audio_concat_file.write_all(outpoint.to_string().as_bytes())
+    }
+
+    pub fn append_audio_point(&mut self,inpoint : &f64,outpoint : &f64) -> std::io::Result<()> {        
+        self.append_audio_inpoint(inpoint)?;
+        self.append_audio_outpoint(outpoint)
+    }
+
+    fn shared_append_image<'a>(&mut self,enable : impl FnOnce() -> &'a str) -> std::io::Result<()> {
         let image_index = &mut self.image_index;
         let next = *image_index + 1;
-        println!("image_index={image_index} next={next}");
-        // TODO : UPDATE THIS
+
         let start_position = &mut self.image_start_position;
 
         // for this part [v1][2]
@@ -77,16 +89,66 @@ impl SharedGeneratorLogic<'_> {
             false => "v",
         };
 
-        let end = *start_position + offset_by;
+        let enable_filter = enable();
 
         //[v1][2]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,44,61)'[v2];
         self.image_filter_complex.push_str(
-            &format!("[{prefix}{image_index}][{next}]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,{start_position},{end})'[v{next}];")
+            &format!("[{prefix}{image_index}][{next}]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='{enable_filter}'[v{next}];")
         );
 
         *image_index = next;
-        *start_position = end;
 
         Ok(())
+    }
+    /// Should be called after [Self::append_audio_point] , [Self::append_audio_outpoint] , [Self::append_audio_inpoint] to ensure expected behaviour
+    pub fn append_image(
+        &mut self,
+        offset_by : f64,
+    ) -> std::io::Result<()> {
+        let end = self.image_start_position + offset_by;
+
+        self.shared_append_image(||{
+            let start_position = &self.image_start_position;
+            &format!("between(t,{start_position},{end})")
+        })?;
+
+        self.image_start_position = end;
+        Ok(())
+    }
+
+    /// **Note** : This method does not set [Self::image_start_position] to the end
+    pub fn append_image_till_end(&mut self) -> std::io::Result<()> {
+        self.shared_append_image(||{
+            let start_position = &self.image_start_position;
+            &format!("gt(t,{start_position}")
+        })
+    }
+
+    /// Returns Generated Video Path
+    pub fn finalize_video(
+        &self,
+        bin_directory : &str,
+        output_directory : &str,
+        image_inputs : impl FnOnce(&mut Command),
+    ) -> std::io::Result<String> {
+        let concated_audio = self.concat_audio_files(bin_directory)?;
+
+        super::utils::get_duration_str(
+            &self.video_generator.ffmpeg,
+            &concated_audio,
+            |concated_audio_length| {
+                let background_audio = self.prepare_background_music(bin_directory,concated_audio_length)?;
+                let video_path = self.prepare_background_video(bin_directory,concated_audio_length,image_inputs)?;
+
+                // TODO : Use this https://filmora.wondershare.com/video-editor/ffmpeg-merge-audio-and-video.html 
+                // to fix this :  Have to do this as can't find a way to successfully create video with audio in a single command
+                let audio_path = self.combine_background_and_concated_audio(bin_directory,&background_audio,&concated_audio)?;
+                self.concat_video_with_audio(
+                    output_directory, 
+                    &video_path, 
+                    &audio_path
+                )
+            }
+        )
     }
 }
