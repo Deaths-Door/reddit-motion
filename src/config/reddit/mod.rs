@@ -4,7 +4,6 @@ mod subreddit;
 mod utils;
 
 use futures::{stream::FuturesUnordered, StreamExt};
-use tokio::pin;
 pub(in crate::config::reddit) use utils::*;
 
 use serde::{Deserialize,Serialize};

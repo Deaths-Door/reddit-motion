@@ -4,7 +4,7 @@ use chromiumoxide::Browser;
 use roux::submission::SubmissionData;
 use whatlang::Detector;
 use crate::ffmpeg::FFmpeg;
-use super::{Config, Callback, VideoCreationError};
+use super::{Config, Callback};
 
 pub struct VideoCreationArguments<'a> {
     pub config : Config,

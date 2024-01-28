@@ -1,37 +1,34 @@
-use std::ops::Deref;
-
 use crate::video_generator::VideoGenerator;
 
-use super::{shared::SharedGeneratorLogic, utils::get_duration_str};
+use super::{shared::SharedGeneratorLogic, utils::get_duration};
 
-pub struct InfiniteVideoLength<'a> {
-    shared_generator : SharedGeneratorLogic<'a>
+pub struct InfiniteVideoLength {
+    shared_generator : SharedGeneratorLogic,
 }
 
-impl Deref for InfiniteVideoLength<'_> {
-    type Target = VideoGenerator;
-    fn deref(&self) -> &Self::Target {
-        self.shared_generator.video_generator
-    }
-}
+impl InfiniteVideoLength {
+    pub const fn new(shared_generator: SharedGeneratorLogic) -> Self { Self { shared_generator } }
 
-impl<'a> InfiniteVideoLength<'a> {
-    pub const fn new(shared_generator: SharedGeneratorLogic<'a>) -> Self { Self { shared_generator } }
-
-    pub fn exceute(mut self,bin_directory : &str,output_directory : &str) -> std::io::Result<String> {
-        let iter= || self.video_gen_files.files.iter();
+    pub fn exceute(
+        mut self,
+        video_generator : &VideoGenerator,
+        bin_directory : &str,
+        output_directory : &str
+    ) -> std::io::Result<String> {
+        let iter= || video_generator.video_gen_files.files.iter();
 
         for (audio_file,_) in iter() {
             self.shared_generator.append_audio(&audio_file)?;
 
-            get_duration_str(
-                &self.ffmpeg, 
-                &audio_file,
-                |duration| self.shared_generator.append_image(duration.parse().unwrap())
-            )?;
+            let duration = get_duration(&video_generator.ffmpeg,&audio_file)?;
+            self.shared_generator.append_image(duration)
         }
 
-        self.shared_generator.finalize_video(bin_directory, output_directory, |cmd|{
+        // So it does not clash with other generated files 
+        let bin_directory = format!("{bin_directory}/infinite");
+        std::fs::create_dir_all(&bin_directory)?;
+
+        self.shared_generator.finalize_video(&video_generator,&bin_directory, output_directory, |cmd|{
             for (_,image_file) in iter() {
                 cmd.args(["-i" , image_file]);
             }

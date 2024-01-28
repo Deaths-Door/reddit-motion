@@ -5,7 +5,7 @@ mod shared;
 mod infinite;
 mod limited;
 
-use crate::config::{VideoCreationError, VideoDuration};
+use crate::config::VideoDuration;
 
 use self::{infinite::InfiniteVideoLength, limited::LimitedVideoLength, shared::SharedGeneratorLogic};
 
@@ -20,20 +20,22 @@ impl VideoGenerator {
         let output_directory = bin_directory.replace("bin", "generated_videos");
         std::fs::create_dir_all(&output_directory)?;
 
-        let create_shared_generator = || SharedGeneratorLogic::new(&self, &bin_directory);
+        // TODO : ENALBE THIS SHIT AGAIN
+        /*if let VideoDuration::Infinite = self.video_duration {
+            let shared_generator = SharedGeneratorLogic::new(&bin_directory)?;
 
-        if let VideoDuration::Infinite = self.video_duration {
             // TODO : CALL EXTERNAL SCRIPT
-            InfiniteVideoLength::new(create_shared_generator()?)
-                .exceute(&bin_directory,&output_directory)?;
-        }
+            InfiniteVideoLength::new(shared_generator)
+                .exceute(&self,&bin_directory,&output_directory)?;
+        }*/
 
-        if let VideoDuration::Limited { limit } | VideoDuration::Both { limit } = self.video_duration {
-            let shared_generator =create_shared_generator()?;
+       // if let VideoDuration::Limited { limit } | VideoDuration::Both { limit } = self.video_duration {
+            let shared_generator = SharedGeneratorLogic::new(&bin_directory)?;
+            let limit = 20f64;
             // TODO : CALL EXTERNAL SCRIPT
-            LimitedVideoLength::new(shared_generator,&shared_generator.video_generator,limit)
-                .exceute(&bin_directory, &output_directory)?;
-        }
+            LimitedVideoLength::new(shared_generator,limit)
+                .exceute(&self,&bin_directory, &output_directory)?;
+     //   }
 
         // TODO : CALL SOME external script eg to publish and split it for long videos
         // TODO : ALLOW CUSTOMIZABLE VOICE IN BACKGROUND MUSIC + MAIN AUDIO

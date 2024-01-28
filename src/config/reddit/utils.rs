@@ -3,7 +3,7 @@ use roux::{Subreddit, util::FeedOption, submission::SubmissionData};
 use unic_langid::LanguageIdentifier;
 use whatlang::{Detector, Lang};
 
-use crate::{config::{VideoCreationArguments, VideoCreationError}, db::Database};
+use crate::{config::VideoCreationError, db::Database};
 
 pub(super) async fn wait_for(secs : u64) {
     tokio::time::sleep(std::time::Duration::from_secs(secs)).await;
