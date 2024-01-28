@@ -20,26 +20,27 @@ impl VideoGenerator {
         let output_directory = bin_directory.replace("bin", "generated_videos");
         std::fs::create_dir_all(&output_directory)?;
 
-        // TODO : ENALBE THIS SHIT AGAIN
-        /*if let VideoDuration::Infinite = self.video_duration {
+        if let VideoDuration::Infinite = self.video_duration {
             let shared_generator = SharedGeneratorLogic::new(&bin_directory)?;
 
             // TODO : CALL EXTERNAL SCRIPT
             InfiniteVideoLength::new(shared_generator)
                 .exceute(&self,&bin_directory,&output_directory)?;
-        }*/
+        }
 
-       // if let VideoDuration::Limited { limit } | VideoDuration::Both { limit } = self.video_duration {
+        if let VideoDuration::Limited { limit } | VideoDuration::Both { limit } = self.video_duration {
             let shared_generator = SharedGeneratorLogic::new(&bin_directory)?;
-            let limit = 20f64;
+            
             // TODO : CALL EXTERNAL SCRIPT
             LimitedVideoLength::new(shared_generator,limit)
                 .exceute(&self,&bin_directory, &output_directory)?;
-     //   }
+        }
 
         // TODO : CALL SOME external script eg to publish and split it for long videos
         // TODO : ALLOW CUSTOMIZABLE VOICE IN BACKGROUND MUSIC + MAIN AUDIO
-        // TODO : ADD CLEANUP
+        
+        self.cleanup(bin_directory)?;
+
         Ok(output_directory)
     }
 }
