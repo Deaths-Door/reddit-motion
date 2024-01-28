@@ -3,7 +3,7 @@ mod gen;
 
 use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
-use std::path::PathBuf;
+use std::{ops::Deref, path::PathBuf};
 
 use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration}};
 
@@ -41,13 +41,12 @@ impl VideoGenerationFiles {
 }
 
 impl VideoGenerator {
-    pub fn new(video_gen_files: VideoGenerationFiles, args : &VideoCreationArguments<'_>,video_duration : &VideoDuration) -> Self {
-        let ffmpeg = args.ffmpeg.clone();
-        let config = &args.config;
+    pub fn new(video_gen_files: VideoGenerationFiles, arguments : &VideoCreationArguments<'_>,video_duration : VideoDuration) -> Self {
+        let ffmpeg = arguments.ffmpeg.clone();
+        let config = &arguments.config;
         let dimensions = config.dimensions.clone();    
         let video_asset_directory = config.assets.random_video_directory().to_owned();
         let audio_asset_directory = config.assets.random_audio_directory().to_owned();
-        let video_duration = (*video_duration).clone();
 
         Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory , video_duration } 
     }

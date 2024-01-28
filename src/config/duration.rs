@@ -1,6 +1,6 @@
 use serde::{Deserialize,Serialize};
 
-#[derive(Default,Clone,Deserialize,Serialize)]
+#[derive(Default,Clone,Copy,Deserialize,Serialize)]
 pub enum VideoDuration {
     #[default]
     Infinite,

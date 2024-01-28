@@ -68,6 +68,7 @@ impl VideoGenerationFiles {
 }
 
 impl VideoGenerationFiles {
+    /// Return `Result<(),()>` that if none then return error 
     async fn exceute_comment<F>(
         &mut self,
         comment : CommentData,
@@ -76,14 +77,12 @@ impl VideoGenerationFiles {
         args : &VideoCreationArguments<'_>,
         map_text : impl FnOnce(&str) -> &str,
         map_element : impl FnOnce(Element,&str) -> F,
-    ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
+    ) -> Result<(),()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
         // For some fucking reason the comment body can be none by the API when its clearly there
         // eg https://reddit.com/r/AskReddit/comments/1903bgc/what_are_some_unsaid_first_date_rules_everyone
         // has comment with id of kgljxfg return None for body
         if comment.body.is_none()  {
-            println!("comment_body={:?}",comment);
-            // TODO : Return Error so skipped count is increased??
-            return Ok(())
+            return Err(())
         }
 
         // Basically the name is t1_ + the 'id' for the comment
@@ -102,7 +101,7 @@ impl VideoGenerationFiles {
                 // Done lazly thats why here clone
                 comment_element_and_screenshot(page, comment_id.to_owned(), &file_name, |e|map_element(e,text)).await
             }
-        ).await
+        ).await.map_err(|_| ())
     }
 }
 
