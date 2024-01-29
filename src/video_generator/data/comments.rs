@@ -120,6 +120,13 @@ impl VideoGenerationFiles {
      //   where Fe: std::future::Future<Output = chromiumoxide::Result<Element>> + 'outer,
     //        Ft: std::future::Future<Output = TranslatorResult> 
     {
+        // For some fucking reason the comment body can be none by the API when its clearly there
+        // eg https://reddit.com/r/AskReddit/comments/1903bgc/what_are_some_unsaid_first_date_rules_everyone
+        // has comment with id of kgljxfg return None for body
+        if comment.body.is_none()  {
+            return Err(())
+        }
+
         // Basically the name is t1_ + the 'id' for the comment
         let comment_id : &str = &comment.name.unwrap();
         let comment_body = comment.body.unwrap();
