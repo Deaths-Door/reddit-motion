@@ -38,7 +38,6 @@ impl VideoGenerator {
 
         // TODO : CALL SOME external script eg to publish and split it for long videos
         // TODO : ALLOW CUSTOMIZABLE VOICE IN BACKGROUND MUSIC + MAIN AUDIO
-        
         self.cleanup(bin_directory)?;
 
         Ok(output_directory)

@@ -3,7 +3,7 @@ mod gen;
 
 use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
-use std::{ops::Deref, path::PathBuf};
+use std::path::PathBuf;
 
 use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration}};
 

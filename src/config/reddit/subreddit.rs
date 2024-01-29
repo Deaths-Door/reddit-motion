@@ -78,13 +78,17 @@ impl SubredditConfig {
             db.add_proccessed_thread(&submission, detected_lang);
         }
 
+        let translater_client = args.config.translate.translator_client();
+        
         for lang in extra_langs {
             let mut video_generation_files = VideoGenerationFiles::new_and_create_dir(&submission,&lang)?;
 
             video_generation_files.exceute_data_gathering_with_translation(
-                lang,
+                subreddit,
                 &submission,
                 &story_mode,
+                lang.clone(),
+                &translater_client,
                 &page,
                 &args
             ).await?;

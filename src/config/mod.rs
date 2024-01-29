@@ -54,7 +54,7 @@ impl Config {
         let config = toml::from_str::<Config>(&toml)?;
 
         config.tts.setup();
-
+        
         Ok(config)
     }
 

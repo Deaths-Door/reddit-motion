@@ -76,6 +76,9 @@ elevenlabs_rs = "0.2.0"
 # Random selection
 rand = "0.8.5"
 
+# For translation 
+deepl = "0.4.5"
+
 # FFmpeg download
 [target.'cfg(target_os = "windows")'.dependencies]
 reqwest = "0.11.23"

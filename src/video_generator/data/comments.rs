@@ -1,9 +1,10 @@
 use std::path::Path;
 
 use chromiumoxide::{Page, Element};
+use deepl::Lang;
 use roux::{submission::SubmissionData, Subreddit, comment::CommentData, response::BasicThing};
 
-use crate::config::{VideoCreationArguments, VideoCreationError};
+use crate::config::{Translator, TranslatorResult, VideoCreationArguments, VideoCreationError};
 
 use super::{VideoGenerationFiles, utils::element_and_screenshot};
 
@@ -16,23 +17,59 @@ impl VideoGenerationFiles {
         page : &Page,
         args : &VideoCreationArguments<'_>,
     ) -> Result<(),VideoCreationError> {
-        self.__exceute_comments(max_comments, subreddit, submission, page, args, |text| text,|e,_| async move {
-            Ok(e)
-        }).await
+        self.exceute_comments(
+            max_comments, 
+            subreddit, 
+            submission,
+            page, 
+            args, 
+            |text| async move { Ok(text) },
+            |e,_| async move { Ok(e) }).await
     }
 
-    async fn __exceute_comments<F>(
+    pub(super) async fn exceute_comments_with_translation(
+        &mut self,
+        max_comments : u32,
+        subreddit : &Subreddit,
+        submission : &SubmissionData,
+        target_lang : Lang,
+        translater_client : &Translator,
+        page : &Page,
+        args : &VideoCreationArguments<'_>,
+    ) -> Result<(),VideoCreationError> {    
+        self.exceute_comments(
+            max_comments, 
+            subreddit, 
+            submission,
+            page, 
+            args, 
+            |text| async move {
+                let text = text.as_str();
+                translater_client.translate(text, target_lang).await
+            },
+            |element,text| async move { 
+                let multiple_p = element.find_elements("div > div > div > p").await?;
+                super::utils::update_p_with_translated_text(text,&multiple_p).await?;
+                Ok(element) 
+            }
+        ).await
+    }
+
+    const MAX_RETRIES : u8 = 3;
+
+    async fn exceute_comments<Fe,Ft>(
         &mut self,
         max_comments : u32,
         subreddit : &Subreddit,
         submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl FnOnce(&str) -> &str + Copy,
-        map_element : impl FnOnce(Element,&str) -> F + Copy
-    ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-        const MAX_RETRIES : u32 = 3;
-
+        map_text : impl FnOnce(String) -> Ft + Clone,
+        map_element : impl FnOnce(Element,&str) -> Fe + Copy
+    ) -> Result<(),VideoCreationError> 
+        where Fe: std::future::Future<Output = chromiumoxide::Result<Element>>,
+            Ft: std::future::Future<Output = TranslatorResult>  
+    {
         let mut retries = 0;
         let mut skipped = 0;
 
@@ -48,7 +85,7 @@ impl VideoGenerationFiles {
             }
 
             for comment in comments {
-                if let Err(_) = self.exceute_comment(comment.data, submission, page, args, map_text, map_element).await {
+                if let Err(_) = self.exceute_comment_impl(comment.data, page, args, map_text.clone(), map_element).await {
                     skipped += 1;
                 }
             }
@@ -59,7 +96,7 @@ impl VideoGenerationFiles {
             }
 
             retries += 1;
-            if retries > MAX_RETRIES {
+            if retries > Self::MAX_RETRIES {
                 // Just leave it with the number of comments processed insteaed of err
                 break Ok(())
             }
@@ -69,15 +106,17 @@ impl VideoGenerationFiles {
 
 impl VideoGenerationFiles {
     /// Return `Result<(),()>` that if none then return error 
-    async fn exceute_comment<F>(
+    async fn exceute_comment_impl<Fe,Ft>(
         &mut self,
         comment : CommentData,
-        submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl FnOnce(&str) -> &str,
-        map_element : impl FnOnce(Element,&str) -> F,
-    ) -> Result<(),()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
+        map_text : impl FnOnce(String) -> Ft,
+        map_element : impl FnOnce(Element,&str) -> Fe,
+    ) -> Result<(),()> 
+        where Fe: std::future::Future<Output = chromiumoxide::Result<Element>>,
+            Ft: std::future::Future<Output = TranslatorResult> 
+    {
         // For some fucking reason the comment body can be none by the API when its clearly there
         // eg https://reddit.com/r/AskReddit/comments/1903bgc/what_are_some_unsaid_first_date_rules_everyone
         // has comment with id of kgljxfg return None for body
@@ -87,21 +126,20 @@ impl VideoGenerationFiles {
 
         // Basically the name is t1_ + the 'id' for the comment
         let comment_id : &str = &comment.name.unwrap();
-
-        // No reason to see why not
         let comment_body = comment.body.unwrap();
+        let text = map_text(comment_body).await.map_err(|_| ())?;
+        let text = text.as_str();
 
         self.exceute_on_thread(
-            submission, 
             args, 
-            comment_id, 
-            &comment_body,
-            map_text,
-            |file_name,text| async move {
+            &comment_id, 
+            text, 
+            |file_name| async move {
                 // Done lazly thats why here clone
                 comment_element_and_screenshot(page, comment_id.to_owned(), &file_name, |e|map_element(e,text)).await
-            }
-        ).await.map_err(|_| ())
+        })
+        .await
+        .map_err(|_| ())
     }
 }
 

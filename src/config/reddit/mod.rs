@@ -36,18 +36,18 @@ impl RedditConfig {
         }
 
         let mut tasks = FuturesUnordered::new();
-
+    
         for subreddit in &self.subreddits {
             args.call_on_new_subreddit(&subreddit.name);
 
-            subreddit.exceute(args,db,|files,args,video_length_limit| {
+            subreddit.exceute(args,db,|files,video_length_limit| {
                 let gen = VideoGenerator::new(files,args,video_length_limit);
                 tasks.push(gen.exceute())
             }).await;
 
             args.call_on_end_subreddit();
         }
-        
+
         while let Some(task_result) = tasks.next().await {
             args.call_on_video_finished(task_result);
         }

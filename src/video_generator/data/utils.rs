@@ -2,7 +2,7 @@ use std::path::{PathBuf, Path};
 
 use chromiumoxide::{Element, Page, cdp::browser_protocol::page::CaptureScreenshotFormat};
 use roux::submission::SubmissionData;
-
+use unic_langid::LanguageIdentifier;
 use crate::config::{VideoCreationArguments, VideoCreationError};
 
 use super::VideoGenerationFiles;
@@ -68,42 +68,69 @@ pub(super) async fn element_and_screenshot<F>(
 }
 
 impl VideoGenerationFiles {
-    pub(super) async fn exceute_on_post<'a,F>(
+    pub(super) async fn exceute_on_post<F>(
         &mut self,
         submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
         name : &str,
-        core_text : &'a str,
-        map_text : impl FnOnce(&'a str) -> &str,
-        map_element : impl FnOnce(Element,&'a str) -> F // translate the &str and update the element with it for translate version
+        text : &str,
+        map_element : impl FnOnce(Element) -> F
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-        self.exceute_on_thread(submission, args, name, core_text, map_text, |png_path,text| async move {
-            super::post_element_and_screenshot(page, submission, &png_path,|e| map_element(e,text)).await
+        self.exceute_on_thread(
+            args, name, text,
+            |png_path| async move {
+                super::post_element_and_screenshot(page, submission, &png_path,|e| map_element(e)).await
         }).await
     }
 
     /// Lowest API for VideoGenerationArguments
-    pub(super) async fn exceute_on_thread<'a,F>(
+    pub(super) async fn exceute_on_thread<F>(
         &mut self,
-        _submission : &SubmissionData,
         args : &VideoCreationArguments<'_>,
         name : &str,
-        core_text : &'a str,
-        map_text : impl FnOnce(&'a str) -> &str,
-        // Text is already translated
-        screenshot : impl FnOnce(PathBuf,&'a str) -> F
+        text : &str,
+        screenshot : impl FnOnce(PathBuf) -> F
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<()>> {
-        let text = map_text(core_text);
-
+        
         let audio_path = self.audio_file(name);
-        if_path_exists!(not &audio_path,args.config.tts.save_speech_to_file(&audio_path,text).await?);       
+        if_path_exists!(not &audio_path,args.config.tts.save_speech_to_file(&audio_path,&text).await?);       
 
         let png_path = self.png_file(name);
-        if_path_exists!(not &png_path,screenshot(png_path.clone(),text).await?);       
+        if_path_exists!(
+            not &png_path,
+            screenshot(png_path.clone()).await?
+        ); 
 
         self.push_files(audio_path,png_path);
 
         Ok(())
     }
+}
+
+
+pub async fn set_attribute(element : &Element,value : &str) -> chromiumoxide::Result<()> {
+    let js_fn = format!("function() {{ this.innerText = {value}; }}");
+    let return_value = element.call_js_fn(js_fn, true).await?;
+
+    // Check is successfully called
+    assert!(return_value.exception_details.is_none());
+    Ok(())
+}
+
+pub async fn update_p_with_translated_text(content : &str,elements : &[Element]) -> chromiumoxide::Result<()> {
+    let mut split_content = content.split("\n");
+            
+    for p in elements {
+        // Since translator will preserve formatting it should work
+        let value = split_content.next().unwrap();
+        set_attribute(p,value).await?;
+    }
+
+    Ok(())
+}
+
+pub fn unic_langid_to_deepl_lang(value : LanguageIdentifier) -> deepl::Lang {
+    // TODO
+    todo!()
 }

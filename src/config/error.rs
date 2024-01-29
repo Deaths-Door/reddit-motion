@@ -1,5 +1,7 @@
 use roux::util::RouxError;
 
+use super::TranslatorError;
+
 #[derive(thiserror::Error, Debug)]
 pub enum VideoCreationError {
     #[error(transparent)]
@@ -15,4 +17,7 @@ pub enum VideoCreationError {
     StoryMode(#[from] crate::config::story_mode::StoryModeError),   
     #[error("Failed to navigate browser, {}",.0)]
     Browser(#[from] chromiumoxide::error::CdpError),
+
+    #[error(transparent)]
+    TranslationError(#[from] TranslatorError)
 }

@@ -41,7 +41,6 @@ impl TextToSpeechService {
 
     pub async fn save_speech_to_file(&self,directory : &Path,unproccessed_text : &str) -> Result<(),TextToSpeechError> {
         let text = utils::preprocess_text(unproccessed_text);
-        #[cfg(debug_assertions)] println!("path={}",&directory.display().to_string());
         match self {
             TextToSpeechService::Google => utils::google(directory,&text),
             TextToSpeechService::Elevenlabs { model, voice_name , .. } => utils::elevenlabs(directory,&text,&model,&voice_name).await,
