@@ -23,12 +23,13 @@ impl VideoGenerationFiles {
     ) -> Result<(),VideoCreationError> {
         self.exceute_title_no_translation(submission,page,args).await?;
         match story_mode {
-            StoryMode::ReadComments { max_comments } => self.exceute_comments_no_translation(
+            StoryMode::ReadComments { max_comments } => self.exceute_comments(
                 *max_comments, 
                 subreddit,
                 submission, 
                 page, 
-                args
+                args,
+                None
             ).await,
             StoryMode::ReadPost => self.exceute_post_no_translation(submission,page,args).await,
             _ => unreachable!()
@@ -51,14 +52,13 @@ impl VideoGenerationFiles {
         self.exceute_title_with_translation(submission,target_lang.clone(), translater_client,page, args).await?;
    
         match story_mode {
-            StoryMode::ReadComments { max_comments } => self.exceute_comments_with_translation(
+            StoryMode::ReadComments { max_comments } => self.exceute_comments(
                 *max_comments, 
                 subreddit, 
                 submission,
-                target_lang,
-                translater_client,
                 page, 
-                args
+                args,
+                Some((translater_client,target_lang))
             ).await,
             StoryMode::ReadPost => self.exceute_post_with_translation(submission, target_lang, translater_client, page, args).await,
             _ => unreachable!()

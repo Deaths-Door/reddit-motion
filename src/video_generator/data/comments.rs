@@ -4,12 +4,12 @@ use chromiumoxide::{Page, Element};
 use deepl::Lang;
 use roux::{submission::SubmissionData, Subreddit, comment::CommentData, response::BasicThing};
 
-use crate::config::{Translator, TranslatorResult, VideoCreationArguments, VideoCreationError};
+use crate::config::{Translator, VideoCreationArguments, VideoCreationError};
 
 use super::{VideoGenerationFiles, utils::element_and_screenshot};
 
 impl VideoGenerationFiles {
-    pub(super) async fn exceute_comments_no_translation(
+    /*pub(super) async fn exceute_comments_no_translation(
         &mut self,
         max_comments : u32,
         subreddit : &Subreddit,
@@ -53,22 +53,23 @@ impl VideoGenerationFiles {
                 Ok(element) 
             }
         ).await
-    }
+    }*/
 
     const MAX_RETRIES : u8 = 3;
 
-    async fn exceute_comments<Fe,Ft>(
+    pub(super) async fn exceute_comments/*<'outer,Fe,Ft>*/(
         &mut self,
         max_comments : u32,
         subreddit : &Subreddit,
         submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl FnOnce(String) -> Ft + Clone,
-        map_element : impl FnOnce(Element,&str) -> Fe + Copy
+        translator : Option<(&Translator,Lang)>
+       // map_text : impl FnOnce(String) -> Ft + Clone,
+       // map_element : impl FnOnce(Element,&'outer str) -> Fe + Copy
     ) -> Result<(),VideoCreationError> 
-        where Fe: std::future::Future<Output = chromiumoxide::Result<Element>>,
-            Ft: std::future::Future<Output = TranslatorResult>  
+       // where Fe: std::future::Future<Output = chromiumoxide::Result<Element>> + 'outer,
+         //   Ft: std::future::Future<Output = TranslatorResult>  
     {
         let mut retries = 0;
         let mut skipped = 0;
@@ -85,7 +86,7 @@ impl VideoGenerationFiles {
             }
 
             for comment in comments {
-                if let Err(_) = self.exceute_comment_impl(comment.data, page, args, map_text.clone(), map_element).await {
+                if let Err(_) = self.exceute_comment_impl(comment.data, page, args,&translator /*, map_text.clone(), map_element*/).await {
                     skipped += 1;
                 }
             }
@@ -106,40 +107,82 @@ impl VideoGenerationFiles {
 
 impl VideoGenerationFiles {
     /// Return `Result<(),()>` that if none then return error 
-    async fn exceute_comment_impl<Fe,Ft>(
+    /// Done this as I can't figure out how to get the compiler to convinve that object does in fact life long enough
+    async fn exceute_comment_impl/*<'outer,Fe,Ft>*/(
         &mut self,
         comment : CommentData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
-        map_text : impl FnOnce(String) -> Ft,
-        map_element : impl FnOnce(Element,&str) -> Fe,
+        translator : &Option<(&Translator,Lang)>
+     //   map_text : impl FnOnce(String) -> Ft,
+     //   map_element : impl FnOnce(Element,&'outer str) -> Fe,
     ) -> Result<(),()> 
-        where Fe: std::future::Future<Output = chromiumoxide::Result<Element>>,
-            Ft: std::future::Future<Output = TranslatorResult> 
+     //   where Fe: std::future::Future<Output = chromiumoxide::Result<Element>> + 'outer,
+    //        Ft: std::future::Future<Output = TranslatorResult> 
     {
-        // For some fucking reason the comment body can be none by the API when its clearly there
-        // eg https://reddit.com/r/AskReddit/comments/1903bgc/what_are_some_unsaid_first_date_rules_everyone
-        // has comment with id of kgljxfg return None for body
-        if comment.body.is_none()  {
-            return Err(())
-        }
-
         // Basically the name is t1_ + the 'id' for the comment
         let comment_id : &str = &comment.name.unwrap();
         let comment_body = comment.body.unwrap();
-        let text = map_text(comment_body).await.map_err(|_| ())?;
-        let text = text.as_str();
+        let text = comment_body;
+        // comment_body vs translate comment_body
+        match translator {
+            None => self.exceute_on_thread(
+                args, 
+                comment_id, 
+                &text, 
+                |file_name| async move {
+                    comment_element_and_screenshot(
+                        page, 
+                        comment_id.to_owned(), 
+                        &file_name, 
+                        |e| async move { Ok(e) }
+                    ).await
+            })
+            .await,
+            Some((translater_client,target_lang)) => {
+                let text = &translater_client.translate(&text, target_lang.clone()).await.map_err(|_| ())?;
+                self.exceute_on_thread(
+                    args, 
+                    comment_id, 
+                    text, 
+                    |file_name| async move {
+                        comment_element_and_screenshot(
+                            page, 
+                            comment_id.to_owned(), 
+                            &file_name, 
+                            |element| async move { 
+                                let multiple_p = element.find_elements("div > div > div > p").await?;
+                                super::utils::update_p_with_translated_text(text,&multiple_p).await?;
+                                Ok(element) 
+                            }
+                        ).await
+                })
+                .await
+            }
+        }.map_err(|_| ())
+      //  let text = map_text(comment_body).await.map_err(|_| ())?;
+       // let text = text.as_str();
 
+        /*let text = match target_lang {
+            None => comment_body,
+            Some(target_lang) => translater_client.translate(text, comment_body).await
+        };
         self.exceute_on_thread(
             args, 
-            &comment_id, 
+            comment_id, 
             text, 
             |file_name| async move {
+                comment_element_and_screenshot(
+                    page, 
+                    comment_id.to_owned(), 
+                    &file_name, 
+                    |e| async move 
+                ).await
                 // Done lazly thats why here clone
-                comment_element_and_screenshot(page, comment_id.to_owned(), &file_name, |e|map_element(e,text)).await
+               // comment_element_and_screenshot(page, comment_id.to_owned(), &file_name, |e| map_element(e,text)).await
         })
         .await
-        .map_err(|_| ())
+        .map_err(|_| ())*/
     }
 }
 
