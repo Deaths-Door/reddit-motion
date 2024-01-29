@@ -60,7 +60,7 @@ impl VideoGenerationFiles {
                     show_nsfw_body(&element).await?;
                 }
 
-                let element = element.find_element("div > div[data-click-id=\"text\"]").await?;
+                let element = element.find_element("div[data-click-id=\"text\"]").await?;
                 map_element(element).await
             }
         ).await

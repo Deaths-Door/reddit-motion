@@ -35,8 +35,8 @@ impl VideoGenerationFiles {
         let title : &str = &title;
         
         self.exceute_title(submission, page, args, title, |element| async move {
-            let element = element.find_element("div > div > h1").await?;
-            utils::set_attribute(&element,title).await?;
+            let h1 = element.find_element("div > div > h1").await?;
+            utils::set_attribute(&h1,title).await?;
             Ok(element)
         }).await
     }
@@ -59,8 +59,14 @@ impl VideoGenerationFiles {
             "title",
             title,
             |element| async move {
-                let element = element.find_element("div > div._2FCtq-QzlfuN-SwVMUZMM3._2v9pwVh0VUYrmhoMv1tHPm").await?;
-                map_element(element).await
+                // Remove children[3..] from DOM
+                const DELETE_ELEMENTS : &str = "function() { this.children.slice(3).map((child) => this.removeChild(child)) }";
+                element.call_js_fn(DELETE_ELEMENTS,true).await?;
+
+                map_element(element).await?;
+                
+                // since we delete some elements so for them to reappear
+                page.reload().await
             }
         ).await
     }

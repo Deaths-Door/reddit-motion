@@ -47,7 +47,8 @@ pub(super) async fn post_element_and_screenshot<F>(
     file_name : &Path,
     map_element : impl FnOnce(Element) -> F,
 ) -> chromiumoxide::Result<()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-    let selector = format!("#t3_{}",submission.id);
+    // TODO : REMOVE NEED FOR THIS maybe filter using div[data-test-id="post-content"]
+    let selector = format!("#t3_{} > div",submission.id);
     element_and_screenshot(selector, page, file_name, map_element).await
 }
 
