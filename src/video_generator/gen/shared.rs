@@ -114,9 +114,7 @@ impl SharedGeneratorLogic {
             |concated_audio_length| {
                 let background_audio = self.prepare_background_music(video_generator,bin_directory,concated_audio_length)?;
                 let video_path = self.prepare_background_video(video_generator,bin_directory,concated_audio_length,image_inputs)?;
-
-                // TODO : Use this https://filmora.wondershare.com/video-editor/ffmpeg-merge-audio-and-video.html 
-                // to fix this :  Have to do this as can't find a way to successfully create video with audio in a single command
+            
                 let audio_path = self.combine_background_and_concated_audio(video_generator,bin_directory,&background_audio,&concated_audio)?;
                 self.concat_video_with_audio(
                     video_generator,

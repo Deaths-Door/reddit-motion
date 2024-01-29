@@ -8,7 +8,6 @@ use serde::{Deserialize,Serialize};
 #[derive(Serialize,Deserialize)]
 pub struct Assets {
     videos : Vec<String>,
-    // TODO : Support downloading from Spotify
     audio : Vec<String>
 }
 

@@ -1,7 +1,6 @@
 use deepl::Lang;
 use serde::{Deserialize,Serialize};
 
-/// TODO : ADD MORE TRANSLATION SERVICES
 #[derive(Serialize, Deserialize,Default)]
 pub struct TranslationServices {
     deepl_api_key : String,
