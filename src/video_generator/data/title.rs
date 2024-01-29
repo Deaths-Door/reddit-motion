@@ -41,7 +41,6 @@ impl VideoGenerationFiles {
         }).await
     }
 
-    // TODO SELECT DIFferent part OF IT
     // Title.text.selector = document.querySelector("#t3_18rbiqq > div > div._2FCtq-QzlfuN-SwVMUZMM3._2v9pwVh0VUYrmhoMv1tHPm > div > div > h1").innerText
     // Title.thingy = #t3_18zski5 > div > div._2FCtq-QzlfuN-SwVMUZMM3._2v9pwVh0VUYrmhoMv1tHPm
     async fn exceute_title<F>(
@@ -63,12 +62,14 @@ impl VideoGenerationFiles {
                 const DELETE_ELEMENTS : &str = "function() { this.children.slice(3).map((child) => this.removeChild(child)) }";
                 element.call_js_fn(DELETE_ELEMENTS,true).await?;
 
-                map_element(element).await?;
-                
-                // since we delete some elements so for them to reappear
-                page.reload().await
+                map_element(element).await
             }
-        ).await
+        ).await?;
+
+        // since we delete some elements so for them to reappear
+        page.reload().await?;
+
+        Ok(())
     }
 }
 
