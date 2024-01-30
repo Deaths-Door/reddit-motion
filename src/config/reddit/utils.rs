@@ -67,6 +67,9 @@ pub(super) async fn create_new_page(
 ) -> chromiumoxide::Result<Page> {
     let url = format!("https://www.reddit.com/r/{name}/comments/{id}",name = submission.subreddit,id = submission.id);
     let page = browser.new_page(url).await?;
-    // TODO : CLOSE ALL POPUPS + NSFW + ANOYMUS BROWSING + COOKIES ACCEPT for no login 
+
+    // Refer to ./experiments/hide_popups.js and ./experiments/as_single_string.kt
+    const FUNCTION : &str = "function() {document.querySelector(\"shreddit-async-loader[bundlename=\"reddit_cookie_banner\"]\")?.remove();document.querySelector(\"shreddit-async-loader[bundlename=\"desktop_rpl_nsfw_blocking_modal\"]\")?.remove();document.querySelector(\"shreddit-app > div\")?.style.filter=\"none\";}";
+    page.evaluate_function(FUNCTION).await?;
     Ok(page)
 }

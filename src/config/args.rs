@@ -6,6 +6,7 @@ use whatlang::Detector;
 use crate::ffmpeg::FFmpeg;
 use super::{Config, Callback};
 
+// TODO : MAKE IT ALL A REFERENCE??
 pub struct VideoCreationArguments<'a> {
     pub config : Config,
     pub ffmpeg : FFmpeg,
