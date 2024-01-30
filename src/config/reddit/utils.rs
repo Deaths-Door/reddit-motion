@@ -69,7 +69,7 @@ pub(super) async fn create_new_page(
     let page = browser.new_page(url).await?;
 
     // Refer to ./experiments/hide_popups.js and ./experiments/as_single_string.kt
-    const FUNCTION : &str = "function() {document.querySelector(\"shreddit-async-loader[bundlename=\"reddit_cookie_banner\"]\")?.remove();document.querySelector(\"shreddit-async-loader[bundlename=\"desktop_rpl_nsfw_blocking_modal\"]\")?.remove();document.querySelector(\"shreddit-app > div\")?.style.filter=\"none\";}";
-    page.evaluate_function(FUNCTION).await?;
+    const FUNCTION : &str = r#"function() {document.querySelector("shreddit-async-loader[bundlename=\"reddit_cookie_banner\"]")?.remove();document.querySelector("shreddit-async-loader[bundlename=\"desktop_rpl_nsfw_blocking_modal\"]")?.remove();const app = document.querySelector("shreddit-app > div");if (app) {app.style.filter="none";} }"#;
+    page.evaluate_function(FUNCTION).await.unwrap();
     Ok(page)
 }
