@@ -1,7 +1,6 @@
 use std::path::{PathBuf, Path};
 
 use chromiumoxide::{Element, Page, cdp::browser_protocol::page::CaptureScreenshotFormat};
-use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use crate::config::{VideoCreationArguments, VideoCreationError};
 
@@ -43,13 +42,11 @@ pub(crate) use if_path_exists;
 
 pub(super) async fn post_element_and_screenshot<F>(
     page: &Page,
-    submission : &SubmissionData,
     file_name : &Path,
     map_element : impl FnOnce(Element) -> F,
 ) -> chromiumoxide::Result<()> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
-    // TODO : REMOVE NEED FOR THIS maybe filter using div[data-test-id="post-content"]
-    let selector = format!("#t3_{} > div",submission.id);
-    element_and_screenshot(selector, page, file_name, map_element).await
+    const SELECTOR : &str= "div[data-test-id=\"post-content\"]";
+    element_and_screenshot(SELECTOR.to_string(), page, file_name, map_element).await
 }
 
 pub(super) async fn element_and_screenshot<F>(
@@ -71,7 +68,6 @@ pub(super) async fn element_and_screenshot<F>(
 impl VideoGenerationFiles {
     pub(super) async fn exceute_on_post<F>(
         &mut self,
-        submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
         name : &str,
@@ -81,11 +77,11 @@ impl VideoGenerationFiles {
         self.exceute_on_thread(
             args, name, text,
             |png_path| async move {
-                super::post_element_and_screenshot(page, submission, &png_path,|e| map_element(e)).await
+                super::post_element_and_screenshot(page, &png_path,|e| map_element(e)).await
         }).await
     }
 
-    /// Lowest API for VideoGenerationArguments
+    /// Lowest API for [VideoGenerationFiles]
     pub(super) async fn exceute_on_thread<F>(
         &mut self,
         args : &VideoCreationArguments<'_>,

@@ -17,7 +17,7 @@ impl VideoGenerationFiles {
     ) -> Result<(),VideoCreationError> {
         let title = title(submission);
 
-        self.exceute_title(submission, page, args, title, |element| async {
+        self.exceute_title(page, args, title, |element| async {
             Ok(element)
         }).await
     }
@@ -34,7 +34,7 @@ impl VideoGenerationFiles {
         
         let title : &str = &title;
         
-        self.exceute_title(submission, page, args, title, |element| async move {
+        self.exceute_title(page, args, title, |element| async move {
             let h1 = element.find_element("div > div > h1").await?;
             utils::set_attribute(&h1,title).await?;
             Ok(element)
@@ -45,14 +45,12 @@ impl VideoGenerationFiles {
     // Title.thingy = #t3_18zski5 > div > div._2FCtq-QzlfuN-SwVMUZMM3._2v9pwVh0VUYrmhoMv1tHPm
     async fn exceute_title<F>(
         &mut self,
-        submission : &SubmissionData,
         page : &Page,
         args : &VideoCreationArguments<'_>,
         title : &str,
         map_element : impl FnOnce(Element) -> F 
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
         self.exceute_on_post(
-            submission,
             page,
             args,
             "title",

@@ -49,7 +49,6 @@ impl VideoGenerationFiles {
         map_element : impl FnOnce(Element) -> F 
     ) -> Result<(),VideoCreationError> where F: std::future::Future<Output = chromiumoxide::Result<Element>> {
         self.exceute_on_post(
-            submission,
             page,
             args,
             "post",

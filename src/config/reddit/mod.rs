@@ -29,7 +29,7 @@ pub struct RedditUser {
 impl RedditConfig {
     pub async fn exceute(&self,args : &VideoCreationArguments<'_>,db : &mut Database) -> Result<(),VideoCreationError> {
         if let Some(user) = &self.user {
-            match !user.login_and_set_theme(args.browser).await? {
+            match user.login_and_set_theme(args.browser).await? {
                 true => args.call_login_successful(),
                 false => args.call_invalid_reddit_credentials(),
             }
