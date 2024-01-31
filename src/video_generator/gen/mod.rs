@@ -42,7 +42,6 @@ impl VideoGenerator<'_> {
             limited_process = scripts.call_limited_script(&file_paths)
         }
 
-        // TODO : ALLOW CUSTOMIZABLE VOICE IN BACKGROUND MUSIC + MAIN AUDIO
         self.cleanup(bin_directory)?;
 
         let callback = self.arguments();

@@ -106,7 +106,6 @@ impl SharedGeneratorLogic {
         Ok(output_file_path)
     }
 
-    // TODO : REMOVE -y Flag and make it so it is in a new dir
     fn extend_media_to_duration(
         &self,
         video_generator : &VideoGenerator,

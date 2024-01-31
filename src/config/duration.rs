@@ -2,6 +2,7 @@ use serde::{Deserialize,Serialize};
 use std::process::{Command,Child};
 
 #[derive(Clone,Copy,Default,Deserialize,Serialize)]
+#[serde(rename_all="lowercase")]
 pub enum VideoDuration {
     #[default]
     Infinite,

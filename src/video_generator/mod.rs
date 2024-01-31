@@ -8,7 +8,6 @@ use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDu
 
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
-    // TODO : MAYBE USE A StrIng intead
     pub(in crate::video_generator) storage_directory : PathBuf,
 
     // audio + png dirs
