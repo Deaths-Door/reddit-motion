@@ -6,8 +6,8 @@ readme = "README.md"
 authors = ["Aarav Shah <aaravaditya51@gmail.com>"]
 description = "Transform Reddit Posts and Custom Text into Engaging Videos with Localization. Customize Content, Boost Speed, Share on Social Media – Experience its Excellence!"
 documentation = "https://docs.rs/reddit-motion"
-repository = "https://github.com/Deaths-Door/reddit-motion-rs"
-homepage = "https://github.com/Deaths-Door/reddit-motion-rs"
+repository = "https://github.com/Deaths-Door/reddit-motion"
+homepage = "https://github.com/Deaths-Door/reddit-motion"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
