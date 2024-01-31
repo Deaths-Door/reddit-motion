@@ -66,7 +66,7 @@ impl Config {
     ) -> anyhow::Result<JoinHandle<()>> {
         let (browser,handler) = self.create_browser().await?;
 
-        let args = VideoCreationArguments::new(callback, &browser, self, ffmpeg);
+        let args = VideoCreationArguments::new(&callback, &browser, &self, &ffmpeg);
 
         args.config.reddit.exceute(&args,db).await?;
 

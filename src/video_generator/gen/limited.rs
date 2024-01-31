@@ -59,7 +59,7 @@ impl<'main> LimitedVideoLength<'main> {
             output_directory : &str
         ) -> std::io::Result<Vec<String>> {
             for (audio_file,image_file) in iter {
-                let duration = get_duration(&video_generator.ffmpeg, &audio_file)?;
+                let duration = get_duration(video_generator.ffmpeg(), &audio_file)?;
     
                 match duration.partial_cmp(&limited_video_length.limit) {
                     None => unreachable!(),
@@ -90,7 +90,7 @@ impl<'main> LimitedVideoLength<'main> {
         }
 
         let mut iter = video_generator.video_gen_files.files.iter();
-        let title_segment = TitleSegment::new(&video_generator.ffmpeg, &mut iter)?;
+        let title_segment = TitleSegment::new(video_generator.ffmpeg(), &mut iter)?;
     
         inner(self,video_generator,&title_segment,&mut iter,bin_directory,output_directory)
     }
@@ -149,7 +149,7 @@ impl<'main> LimitedVideoLength<'main> {
         video_path : String,
         output_directory : &str
     ) -> std::io::Result<Vec<String>> {
-        let duration = get_duration(&video_generator.ffmpeg, &video_path)?;
+        let duration = get_duration(&video_generator.ffmpeg(), &video_path)?;
 
         if duration < self.limit {
             return Ok(vec![video_path])
@@ -158,7 +158,7 @@ impl<'main> LimitedVideoLength<'main> {
         let output_placeholder = format!("{output_directory}/final_video_%03d.mp4");
 
         // ffmpeg -i "C:\Users\Aarav Aditya Shah\Music\Alan Walker - The Spectre.mp3" -f segment -segment_time 30 -vf "crop=200:200" output_%03d.mp3
-        video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+        video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
             cmd.args([
                 "-i" , &video_path,
                 "-f" , "segment",

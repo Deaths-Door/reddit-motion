@@ -4,7 +4,6 @@ mod gen;
 use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use std::path::PathBuf;
-
 use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration}};
 
 #[derive(Debug)]
@@ -17,14 +16,16 @@ pub struct VideoGenerationFiles {
     files : Vec<(String,String)>
 }
 
-// TODO : Figure out a way to use lifetimes to avoid cloning all the time
-pub struct VideoGenerator {
+pub struct VideoGenerator<'a> {
     video_gen_files : VideoGenerationFiles,
-    ffmpeg : FFmpeg,
-    dimensions: Dimensions,
+    arguments: &'a VideoCreationArguments<'a>,
     video_duration : VideoDuration,
-    video_asset_directory : String,
-    audio_asset_directory : String
+
+    /// Reference from [VideoGenerator.arguments.config.assets.random_video_directory]
+    video_asset_directory : &'a str,
+
+    /// Reference from [VideoGenerator.arguments.config.assets.random_audio_directory]
+    audio_asset_directory : &'a str
 }
 
 impl VideoGenerationFiles {
@@ -40,14 +41,21 @@ impl VideoGenerationFiles {
     }
 }
 
-impl VideoGenerator {
-    pub fn new(video_gen_files: VideoGenerationFiles, arguments : &VideoCreationArguments<'_>,video_duration : VideoDuration) -> Self {
-        let ffmpeg = arguments.ffmpeg.clone();
+impl<'a> VideoGenerator<'a> {
+    pub fn new(video_gen_files: VideoGenerationFiles, arguments : &'a VideoCreationArguments<'a>,video_duration : VideoDuration) -> Self {
         let config = &arguments.config;
-        let dimensions = config.dimensions.clone();    
-        let video_asset_directory = config.assets.random_video_directory().to_owned();
-        let audio_asset_directory = config.assets.random_audio_directory().to_owned();
 
-        Self { video_gen_files, ffmpeg , dimensions , video_asset_directory , audio_asset_directory , video_duration } 
+        let video_asset_directory = config.assets.random_video_directory();
+        let audio_asset_directory = config.assets.random_audio_directory();
+
+        Self { video_gen_files ,arguments , video_duration , video_asset_directory , audio_asset_directory } 
+    }
+
+    pub const fn ffmpeg(&self) -> &FFmpeg {
+        &self.arguments.ffmpeg
+    }
+
+    pub const fn dimensions(&self) -> &Dimensions {
+        &self.arguments.config.dimensions
     }
 }

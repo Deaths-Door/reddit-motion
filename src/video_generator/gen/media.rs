@@ -14,7 +14,7 @@ impl SharedGeneratorLogic {
 
         if_path_exists!(not &path,{
             // ffmpeg -f concat -safe 0 -i concat.txt -c copy output.mp4
-            video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+            video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
                 cmd.args([
                     "-f" , "concat",
                     "-i" , &self.audio_concat_file_path,
@@ -64,7 +64,7 @@ impl SharedGeneratorLogic {
         let video_path = self.crop_and_move(video_generator,&bin_directory)?;
 
         // Start from random position within video length
-        let duration = get_duration(&video_generator.ffmpeg, &video_path)?;
+        let duration = get_duration(&video_generator.ffmpeg(), &video_path)?;
 
         // Ensure start_duration is not a value near/at the end of the video
         // Hence the * 0.5
@@ -91,7 +91,7 @@ impl SharedGeneratorLogic {
         //   [v1][2]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='between(t,44,61)'[v2];
         //   [v2][3]overlay=x=(main_w-overlay_w)/2:y=(main_h-overlay_h)/2:enable='gt(t,112)'[v3]"
         // -map "[v3]" -map 0:a  out.mp4
-        video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+        video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
             cmd.args(["-i", &temp_file_path]);
 
             image_inputs(cmd);
@@ -132,7 +132,7 @@ impl SharedGeneratorLogic {
         // -i "C:\Users\Aarav Aditya Shah\Desktop\input.mp4" 
         // -ss 5 -t 60 
         // -map 0:v:0 out.mp4
-        video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+        video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
             cmd.args([
                 "-stream_loop" , "-1",
                 "-i" , input_file,
@@ -160,7 +160,7 @@ impl SharedGeneratorLogic {
         let output_file_path = format!("{output_directory}/final_video.mp4");
 
         // ffmpeg -i video.mp4 -i audio.wav -c:v copy -c:a aac output.mp4
-        video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+        video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
             cmd.args([
                 "-i" , video_path,
                 "-i" , audio_path,
@@ -182,7 +182,7 @@ impl SharedGeneratorLogic {
         let output_file_path = format!("{bin_directory}/background_and_concated.mp3");
 
         if_path_exists!(not &output_file_path,{
-            video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
+            video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
                 cmd.args([
                     "-i" , concated_audio,
                     "-i" , background_audio,

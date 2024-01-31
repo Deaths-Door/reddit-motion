@@ -11,7 +11,7 @@ use self::{infinite::InfiniteVideoLength, limited::LimitedVideoLength, shared::S
 
 use super::VideoGenerator;
 
-impl VideoGenerator {
+impl VideoGenerator<'_> {
     /// returns output video path
     pub async fn exceute(self) -> std::io::Result<String> {    
         let bin_directory = self.video_gen_files.storage_directory.display().to_string();

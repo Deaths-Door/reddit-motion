@@ -6,10 +6,9 @@ use whatlang::Detector;
 use crate::ffmpeg::FFmpeg;
 use super::{Config, Callback};
 
-// TODO : MAKE IT ALL A REFERENCE??
 pub struct VideoCreationArguments<'a> {
-    pub config : Config,
-    pub ffmpeg : FFmpeg,
+    pub config : &'a Config,
+    pub ffmpeg : &'a FFmpeg,
     pub browser : &'a Browser,
     pub detector : Detector,
     callback : &'a Callback,
@@ -19,8 +18,8 @@ impl<'a> VideoCreationArguments<'a> {
     pub fn new(
         callback: &'a Callback, 
         browser: &'a Browser,
-        config: Config, 
-        ffmpeg: FFmpeg,
+        config: &'a Config, 
+        ffmpeg: &'a FFmpeg,
     ) -> Self { Self { config , ffmpeg, callback, browser , detector : Detector::new()} }
 
     pub fn call_invalid_reddit_credentials(&self) {

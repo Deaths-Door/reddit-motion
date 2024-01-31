@@ -10,12 +10,13 @@ impl SharedGeneratorLogic {
         if_path_exists!(not &video_file,{
             let video_dir = &video_generator.video_asset_directory;
 
-            let dimensions = get_video_dimensions(
-                &video_generator.ffmpeg,
+            let video_dimensions = get_video_dimensions(
+                &video_generator.ffmpeg(),
                 &video_dir
             )?;
         
-            match video_generator.dimensions.width > dimensions.width || video_generator.dimensions.height > dimensions.height {
+            let config_dimensions = video_generator.dimensions();
+            match config_dimensions.width > video_dimensions.width || config_dimensions.height > video_dimensions.height {
                 true => { std::fs::copy(video_dir, &video_file)?; },
                 false => { self.crop_video(video_generator,video_dir, &video_file)?; }
             }
@@ -33,8 +34,9 @@ impl SharedGeneratorLogic {
         if_path_exists!(file_path,return ok);
 
         // ffmpeg -i input.mp4 -filter:v "crop=w:h:x:y" output.mp4
-        video_generator.ffmpeg.ffmpeg_expect_failure(|cmd|{
-            let filter = format!("crop={}:{}",video_generator.dimensions.width,video_generator.dimensions.height);
+        video_generator.ffmpeg().ffmpeg_expect_failure(|cmd|{
+            let dimensions = video_generator.dimensions();
+            let filter = format!("crop={}:{}",dimensions.width,dimensions.height);
             cmd.args([
                 "-i", input, 
                 "-vf", &filter, 

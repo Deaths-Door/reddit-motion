@@ -8,6 +8,7 @@ use serde::{Deserialize,Serialize};
 #[derive(Serialize,Deserialize)]
 pub struct Assets {
     videos : Vec<String>,
+    // TODO : CHECK IF EMPTY AND THEN RETURN OPTION -> NO BACKGROUND AUDIO
     audio : Vec<String>
 }
 

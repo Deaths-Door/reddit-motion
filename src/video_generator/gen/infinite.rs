@@ -20,7 +20,7 @@ impl InfiniteVideoLength {
         for (audio_file,_) in iter() {
             self.shared_generator.append_audio(&audio_file)?;
 
-            let duration = get_duration(&video_generator.ffmpeg,&audio_file)?;
+            let duration = get_duration(video_generator.ffmpeg(),&audio_file)?;
             self.shared_generator.append_image(duration)
         }
 

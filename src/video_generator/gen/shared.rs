@@ -109,7 +109,7 @@ impl SharedGeneratorLogic {
         let concated_audio = self.concat_audio_files(video_generator,bin_directory)?;
 
         super::utils::get_duration_str(
-            &video_generator.ffmpeg,
+            video_generator.ffmpeg(),
             &concated_audio,
             |concated_audio_length| {
                 let background_audio = self.prepare_background_music(video_generator,bin_directory,concated_audio_length)?;

@@ -24,7 +24,7 @@ pub(crate) fn get_duration(ffmpeg : &FFmpeg,file_path : &str) -> std::io::Result
     get_duration_str(ffmpeg, file_path, |v| Ok(v.parse().unwrap()))
 }
 
-impl VideoGenerator {
+impl VideoGenerator<'_> {
     pub(super) fn cleanup(&self,bin_directory : String) -> std::io::Result<()> {
         std::fs::create_dir_all(bin_directory)
     }
