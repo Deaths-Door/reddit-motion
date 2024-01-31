@@ -31,6 +31,7 @@ impl SharedGeneratorLogic {
         &self,
         video_generator : &VideoGenerator,
         bin_directory : &str,
+        music : &str,
         concated_audio_length: &str
     ) -> std::io::Result<String> {
         // extend_background_music_to_concated_audio_length
@@ -41,7 +42,7 @@ impl SharedGeneratorLogic {
 
         self.extend_media_to_duration(
             video_generator,
-            &video_generator.audio_asset_directory, 
+            &music, 
             &output_file_path,
             "0", 
             &concated_audio_length,

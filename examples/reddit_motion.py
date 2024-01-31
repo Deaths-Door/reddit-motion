@@ -1,5 +1,4 @@
 import argparse
-from typing import Self;
 
 class RedditMotionCommandLineParser:
     """

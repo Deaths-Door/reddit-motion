@@ -24,7 +24,7 @@ pub struct VideoGenerator<'a> {
     video_asset_directory : &'a str,
 
     /// Reference from [VideoGenerator.arguments.config.assets.random_audio_directory]
-    audio_asset_directory : &'a str,
+    audio_asset_directory : Option<&'a String>,
 }
 
 impl VideoGenerationFiles {
@@ -48,7 +48,7 @@ impl<'a> VideoGenerator<'a> {
     ) -> Self {
         let config = &arguments.config;
 
-        let video_asset_directory = config.assets.random_video_directory();
+        let video_asset_directory = config.assets.random_video_directory().unwrap();
         let audio_asset_directory = config.assets.random_audio_directory();
 
         Self { arguments , video_gen_files , video_duration , video_asset_directory , audio_asset_directory } 

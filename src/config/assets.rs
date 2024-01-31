@@ -4,11 +4,11 @@ use mime::Name;
 use mime_guess::MimeGuess;
 use rusty_ytdl::{Video, get_video_id};
 use serde::{Deserialize,Serialize};
+use rand::Rng;
 
 #[derive(Serialize,Deserialize)]
 pub struct Assets {
     videos : Vec<String>,
-    // TODO : CHECK IF EMPTY AND THEN RETURN OPTION -> NO BACKGROUND AUDIO
     audio : Vec<String>
 }
 
@@ -17,17 +17,16 @@ impl Assets {
         self.audio.len() + self.videos.len()
     }
 
-    fn random_index(slice : &[String]) -> usize {
-        use rand::Rng;
-        rand::thread_rng().gen_range(0..slice.len())
+    fn get_random_index(slice : &[String]) -> Option<&String> {
+        slice.get(rand::thread_rng().gen_range(0..slice.len()))
     }
 
-    pub fn random_video_directory(&self) -> &str {
-        &self.videos[Self::random_index(&self.videos)]
+    pub fn random_video_directory(&self) -> Option<&String> {
+        Self::get_random_index(&self.videos)
     }
 
-    pub fn random_audio_directory(&self) -> &str {
-        &self.audio[Self::random_index(&self.audio)]
+    pub fn random_audio_directory(&self) -> Option<&String> {
+        Self::get_random_index(&self.audio)
     }
 }
 

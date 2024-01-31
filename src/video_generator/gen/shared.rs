@@ -112,10 +112,18 @@ impl SharedGeneratorLogic {
             video_generator.ffmpeg(),
             &concated_audio,
             |concated_audio_length| {
-                let background_audio = self.prepare_background_music(video_generator,bin_directory,concated_audio_length)?;
+                let audio_path : std::borrow::Cow<'_,str> = match video_generator.audio_asset_directory {
+                    // No audio asset hence just return concated_audio
+                    None => (&concated_audio).into(),
+                    Some(music_asset) => {
+                        let background_audio = self.prepare_background_music(video_generator,bin_directory,music_asset,concated_audio_length)?;
+                        let final_audio = self.combine_background_and_concated_audio(video_generator,bin_directory,&background_audio,&concated_audio)?;
+                        final_audio.into()
+                    }
+                };
+
                 let video_path = self.prepare_background_video(video_generator,bin_directory,concated_audio_length,image_inputs)?;
             
-                let audio_path = self.combine_background_and_concated_audio(video_generator,bin_directory,&background_audio,&concated_audio)?;
                 self.concat_video_with_audio(
                     video_generator,
                     output_directory, 
