@@ -10,6 +10,7 @@ use serde::{Deserialize,Serialize};
 use crate::{db::Database, video_generator::VideoGenerator};
 
 use super::{VideoCreationArguments, VideoCreationError};
+pub use subreddit::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct RedditConfig {
@@ -41,7 +42,7 @@ impl RedditConfig {
             args.call_on_new_subreddit(&subreddit.name);
 
             subreddit.exceute(args,db,|files,video_length_limit| {
-                let gen = VideoGenerator::new(files,args,video_length_limit);
+                let gen = VideoGenerator::new(args,files,video_length_limit);
                 tasks.push(gen.exceute())
             }).await;
 

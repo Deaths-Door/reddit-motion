@@ -52,8 +52,7 @@ impl FFmpeg {
         &self,
         builder : impl FnOnce(&mut Command) -> (),
     ) -> std::io::Result<()> { 
-        let o = self.expect_failure(self.ffmpeg_command(),builder)?;
-        println!("{}",String::from_utf8(o.stdout).unwrap());
+        self.expect_failure(self.ffmpeg_command(),builder)?;
         Ok(())
     }
 
@@ -78,7 +77,7 @@ impl FFmpeg {
             eprintln!("stderr={}",String::from_utf8(output.stderr).unwrap());
             return Err(std::io::Error::new(
                 std::io::ErrorKind::Other, 
-                "ffmpeg command failed"
+                "FFmpeg Command Failed"
             ))
         };
 

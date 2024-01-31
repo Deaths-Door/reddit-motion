@@ -21,9 +21,19 @@ reddit = *
     .login-success = Hurra! Wurde erfolgreich bei Reddit angemeldet und das gewünschte Thema angewendet
     .subreddit-checking = Überprüfe Subreddit { $name }
     .subreddit-finished = Mit dem Subreddit fertig!
-    .post-skipped = Fehler beim Verarbeiten des Subreddit-Beitrags: { $error } \n. Beitrag wird übersprungen.
-    .post-inform = "Video wird { $name } 👍\n Thread-URL ist { $link } 👍\nThread hat eine Upvote-Ratio von { $percent }%
+    .post-skipped = Fehler beim Verarbeiten des Subreddit-Beitrags: { $error }.
+    Beitrag wird übersprungen.
+    .post-inform = Video wird { $name } 👍
+    Thread-URL ist { $link } 👍
+    Thread hat eine Upvote-Ratio von { $percent }%
 
 video = *
     .success = Erstellte Inhalte sind unter { $path } verfügbar 🥰
     .error = Fehler beim Verarbeiten des Videos { $error }
+
+task = *
+    .spawn-failed = Starten des externen Skripts { $script } nicht möglich, aufgrund von { $error }
+    .finished =  Die Aufgabe ({ $script }) { $code ->
+        [0] -> wurde erfolgreich abgeschlossen.
+        *[other] -> ist mit dem Fehlercode { $code } fehlgeschlagen.
+    }

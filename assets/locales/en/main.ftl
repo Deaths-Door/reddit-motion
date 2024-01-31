@@ -21,9 +21,19 @@ reddit = *
     .login-success = Hooray! Successfully have logged into Reddit and applied the desired theme
     .subreddit-checking = Checking { $name } subreddit
     .subreddit-finished = Finished with subreddit!
-    .post-skipped = Error encountered while processing subreddit post: { $error } \n. Skipping post.
-    .post-inform = "Video will be { $name } 👍\n Thread url is { $link } 👍\nThread has a upvote ratio of { $percent }%
+    .post-skipped = Error encountered while processing subreddit post: { $error }. 
+    Skipping post.
+    .post-inform = Video will be { $name } 👍
+    Thread url is { $link } 👍
+    Thread has a upvote ratio of { $percent }%
 
 video = *
     .success = Genereated content is availiable at { $path } 🥰
     .error = Error encountered while processing video { $error }
+
+task = *
+    .spawn-failed = Unable to start external script { $script } , due to { $error }
+    .finished = The task ({ $script }) { $code -> 
+        [0] -> completed successfully.
+        *[other] -> failed with error code { $code }.
+    }

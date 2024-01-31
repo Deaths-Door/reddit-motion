@@ -219,6 +219,24 @@ pub fn create_callback() -> Callback {
                 Err(err) => lookup1(lang, "video.error", "error", &err.to_string()).red(),
             });
             print_seperator();
+        },
+        |lang,script,error| {
+            let s = lookup_args(lang, "task.spawn-failed", &convert_args!(hashmap!(
+                "error" => error.to_string(),
+                "script" => script
+            )));
+            
+            println!("{}",s.red());    
+            print_seperator();
+        },
+        |lang,script,code| {
+            let s = lookup_args(lang, "task.finished", &convert_args!(hashmap!(
+                "script" => script,
+                "code" => code
+            )));
+            
+            println!("{}",s);    
+            print_seperator();
         }
     )
 }

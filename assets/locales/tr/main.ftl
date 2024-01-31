@@ -4,7 +4,7 @@ questions = Herhangi bir sorunuz varsa, lütfen GitHub Issue aracılığıyla be
 
 solutions = Birçok SSS'nin çözümlerini { $link } adresinde bulabilirsiniz.
 
-using-old-version = "Botun eski bir sürümünü ( { $package_version } ) kullanıyorsunuz. En son sürüm ({ $release_version } ) 'ü { $link } adresinden indirin.
+using-old-version = Botun eski bir sürümünü ( { $package_version } ) kullanıyorsunuz. En son sürüm ({ $release_version } ) 'ü { $link } adresinden indirin.
 
 ffmpeg = FFmpeg kullanılabilir
     .not_installed = Bu sistemde FFmpeg kurulu değil.
@@ -23,9 +23,19 @@ reddit = *
     .login-success = Yaaay! Reddit'e başarıyla giriş yaptım ve istenen temayı uyguladım
     .subreddit-checking = { $name } subreddit'ini kontrol ediyor
     .subreddit-finished = Subreddit ile bitti!
-    .post-skipped = subreddit gönderisini işlerken hata oluştu: { $error } \n. Post atlanıyor.
-    .post-inform = "Video { $name } olacak 👍\n Konu URL'si { $link } 👍\nKonu { $percent }% oy oranına sahip
+    .post-skipped = subreddit gönderisini işlerken hata oluştu: { $error }.
+    Post atlanıyor.
+    .post-inform = Video { $name } olacak 👍
+    Konu URL'si { $link } 👍
+    Konu { $percent }% oy oranına sahip
 
 video = *
     .success = Oluşturulan içerikler { $path } adresinde mevcuttur 🥰
     .error = Videoyu işlerken hata oluştu: { $error }
+
+task = *
+    .spawn-failed = Dışarıdan bir komut dosyası { $script } başlatılamadı, çünkü { $error }.
+    .finished = Görev ({ $script }) { $code ->
+        [0] -> Başarıyla tamamlandı.
+        *[other] -> Hata kodu { $code } ile başarısız oldu.
+    }

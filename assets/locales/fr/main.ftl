@@ -21,9 +21,19 @@ reddit = *
     .login-success = Hourra ! Je me suis connecté avec succès à Reddit et j'ai appliqué le thème souhaité
     .subreddit-checking = Vérification du subreddit { $name }
     .subreddit-finished = Terminé avec le subreddit !
-    .post-skipped = Erreur rencontrée lors du traitement du post du subreddit: { $error } \n. Post ignoré.
-    .post-inform = "La vidéo sera { $name } 👍\n L'URL du fil est { $link } 👍\nLe fil a un ratio de vote positif de { $percent }%
+    .post-skipped = Erreur rencontrée lors du traitement du post du subreddit: { $error }.
+    Post ignoré.
+    .post-inform = La vidéo sera { $name } 👍
+    L'URL du fil est { $link } 👍
+    Le fil a un ratio de vote positif de { $percent }%
 
 video = *
     .success = Le contenu généré est disponible à l'adresse { $path } 🥰
     .error = Erreur rencontrée lors du traitement de la vidéo { $error }
+
+task = *
+    .spawn-failed = Impossible de démarrer le script externe { $script }, en raison de { $error }
+    .finished = La tâche ({ $script }) { $code -> 
+        [0] -> s'est terminée correctement.
+        *[other] -> a échoué avec le code d'erreur { $code }.
+    }

@@ -7,7 +7,7 @@ use fluent_templates::fluent_bundle::FluentValue;
 fluent_templates::static_loader! {
     static LOCALES = {
         locales : "./assets/locales",
-        fallback_language : "en-US",
+        fallback_language : "en",
     };
 }
 

@@ -7,11 +7,11 @@ use crate::ffmpeg::FFmpeg;
 use super::{Config, Callback};
 
 pub struct VideoCreationArguments<'a> {
-    pub config : &'a Config,
-    pub ffmpeg : &'a FFmpeg,
-    pub browser : &'a Browser,
-    pub detector : Detector,
-    callback : &'a Callback,
+    pub(crate) config : &'a Config,
+    pub(crate) ffmpeg : &'a FFmpeg,
+    pub(crate) browser : &'a Browser,
+    pub(crate) detector : Detector,
+    pub(crate) callback : &'a Callback,
 }
 
 impl<'a> VideoCreationArguments<'a> {
@@ -38,8 +38,8 @@ impl<'a> VideoCreationArguments<'a> {
         (self.callback.on_end_subreddit)(&self.config.lang)
     }
 
-    pub fn call_on_skipping_post_due_to_error<E : Error>(&self,err : E) {
-        (self.callback.on_skipping_post_due_to_error)(&self.config.lang,&err)
+    pub fn call_on_skipping_post_due_to_error<E : Error>(&self,err : &E) {
+        (self.callback.on_skipping_post_due_to_error)(&self.config.lang,err)
     }
 
     pub fn call_on_post_choosen(&self,submission : &SubmissionData) {
@@ -48,5 +48,15 @@ impl<'a> VideoCreationArguments<'a> {
 
     pub fn call_on_video_finished(&self,result : std::io::Result<String>) {
         (self.callback.on_video_finished)(&self.config.lang,result)
+    }
+    
+    pub fn call_failed_to_spawn_task<E : Error>(&self,script : &str,error : &E) {
+        (self.callback.failed_to_spawn_task)(&self.config.lang,script,error)
+    }
+        
+    pub fn call_task_with_code(&self,script : &str,status : &std::process::ExitStatus) {
+        // UNIX SIGTERM : The process was terminated by a signal from a shell or other process.
+        let code = status.code().unwrap_or(143);
+        (self.callback.task_with_code)(&self.config.lang,&script,&code)
     }
 }

@@ -31,3 +31,4 @@ db.toml
 /ffmpeg-6.0
 /bin
 /generated_videos
+*/__pycache__

@@ -35,7 +35,7 @@ impl SubredditConfig {
         let mut count= 0;
         for _ in 0..self.repeat_count {
             if let Err(err) = self.__exceute(&mut count,db, args, &subreddit,add_task).await {
-                args.call_on_skipping_post_due_to_error(err)
+                args.call_on_skipping_post_due_to_error(&err)
             }
         }
     }

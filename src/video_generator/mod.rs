@@ -4,14 +4,13 @@ mod gen;
 use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use std::path::PathBuf;
-use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration}};
+use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration, ExternalScripts}};
 
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
     // TODO : MAYBE USE A StrIng intead
     pub(in crate::video_generator) storage_directory : PathBuf,
 
-    // TODO : Create new struct for it??
     // audio + png dirs
     files : Vec<(String,String)>
 }
@@ -25,7 +24,7 @@ pub struct VideoGenerator<'a> {
     video_asset_directory : &'a str,
 
     /// Reference from [VideoGenerator.arguments.config.assets.random_audio_directory]
-    audio_asset_directory : &'a str
+    audio_asset_directory : &'a str,
 }
 
 impl VideoGenerationFiles {
@@ -42,13 +41,17 @@ impl VideoGenerationFiles {
 }
 
 impl<'a> VideoGenerator<'a> {
-    pub fn new(video_gen_files: VideoGenerationFiles, arguments : &'a VideoCreationArguments<'a>,video_duration : VideoDuration) -> Self {
+    pub fn new(
+        arguments : &'a VideoCreationArguments<'a> , 
+        video_gen_files: VideoGenerationFiles,
+        video_duration : VideoDuration
+    ) -> Self {
         let config = &arguments.config;
 
         let video_asset_directory = config.assets.random_video_directory();
         let audio_asset_directory = config.assets.random_audio_directory();
 
-        Self { video_gen_files ,arguments , video_duration , video_asset_directory , audio_asset_directory } 
+        Self { arguments , video_gen_files , video_duration , video_asset_directory , audio_asset_directory } 
     }
 
     pub const fn ffmpeg(&self) -> &FFmpeg {
@@ -57,5 +60,13 @@ impl<'a> VideoGenerator<'a> {
 
     pub const fn dimensions(&self) -> &Dimensions {
         &self.arguments.config.dimensions
+    }
+
+    pub const fn scripts(&self) -> &ExternalScripts {
+        &self.arguments.config.scripts
+    }
+
+    pub const fn arguments(&self) -> &VideoCreationArguments<'_> {
+        &self.arguments
     }
 }

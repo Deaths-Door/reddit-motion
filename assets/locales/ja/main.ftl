@@ -4,7 +4,7 @@ questions = ご質問がございましたら、GitHubのIssueを通じてお問
 
 solutions = 多くのよくある質問の解決策については、{ $link }をご覧ください。
 
-using-old-version = "古いバージョンのボット ( { $package_version } ) を使用しています。最新バージョン ( { $release_version } ) を { $link } からダウンロードしてください。
+using-old-version = 古いバージョンのボット ( { $package_version } ) を使用しています。最新バージョン ( { $release_version } ) を { $link } からダウンロードしてください。
 
 ffmpeg = FFmpegが利用可能です
     .not_installed = このシステムにFFmpegがインストールされていません。
@@ -23,9 +23,19 @@ reddit = *
     .login-success = やった！ Redditに正常にログインし、希望のテーマを適用しました。
     .subreddit-checking = { $name }サブredditをチェックしています
     .subreddit-finished = サブreddit終了！
-    .post-skipped = サブreddit投稿の処理中にエラーが発生しました：{ $error } \n投稿をスキップします。
-    .post-inform = "ビデオは{ $name }になります👍\nスレッドURLは{ $link }👍\nスレッドの投票率は{ $percent }%です。"
+    .post-skipped = サブreddit投稿の処理中にエラーが発生しました：{ $error }
+    投稿をスキップします。
+    .post-inform = ビデオは{ $name }になります👍
+    スレッドURLは{ $link }👍
+    スレッドの投票率は{ $percent }%です。
 
 video = *
     .success = 生成されたコンテンツは{ $path }にあります🥰！
     .error = ビデオの処理中にエラーが発生しました：{ $error }
+
+task = *
+    .spawn-failed = 外部スクリプト { $script } を起動できませんでした。理由は { $error } です。
+    .finished = タスク ({ $script }) { $code -> 
+        [0] -> 正常に完了しました。
+        *[other] -> エラーコード { $code } で失敗しました。
+    }

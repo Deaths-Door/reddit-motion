@@ -31,17 +31,19 @@ use tokio::task::JoinHandle;
 #[derive(Serialize, Deserialize)]
 pub struct Config {
     #[serde_as(as = "DisplayFromStr")]
-    pub lang: LanguageIdentifier,
-    pub assets: Assets,
-    pub dimensions: Dimensions,
+    pub(crate) lang: LanguageIdentifier,
+    pub(crate) assets: Assets,
+    pub(crate) dimensions: Dimensions,
     
     #[serde(default)]
-    pub tts : TextToSpeechService,
+    pub(crate) tts : TextToSpeechService,
 
     reddit: RedditConfig,
 
     #[serde(default)]
-    translate : TranslationServices
+    translate : TranslationServices,
+
+    pub(crate) scripts : ExternalScripts
 }
 
 use std::path::Path;

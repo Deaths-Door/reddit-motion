@@ -4,7 +4,7 @@ questions = Si tiene alguna pregunta, no dude en ponerse en contacto conmigo env
 
 solutions = Puede encontrar soluciones a muchas preguntas frecuentes en { $link }
 
-using-old-version = "Está utilizando una versión anterior del bot ({ $package_version }). Descargue la última versión ({ $release_version }) desde { $link }.
+using-old-version = Está utilizando una versión anterior del bot ({ $package_version }). Descargue la última versión ({ $release_version }) desde { $link }.
 
 ffmpeg = FFmpeg está disponible
     .not_installed = FFmpeg no está instalado en este sistema.
@@ -23,9 +23,19 @@ reddit = *
     .login-success = ¡Hurra! ¡He iniciado sesión con éxito en Reddit y apliqué el tema deseado!
     .subreddit-checking = Verificando el subreddit { $name }
     .subreddit-finished = ¡Listo con el subreddit!
-    .post-skipped = Se encontró un error al procesar la publicación del subreddit: { $error } \n. Saltar publicación.
-    .post-inform = "¡El video será { $name } 👍!\n ¡La URL del hilo es { $link } 👍!\n ¡El hilo tiene un índice de votación positivo del { $percent }%!"
+    .post-skipped = Se encontró un error al procesar la publicación del subreddit: { $error }.
+    Saltar publicación.
+    .post-inform = ¡El video será { $name } 👍!
+    ¡La URL del hilo es { $link } 👍!
+    ¡El hilo tiene un índice de votación positivo del { $percent }%!
 
 video = *
     .success = ¡El contenido generado está disponible en { $path } 🥰!
     .error = Se encontró un error al procesar el video { $error }
+
+task = *
+    .spawn-failed = No se pudo iniciar el script externo { $script }, debido a { $error }
+    .finished = La tarea ({ $script }) { $code -> 
+        [0] -> se completó correctamente.
+        *[other] -> falló con el código de error { $code }.
+    }
