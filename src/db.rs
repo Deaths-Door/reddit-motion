@@ -10,9 +10,6 @@ use std::io::Write;
 #[serde_as]
 #[derive(Default,serde::Deserialize,serde::Serialize)]
 pub struct Database {
-    #[serde(skip)]
-    path : String,
-
     #[serde_as(as = "DisplayFromStr")]
     pub last_version_check : DateTime<Utc>,
 
@@ -21,18 +18,17 @@ pub struct Database {
     proccessed_threads : HashMap<String,HashSet<LanguageIdentifier>>
 }
 
+const NAME : &str = "db.toml";
 impl Database {
-    pub fn from_file_or_create(_path : &str) -> anyhow::Result<Database> {
-        let path : &Path = _path.as_ref();
-        let mut db = match path.exists() {
+    pub fn try_create() -> anyhow::Result<Database> {
+        let path : &Path = NAME.as_ref();
+        Ok(match path.exists() {
             true => {
                 let toml = std::fs::read_to_string(path)?;
                 toml::from_str::<Database>(&toml)?
             },
             false => Self::default()
-        };
-        db.path = _path.to_string();
-        Ok(db)
+        })
     }
 
     pub fn update_database(self) -> anyhow::Result<()> {
@@ -40,7 +36,7 @@ impl Database {
         let mut file = OpenOptions::new()
             .create(true)
             .write(true)
-            .open(self.path)
+            .open(NAME)
             .unwrap();
 
         Ok(write!(file,"{}",toml)?)
@@ -48,13 +44,10 @@ impl Database {
 
 
     pub fn unprocessed_threads<'a>(&self,id : &str,langs : &'a [LanguageIdentifier]) -> Vec<&'a LanguageIdentifier> {
-        self.proccessed_threads.get(id).and_then(|processed_langs|{
-            Some(
-                langs.iter()
-                    .filter(|lang| !processed_langs.contains(lang))
-                    .collect()
-            )
-        }).unwrap_or(vec![])
+        self.proccessed_threads.get(id).map(|processed_langs|  langs.iter()
+            .filter(|lang| !processed_langs.contains(lang))
+            .collect()
+        ).unwrap_or(vec![])
     }
 
     pub fn add_proccessed_thread(&mut self,submission : &SubmissionData,lang : LanguageIdentifier) {

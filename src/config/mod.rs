@@ -43,6 +43,7 @@ pub struct Config {
     #[serde(default)]
     translate : TranslationServices,
 
+    #[serde(default)]
     pub(crate) scripts : ExternalScripts
 }
 

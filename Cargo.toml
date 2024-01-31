@@ -2,6 +2,13 @@
 name = "reddit-motion"
 version = "0.1.0"
 edition = "2021"
+readme = "README.md"
+authors = ["Aarav Shah <aaravaditya51@gmail.com>"]
+description = "Transform Reddit Posts and Custom Text into Engaging Videos with Localization. Customize Content, Boost Speed, Share on Social Media – Experience its Excellence!"
+documentation = "https://docs.rs/reddit-motion"
+repository = "https://github.com/Deaths-Door/reddit-motion-rs"
+homepage = "https://github.com/Deaths-Door/reddit-motion-rs"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 # Base dependency for async/await

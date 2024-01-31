@@ -116,8 +116,7 @@ impl SharedGeneratorLogic {
         is_audio : bool,
         filter_complex : Option<&str>
     ) -> std::io::Result<()> {
-        // TODO : ADD THIS BACK
-        //if_path_exists!(input_file,return ok);
+        if_path_exists!(input_file,return ok);
 
         let map_impl = match is_audio {
             true => "0:a:0",

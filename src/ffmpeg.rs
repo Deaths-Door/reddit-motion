@@ -70,17 +70,19 @@ impl FFmpeg {
     ) -> std::io::Result<Output> {
         builder(&mut command);
         let output =  command.output()?;
-        let status = output.status.success();
-
-        if !status {
-            eprintln!("{:?}",command);
-            eprintln!("stderr={}",String::from_utf8(output.stderr).unwrap());
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other, 
-                "FFmpeg Command Failed"
-            ))
-        };
-
+       
+        #[cfg(debug_assertions)] {
+            let status = output.status.success();
+            if !status {
+                eprintln!("{:?}",command);
+                eprintln!("stderr={}",String::from_utf8(output.stderr).unwrap());
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Other, 
+                    "FFmpeg Command Failed"
+                ))
+            };
+        }
+        
         Ok(output)
     }
 }

@@ -32,7 +32,7 @@ impl Command {
         let mut config = Config::from_file(CONFIG_PATH)?;
         utils::print_banner(&config.lang);
 
-        let mut db = Database::from_file_or_create("db.toml")?;  
+        let mut db = Database::try_create()?;  
         utils::check_and_install_latest_version(&mut db,&config.lang).await?;
         utils::download_assets(&mut config.assets, &config.lang).await?;
 

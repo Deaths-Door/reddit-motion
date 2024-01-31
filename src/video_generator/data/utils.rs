@@ -128,6 +128,6 @@ pub async fn update_p_with_translated_text(content : &str,elements : &[Element])
 }
 
 pub fn unic_langid_to_deepl_lang(value : LanguageIdentifier) -> deepl::Lang {
-    // TODO
-    todo!()
+    // TODO : When more translators are added extend this
+    deepl::Lang::try_from(value.language.as_str()).unwrap()
 }
