@@ -1,7 +1,7 @@
 use std::process::Command;
 use rand::Rng;
 
-use crate::video_generator::{data::if_path_exists, VideoGenerator};
+use crate::{config::AudioAsset,video_generator::{data::if_path_exists, VideoGenerator}};
 use super::{shared::SharedGeneratorLogic, utils::get_duration};
 
 impl SharedGeneratorLogic {
@@ -31,24 +31,22 @@ impl SharedGeneratorLogic {
         &self,
         video_generator : &VideoGenerator,
         bin_directory : &str,
-        music : &str,
+        asset : &AudioAsset,
         concated_audio_length: &str
     ) -> std::io::Result<String> {
         // extend_background_music_to_concated_audio_length
         let output_file_path = format!("{bin_directory}/extended_music.mp3");
 
-        // TODO : Add option to change volume of background music and audio files
-        const FILTER_COMPLEX : &str = "volume=0.6";
+        let filter_complex = format!("volume={}",asset.volume());
 
         self.extend_media_to_duration(
             video_generator,
-            &music, 
+            &asset.file_path(), 
             &output_file_path,
             "0", 
             &concated_audio_length,
             true,
-            None
-          //  Some(FILTER_COMPLEX)
+            Some(&filter_complex)
         )?;
         
         Ok(output_file_path)
@@ -117,7 +115,6 @@ impl SharedGeneratorLogic {
         start_duration : &str,
         end_duration : &str,
         is_audio : bool,
-        // TODO : remove this??
         filter_complex : Option<&str>
     ) -> std::io::Result<()> {
         // TODO : ADD THIS BACK

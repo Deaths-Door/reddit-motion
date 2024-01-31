@@ -9,7 +9,39 @@ use rand::Rng;
 #[derive(Serialize,Deserialize)]
 pub struct Assets {
     videos : Vec<String>,
-    audio : Vec<String>
+    audio : Vec<AudioAsset>
+}
+
+#[derive(Serialize,Deserialize)]
+pub struct AudioAsset {
+    path : String,
+
+    #[serde(default="default_volume")]
+    volume : f32
+}
+
+impl AsRef<str> for AudioAsset {
+    fn as_ref(&self) -> &str {
+        &self.path.as_ref()
+    }
+}
+
+fn default_volume() -> f32 {
+    1f32
+}
+
+impl AudioAsset {
+    fn new(path : String) -> Self {
+        AudioAsset { path , volume : default_volume() }
+    }
+
+    pub const fn volume(&self) -> &f32 {
+        &self.volume
+    }
+
+    pub const fn file_path(&self) -> &String {
+        &self.path
+    }
 }
 
 impl Assets {
@@ -17,7 +49,7 @@ impl Assets {
         self.audio.len() + self.videos.len()
     }
 
-    fn get_random_index(slice : &[String]) -> Option<&String> {
+    fn get_random_index<T>(slice : &[T]) -> Option<&T> {
         slice.get(rand::thread_rng().gen_range(0..slice.len()))
     }
 
@@ -25,7 +57,7 @@ impl Assets {
         Self::get_random_index(&self.videos)
     }
 
-    pub fn random_audio_directory(&self) -> Option<&String> {
+    pub fn random_audio_asset(&self) -> Option<&AudioAsset> {
         Self::get_random_index(&self.audio)
     }
 }
@@ -42,19 +74,41 @@ impl Assets {
         warn_wrong_mime : F,
         on_each_download : D,
     ) -> anyhow::Result<()> where F : Fn(PathBuf,&Name<'_>,&Name<'_>) + Copy , D : Fn() + Copy {
-        Self::__proccess(&mut self.videos,warn_wrong_mime,on_each_download,"mp4",mime::VIDEO).await?;
-        Self::__proccess(&mut self.audio,warn_wrong_mime,on_each_download,"mp3",mime::AUDIO).await
+        let vvec = Self::proccess(
+            self.videos.iter_mut(),
+            warn_wrong_mime,
+            on_each_download,
+            "mp4",
+            mime::VIDEO,
+            |file_name| file_name
+        ).await?;
+        self.videos.extend(vvec);
+
+        let avec = Self::proccess(
+            self.audio.iter_mut(),
+            warn_wrong_mime,
+            on_each_download,"
+            mp3",
+            mime::AUDIO,
+            |file_name| AudioAsset::new(file_name)
+        ).await?;
+
+        self.audio.extend(avec.into_iter().map(|v| AudioAsset::new(v)));
+
+        Ok(())
     }
 
-    async fn __proccess<F,D>(
-        slice : &mut Vec<String>,
+    async fn proccess<F,D,T>(
+        iter : std::slice::IterMut<'_,T>,
         warn_wrong_mime : F,
         on_each_download : D,
         extension : &str,
-        expected_mime : Name<'_>
-    ) -> anyhow::Result<()> where F : Fn(PathBuf,&Name<'_>,&Name<'_>) , D : Fn() + Copy {
+        expected_mime : Name<'_>,
+        construct : impl Fn(String) -> T
+    ) -> anyhow::Result<Vec<String>> where F : Fn(PathBuf,&Name<'_>,&Name<'_>) , D : Fn() + Copy , T : AsRef<str>  {
         let mut vec = vec![];
-        for item in &mut *slice {
+        for _item in iter {
+            let item = _item.as_ref();
             // Download  
             if item.contains("https") {
                 let id = get_video_id(item).unwrap();
@@ -70,7 +124,7 @@ impl Assets {
                 video.download(&file_name).await?;
                 on_each_download();
 
-                *item = file_name;
+                *_item = construct(file_name);
                 continue
             }
 
@@ -88,8 +142,6 @@ impl Assets {
             }
         }
 
-        slice.extend(vec);
-
-        Ok(())
+        Ok(vec)
     }
 }

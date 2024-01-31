@@ -4,7 +4,7 @@ mod gen;
 use roux::submission::SubmissionData;
 use unic_langid::LanguageIdentifier;
 use std::path::PathBuf;
-use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration, ExternalScripts}};
+use crate::{ffmpeg::FFmpeg, config::{Dimensions, VideoCreationArguments, VideoDuration, ExternalScripts, AudioAsset}};
 
 #[derive(Debug)]
 pub struct VideoGenerationFiles {
@@ -24,7 +24,7 @@ pub struct VideoGenerator<'a> {
     video_asset_directory : &'a str,
 
     /// Reference from [VideoGenerator.arguments.config.assets.random_audio_directory]
-    audio_asset_directory : Option<&'a String>,
+    audio_asset_directory : Option<&'a AudioAsset>,
 }
 
 impl VideoGenerationFiles {
@@ -49,7 +49,7 @@ impl<'a> VideoGenerator<'a> {
         let config = &arguments.config;
 
         let video_asset_directory = config.assets.random_video_directory().unwrap();
-        let audio_asset_directory = config.assets.random_audio_directory();
+        let audio_asset_directory = config.assets.random_audio_asset();
 
         Self { arguments , video_gen_files , video_duration , video_asset_directory , audio_asset_directory } 
     }
