@@ -32,7 +32,7 @@ toml = "0.7.6"
 serde_with = "3.4.0"
 
 # Enum Utils
-strum = { version = "0.25.0" , features = ["derive"] }
+strum = { version = "0.26.2" , features = ["derive"] }
 
 # UI Localization
 fluent-templates = "0.8.0"
