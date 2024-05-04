@@ -35,7 +35,7 @@ serde_with = "3.4.0"
 strum = { version = "0.25.0" , features = ["derive"] }
 
 # UI Localization
-fluent-templates = "0.8.0"
+fluent-templates = "0.9.4"
 unic-langid = "0.9.4"
 
 # For Terminal UI
