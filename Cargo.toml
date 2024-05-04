@@ -58,7 +58,7 @@ mime_guess = "2.0.4"
 mime = "0.3.17"
 
 # Video download
-rusty_ytdl = "0.6.6"
+rusty_ytdl = "0.7.1"
 
 # File download progress
 indicatif = "0.17.6"
