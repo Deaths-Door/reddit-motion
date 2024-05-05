@@ -10,20 +10,24 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install alsa library (Optional)
+      run: sudo apt-get update && sudo apt-get install -y libalsa-dev
+
     - name: Set PKG_CONFIG_PATH
       run: |  # Shell script for setting environment variable
         echo "::group::Setting PKG_CONFIG_PATH"
         export PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig"
         echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"  # Print for verification
         echo "::endgroup::"
+
     - name: Build
       run: cargo build --verbose
+
     - name: Run tests
       run: cargo test --verbose
