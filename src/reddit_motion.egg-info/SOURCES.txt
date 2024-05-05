@@ -1,0 +1,7 @@
+README.md
+setup.py
+src/reddit_motion.egg-info/PKG-INFO
+src/reddit_motion.egg-info/SOURCES.txt
+src/reddit_motion.egg-info/dependency_links.txt
+src/reddit_motion.egg-info/requires.txt
+src/reddit_motion.egg-info/top_level.txt

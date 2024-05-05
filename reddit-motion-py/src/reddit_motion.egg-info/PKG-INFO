@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: reddit-motion
+Version: 1.2
+Summary: Command-line arguments parser for reddit-motion's external script function.
+Home-page: https://github.com/Deaths-Door/reddit-motion
+Author: Aarav Shah
+Requires-Python: >=3.7, <4
+Requires-Dist: argparse>=1.4.0
