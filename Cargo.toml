@@ -26,7 +26,7 @@ thiserror = "1.0.47"
 
 # Data serialization
 serde = { version = "1.0.145" , features = ["derive"] }
-toml = "0.7.6"
+toml = "0.8.13"
 
 # Custom Serialization 
 serde_with = "3.4.0"
