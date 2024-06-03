@@ -64,7 +64,7 @@ rusty_ytdl = "0.7.1"
 indicatif = "0.17.6"
 
 # Browser interaction
-chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"] }
+chromiumoxide = { version = "0.6.0" , features = ["tokio-runtime"] }
 futures = "0.3.30"
 
 # Reddit API
