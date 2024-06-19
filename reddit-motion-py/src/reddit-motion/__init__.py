@@ -45,6 +45,12 @@ class RedditMotionCommandLineParser:
         Returns `True` if the parser is received --limited flag
         """
         return self.__arguments.limited_directories is not None
+    
+    def all_file_paths(self) -> list[str] :
+        """
+        Returns a list of file paths irrespective of the flag received
+        """
+        self.__arguments.infinite_directory if self.is_infinite_duration() else [self.__arguments.limited_directories]
 
     def infinite_file_path(self) -> str:
         """
@@ -52,9 +58,9 @@ class RedditMotionCommandLineParser:
         """
         if not self.is_infinite_duration():
             raise AttributeError('The parser is not configured to process an infinite stream of data.')
-        return self.__arguments.infinite_directory
+        return 
 
-    def limited_file_paths(self) -> [str]:
+    def limited_file_paths(self) -> list[str]:
         """
         Returns a list of file paths if `is_limited_duration()` is `True`, raises an `AttributeError` otherwise.
         """

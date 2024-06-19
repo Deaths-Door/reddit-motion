@@ -20,7 +20,7 @@ impl VideoGenerator<'_> {
         let output_directory = bin_directory.replace("bin", "generated_videos");
         std::fs::create_dir_all(&output_directory)?;
 
-        let scripts = self.scripts();
+        let script = self.scripts();
         let mut infinite_process = None;
         let mut limited_process = None;
         
@@ -30,7 +30,7 @@ impl VideoGenerator<'_> {
             let file_path = InfiniteVideoLength::new(shared_generator)
                 .exceute(&self,&bin_directory,&output_directory)?;
             
-            infinite_process = scripts.call_infinite_script(&file_path)
+            infinite_process = script.call_infinite_script(&file_path)
         }
 
         if let VideoDuration::Limited { limit } | VideoDuration::Both { limit } = self.video_duration {
@@ -39,18 +39,16 @@ impl VideoGenerator<'_> {
             let file_paths = LimitedVideoLength::new(shared_generator,limit)
                 .exceute(&self,&bin_directory, &output_directory)?;
 
-            limited_process = scripts.call_limited_script(&file_paths)
+            limited_process = script.call_limited_script(&file_paths)
         }
 
         self.cleanup(bin_directory)?;
 
         let callback = self.arguments();
-        let infinite_script = scripts.infinite_script();
-        let limited_script = scripts.limited_script();
 
         // Don't show success if both fail
-        match utils::handle_child_proccess(infinite_script,infinite_process,callback) 
-            && utils::handle_child_proccess(limited_script,limited_process,callback) {
+        match utils::handle_child_proccess(script.path(),infinite_process,callback) 
+            && utils::handle_child_proccess(script.path(),limited_process,callback) {
             true => Ok(output_directory),
             false => Err(std::io::Error::new(
                 std::io::ErrorKind::Other, 
