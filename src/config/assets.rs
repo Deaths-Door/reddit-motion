@@ -87,8 +87,8 @@ impl Assets {
         let avec = Self::proccess(
             self.audio.iter_mut(),
             warn_wrong_mime,
-            on_each_download,"
-            mp3",
+            on_each_download,
+            "mp3",
             mime::AUDIO,
             |file_name| AudioAsset::new(file_name)
         ).await?;
