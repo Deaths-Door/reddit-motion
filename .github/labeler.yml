@@ -1,0 +1,22 @@
+# Add 'root' label to any root file changes
+# Quotation marks are required for the leading asterisk
+root:
+- changed-files:
+  - any-glob-to-any-file: '*'
+
+workflow:
+- changed-files:
+  - any-glob-to-any-file: .github/**
+
+examples:
+- changed-files:
+  - any-glob-to-any-file: examples/**
+
+experiments:
+- changed-files:
+  - any-glob-to-any-file: experiments/**
+  
+source:
+- all:
+  - changed-files:
+    - any-glob-to-any-file: 'src/**'
