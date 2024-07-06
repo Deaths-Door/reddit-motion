@@ -6,15 +6,15 @@ root:
 
 workflow:
 - changed-files:
-  - any-glob-to-any-file: .github/**
+  - any-glob-to-any-file: '.github/**'
 
 examples:
 - changed-files:
-  - any-glob-to-any-file: examples/**
+  - any-glob-to-any-file: 'examples/**'
 
 experiments:
 - changed-files:
-  - any-glob-to-any-file: experiments/**
+  - any-glob-to-any-file: 'experiments/**'
   
 source:
 - all:
