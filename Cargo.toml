@@ -26,7 +26,7 @@ thiserror = "1.0.47"
 
 # Data serialization
 serde = { version = "1.0.145" , features = ["derive"] }
-toml = "0.7.6"
+toml = "0.8.14"
 
 # Custom Serialization 
 serde_with = "3.4.0"
@@ -46,7 +46,7 @@ maplit = "1.0.2"
 lazy_static = "1.4.0"
 
 # Version check
-crates_io_api = "0.9.0"
+crates_io_api = "0.11.0"
 chrono = "0.4.31"
 version-compare = "0.2.0"
 
@@ -64,7 +64,7 @@ rusty_ytdl = "0.7.1"
 indicatif = "0.17.6"
 
 # Browser interaction
-chromiumoxide = { version = "0.5.7" , features = ["tokio-runtime"] }
+chromiumoxide = { version = "0.6.0" , features = ["tokio-runtime"] }
 futures = "0.3.30"
 
 # Reddit API
