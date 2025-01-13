@@ -39,7 +39,7 @@ fluent-templates = "0.9.4"
 unic-langid = "0.9.4"
 
 # For Terminal UI
-colored = "2.1.0"
+colored = "3.0.0"
 
 # For Lazyness
 maplit = "1.0.2"
