@@ -78,7 +78,7 @@ regex = "1.10.2"
 
 # Text-to-Speech
 gtts = "0.1.0"
-elevenlabs_rs = "0.3.0"
+elevenlabs_rs = "0.5.1"
 
 # Random selection
 rand = "0.8.5"
