@@ -61,7 +61,7 @@ mime = "0.3.17"
 rusty_ytdl = "0.7.1"
 
 # File download progress
-indicatif = "0.17.6"
+indicatif = "0.18.0"
 
 # Browser interaction
 chromiumoxide = { version = "0.6.0" , features = ["tokio-runtime"] }
