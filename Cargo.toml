@@ -1,5 +1,19 @@
 [package]
 name = "reddit-motion"
+version.workspace = true
+edition.workspace = true
+readme.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+
+[workspace]
+members = ["reddit-motion-core", "reddit-motion-impl"]
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 readme = "README.md"
@@ -10,85 +24,35 @@ repository = "https://github.com/Deaths-Door/reddit-motion"
 homepage = "https://github.com/Deaths-Door/reddit-motion"
 license = "MIT OR Apache-2.0"
 
-[dependencies]
-# Base dependency for async/await
-tokio = { version = "1.35.1", features = ["macros", "rt-multi-thread"] }
-
-# For providing option to edit config.toml
-clap = { version = "4.4.12" , features = ["derive"] }
-
-# Edit config.toml
-open = "5.0.1"
-
-# Error handling
-anyhow = "1.0.77"
+[workspace.dependencies]
+reddit-motion-core = { path = "../reddit-motion/reddit-motion-core" }
+serde = { version = "1.0.145" , features = ["derive"] }
+unic-langid = "0.9.4"
+tokio = { version = "1.35.1" } 
 thiserror = "1.0.47"
 
-# Data serialization
-serde = { version = "1.0.145" , features = ["derive"] }
-toml = "0.8.14"
+[workspace.lints.clippy]
+correctness = "deny"
+suspicious = "deny"
+complexity = "deny"
+perf = "deny"
+style = "deny"
+cargo = "deny"
 
-# Custom Serialization 
-serde_with = "3.4.0"
+[workspace.lints.rust]
+missing_docs= "deny"
+missing_debug_implementations= "deny"
+unsafe_code= "deny"
+unused_mut= "deny"
+unused_allocation= "deny"
+unused_must_use= "deny"
+unreachable_patterns= "deny"
+unstable_features= "deny"
+unsafe_op_in_unsafe_fn= "deny"
+trivial_casts= "deny"
+overflowing_literals= "deny"
+non_snake_case= "deny"
 
-# Enum Utils
-strum = { version = "0.26.2" , features = ["derive"] }
-
-# UI Localization
-fluent-templates = "0.9.4"
-unic-langid = "0.9.4"
-
-# For Terminal UI
-colored = "2.1.0"
-
-# For Lazyness
-maplit = "1.0.2"
-lazy_static = "1.4.0"
-
-# Version check
-crates_io_api = "0.11.0"
-chrono = "0.4.31"
-version-compare = "0.2.0"
-
-# For handling assets
-glob = "0.3.1"
-
-# Ensuring only valid files are passed on to the program
-mime_guess = "2.0.4"
-mime = "0.3.17"
-
-# Video download
-rusty_ytdl = "0.7.1"
-
-# File download progress
-indicatif = "0.17.6"
-
-# Browser interaction
-chromiumoxide = { version = "0.6.0" , features = ["tokio-runtime"] }
-futures = "0.3.30"
-
-# Reddit API
-roux = "2.2.9"
-
-# For detecting language of current post
-whatlang = "0.16.4"
-
-# Text preprocessing
-regex = "1.10.2"
-
-# Text-to-Speech
-gtts = "0.1.0"
-elevenlabs_rs = "0.3.0"
-
-# Random selection
-rand = "0.8.5"
-
-# For translation 
-deepl = "0.6.3"
-
-# FFmpeg download
-[target.'cfg(target_os = "windows")'.dependencies]
-reqwest = "0.12.4"
-
-# For extracting zip file
-zip-extract = "0.1.2"
+[dependencies]
+reddit-motion-impl = { path = "../reddit-motion/reddit-motion-impl" }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -1,0 +1,4 @@
+
+CREATE TABLE IF NOT EXISTS  languages (
+  lang_code TEXT NOT NULL PRIMARY KEY
+);

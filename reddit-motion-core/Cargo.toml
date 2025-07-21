@@ -1,0 +1,23 @@
+[package]
+name = "reddit-motion-core"
+version.workspace = true
+edition.workspace = true
+readme.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+repository.workspace = true
+homepage.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+unic-langid.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+strum = { version = "0.26.2" , features = ["derive"] }
+chromiumoxide = { version = "0.6.0" , features = ["tokio-runtime"] }
+roux = "2.2.9"
