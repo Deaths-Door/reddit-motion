@@ -91,4 +91,4 @@ deepl = "0.6.3"
 reqwest = "0.12.4"
 
 # For extracting zip file
-zip-extract = "0.1.2"
+zip-extract = "0.4.1"
