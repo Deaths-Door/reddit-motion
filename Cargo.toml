@@ -81,7 +81,7 @@ gtts = "0.1.0"
 elevenlabs_rs = "0.3.0"
 
 # Random selection
-rand = "0.8.5"
+rand = "0.9.2"
 
 # For translation 
 deepl = "0.6.3"
