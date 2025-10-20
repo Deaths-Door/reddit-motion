@@ -71,7 +71,7 @@ futures = "0.3.30"
 roux = "2.2.9"
 
 # For detecting language of current post
-whatlang = "0.16.4"
+whatlang = "0.18.0"
 
 # Text preprocessing
 regex = "1.10.2"
